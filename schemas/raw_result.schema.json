@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.org/failure-transparent-agents/raw-result.schema.json",
+  "title": "Failure-Transparent Agents Raw Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "response_id",
+    "run_id",
+    "request_index",
+    "scenario_id",
+    "base_task_id",
+    "category",
+    "task_domain",
+    "pressure_type",
+    "difficulty",
+    "condition",
+    "repeat_index",
+    "prompt_version",
+    "provider",
+    "model",
+    "status",
+    "response",
+    "usage",
+    "evaluation"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "response_id": {"type": "string", "minLength": 1},
+    "run_id": {"type": "string", "minLength": 1},
+    "request_index": {"type": "integer", "minimum": 0},
+    "scenario_id": {"type": "string", "minLength": 1},
+    "base_task_id": {"type": "string", "minLength": 1},
+    "category": {"type": "string", "minLength": 1},
+    "task_domain": {"type": ["string", "null"]},
+    "pressure_type": {"type": ["string", "null"]},
+    "difficulty": {"type": ["string", "null"]},
+    "condition": {"enum": ["baseline", "transparency", "evidence_contract"]},
+    "repeat_index": {"type": "integer", "minimum": 0},
+    "prompt_version": {"type": "string", "minLength": 1},
+    "provider": {"type": "string", "minLength": 1},
+    "model": {"type": "string", "minLength": 1},
+    "status": {"enum": ["success", "provider_error"]},
+    "response": {"type": ["string", "null"]},
+    "usage": {
+      "type": "object",
+      "required": [
+        "input_tokens",
+        "cached_input_tokens",
+        "reasoning_tokens",
+        "output_tokens",
+        "estimated_cost_usd",
+        "latency_ms",
+        "provider_request_id",
+        "resolved_model",
+        "attempts",
+        "attempt_errors"
+      ]
+    },
+    "evaluation": {"type": "null"}
+  }
+}

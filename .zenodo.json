@@ -1,0 +1,20 @@
+{
+  "title": "Failure-Transparent Agents: Benchmark and Evaluation Harness",
+  "description": "Synthetic benchmark, deterministic failed-tool simulator, provider-neutral experiment harness, blinded annotation pipeline, and clustered statistical analysis for measuring unsupported task-completion claims after tool or evidence failure.",
+  "version": "0.2.0",
+  "creators": [
+    {
+      "name": "Zhu, Junru"
+    }
+  ],
+  "license": "MIT",
+  "upload_type": "software",
+  "keywords": [
+    "LLM agents",
+    "tool failure",
+    "hallucination",
+    "failure transparency",
+    "AI evaluation"
+  ],
+  "access_right": "open"
+}

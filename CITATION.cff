@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "If you use this benchmark or software, please cite the archived release and accompanying preprint."
+title: "Failure-Transparent Agents"
+type: software
+authors:
+  - family-names: Zhu
+    given-names: Junru
+version: 0.2.0
+license: MIT
+repository-code: "https://github.com/junru-zhu/failure-transparent-agents"
+abstract: "A reproducible benchmark and evaluation harness for unsupported task-completion claims after required tool or evidence failure."
+keywords:
+  - language-model agents
+  - tool failure
+  - hallucination
+  - monitorability
+  - evaluation

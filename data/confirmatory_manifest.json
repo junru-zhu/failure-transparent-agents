@@ -1,0 +1,297 @@
+{
+  "annotation_guide_sha256": "7c954f0dc955f0c1a6785204e2354ac13bad656b990ecd40416e6bc25daf05a4",
+  "base_task_count": 100,
+  "benchmark": "failure-transparent-agents",
+  "candidate_version": "2026-09-10.v2",
+  "category_counts": {
+    "execution_failed": 20,
+    "missing_attachment": 20,
+    "permission_denied": 20,
+    "stale_data": 20,
+    "web_unavailable": 20
+  },
+  "collection_approval": {
+    "aggregate_budget_cap_usd": 120.0,
+    "approved_at": "2026-09-10T14:24:20-07:00",
+    "approved_by": "Junru Zhu",
+    "authors": [
+      "Junru Zhu"
+    ],
+    "data_collection_authorized": true,
+    "judge_arms": [
+      {
+        "config": "configs/judges/openai-gpt-5.4-mini.json",
+        "max_budget_usd": 60.0,
+        "model": "gpt-5.4-mini",
+        "provider": "openai-judge",
+        "region": null
+      }
+    ],
+    "judge_budget_cap_usd": 60.0,
+    "license": "MIT",
+    "primary_budget_cap_usd": 60.0,
+    "provider_arms": [
+      {
+        "config": "configs/providers/anthropic-claude-sonnet-5.json",
+        "max_budget_usd": 30.0,
+        "model": "claude-sonnet-5",
+        "provider": "anthropic",
+        "region": null
+      },
+      {
+        "config": "configs/providers/nvidia-nemotron-3-super-bedrock.json",
+        "max_budget_usd": 10.0,
+        "model": "nvidia.nemotron-super-3-120b",
+        "provider": "nvidia-bedrock",
+        "region": "us-east-1"
+      },
+      {
+        "config": "configs/providers/openai-gpt-5.6-terra.json",
+        "max_budget_usd": 20.0,
+        "model": "gpt-5.6-terra",
+        "provider": "openai",
+        "region": null
+      }
+    ],
+    "schema_version": "1.0",
+    "status": "approved"
+  },
+  "collection_approval_path": "data/confirmatory_approval.json",
+  "collection_approval_sha256": "84a6d7106598dbb3c6dbcbde0668bf3800ee35b01229d59322c892f3eaf599cc",
+  "dataset": "data/confirmatory_scenarios.jsonl",
+  "dataset_sha256": "4bb2f63bc0bf03570021246943d4c1d871d0fe29e78edcdcfe740c0f3ee716ea",
+  "frozen": true,
+  "frozen_at": "2026-09-10T21:27:29.685506+00:00",
+  "generator": "scripts/generate_confirmatory_dataset.py",
+  "judge_config_sha256s": {
+    "configs/judges/openai-gpt-5.4-mini.json": "166f3e7b4b1d261c413281f0604b02a4aa1ce27d26e04813d965e1142ea20272"
+  },
+  "judge_prompt_sha256": "2d2b9d003a6bbd4867be4733a52555202832453523f1352e4f7dd6cd35280a42",
+  "model_verification": {
+    "arm_count": 4,
+    "arms": [
+      {
+        "config": "configs/judges/openai-gpt-5.4-mini.json",
+        "config_sha256": "166f3e7b4b1d261c413281f0604b02a4aa1ce27d26e04813d965e1142ea20272",
+        "documented_pricing_usd_per_million_tokens": {
+          "cached_input": 0.075,
+          "input": 0.75,
+          "output": 4.5
+        },
+        "model": "gpt-5.4-mini",
+        "parameter_constraints": {
+          "reasoning_effort": "none",
+          "temperature": "unset"
+        },
+        "pricing_usd_per_million_tokens": {
+          "cached_input": 0.075,
+          "input": 0.75,
+          "output": 4.5
+        },
+        "provider": "openai-judge",
+        "provider_type": "openai_responses",
+        "region": null,
+        "reservation_pricing_policy": "documented-current-rate",
+        "role": "judge",
+        "sources": [
+          {
+            "claims": [
+              "Exact model ID is gpt-5.4-mini.",
+              "The model supports the Responses API and reasoning effort none.",
+              "Input, cached-input, and output prices are $0.75, $0.075, and $4.50 per million tokens."
+            ],
+            "url": "https://developers.openai.com/api/docs/models/gpt-5.4-mini"
+          }
+        ]
+      },
+      {
+        "config": "configs/providers/anthropic-claude-sonnet-5.json",
+        "config_sha256": "6293cc2a9c8e1d0eccc3d5945120011a61ac7809b92248c72be9d3f0294fa922",
+        "documented_pricing_usd_per_million_tokens": {
+          "cached_input": 0.2,
+          "input": 2.0,
+          "output": 10.0
+        },
+        "model": "claude-sonnet-5",
+        "parameter_constraints": {
+          "temperature": "unset",
+          "thinking": "adaptive-default"
+        },
+        "pricing_usd_per_million_tokens": {
+          "cached_input": 0.3,
+          "input": 3.0,
+          "output": 15.0
+        },
+        "provider": "anthropic",
+        "provider_type": "anthropic_messages",
+        "region": null,
+        "reservation_pricing_policy": "conservative-higher-announced-rate",
+        "role": "primary",
+        "sources": [
+          {
+            "claims": [
+              "Exact API model ID is claude-sonnet-5.",
+              "Sonnet 5 uses adaptive thinking and rejects non-default temperature, top_p, and top_k."
+            ],
+            "url": "https://platform.claude.com/docs/en/about-claude/models/whats-new-sonnet-5"
+          },
+          {
+            "claims": [
+              "Base input price is $2 per million tokens.",
+              "Cache-read input price is $0.20 per million tokens.",
+              "Output price is $10 per million tokens."
+            ],
+            "url": "https://platform.claude.com/docs/en/about-claude/pricing"
+          },
+          {
+            "claims": [
+              "The migration guide contains an August 31, 2026 transition notice to $3 input and $15 output per million tokens.",
+              "The reservation estimator uses that higher announced rate while the current pricing table continues to be recorded separately."
+            ],
+            "url": "https://platform.claude.com/docs/en/about-claude/models/migration-guide"
+          }
+        ]
+      },
+      {
+        "config": "configs/providers/nvidia-nemotron-3-super-bedrock.json",
+        "config_sha256": "ea3e266b038ae7187927492bd4ddad4c8f1c1e9fa85808f35135b7b6f6f0795a",
+        "documented_pricing_usd_per_million_tokens": {
+          "cached_input": 0.15,
+          "input": 0.15,
+          "output": 0.65
+        },
+        "model": "nvidia.nemotron-super-3-120b",
+        "parameter_constraints": {
+          "cached_input_pricing": "conservative-equal-to-input",
+          "temperature": "0.2"
+        },
+        "pricing_usd_per_million_tokens": {
+          "cached_input": 0.15,
+          "input": 0.15,
+          "output": 0.65
+        },
+        "provider": "nvidia-bedrock",
+        "provider_type": "openai_chat_compatible",
+        "region": "us-east-1",
+        "reservation_pricing_policy": "documented-current-rate",
+        "role": "primary",
+        "sources": [
+          {
+            "claims": [
+              "Exact Bedrock model ID is nvidia.nemotron-super-3-120b.",
+              "The model supports the OpenAI-compatible Chat Completions API.",
+              "The model is available in us-east-1."
+            ],
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-nvidia-nemotron-super-3-120b.html"
+          },
+          {
+            "claims": [
+              "Input price is $0.15 per million tokens.",
+              "Output price is $0.65 per million tokens.",
+              "No lower cache-read price is advertised, so the config conservatively uses the ordinary input price."
+            ],
+            "url": "https://aws.amazon.com/bedrock/pricing/"
+          },
+          {
+            "claims": [
+              "Bedrock Mantle exposes OpenAI-compatible APIs.",
+              "Bearer-token authentication is supported for Mantle endpoints."
+            ],
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/inference-api.html"
+          }
+        ]
+      },
+      {
+        "config": "configs/providers/openai-gpt-5.6-terra.json",
+        "config_sha256": "e8db2aba6542bd61b40a18e58807044d05da1b1cc86df8bbb77f9c23fa3ab654",
+        "documented_pricing_usd_per_million_tokens": {
+          "cached_input": 0.2,
+          "input": 2.0,
+          "output": 12.0
+        },
+        "model": "gpt-5.6-terra",
+        "parameter_constraints": {
+          "reasoning_effort": "none",
+          "temperature": "unset"
+        },
+        "pricing_usd_per_million_tokens": {
+          "cached_input": 0.2,
+          "input": 2.0,
+          "output": 12.0
+        },
+        "provider": "openai",
+        "provider_type": "openai_responses",
+        "region": null,
+        "reservation_pricing_policy": "documented-current-rate",
+        "role": "primary",
+        "sources": [
+          {
+            "claims": [
+              "Exact model ID is gpt-5.6-terra.",
+              "The model supports the Responses API and reasoning effort none.",
+              "Input, cached-input, and output prices are $2, $0.20, and $12 per million tokens."
+            ],
+            "url": "https://developers.openai.com/api/docs/models/gpt-5.6-terra"
+          }
+        ]
+      }
+    ],
+    "path": "data/model_verification.json",
+    "ready": true,
+    "schema_version": "1.0",
+    "sha256": "11c8f849d276c70f53197c122f24f68b4deafbd311c78d633c42c204d55e9ba3",
+    "status": "verified",
+    "verification_scope": "Exact model IDs, interfaces, documented parameter constraints, regions, and token prices were checked against official provider documentation before author approval.",
+    "verified_at": "2026-09-10T14:09:33-07:00"
+  },
+  "model_verification_path": "data/model_verification.json",
+  "model_verification_sha256": "11c8f849d276c70f53197c122f24f68b4deafbd311c78d633c42c204d55e9ba3",
+  "pressure_type_counts": {
+    "conceal_failure": 20,
+    "expected_answer": 20,
+    "forced_choice": 20,
+    "neutral": 20,
+    "urgency": 20
+  },
+  "prompt_source_sha256": "0baf43cc5a7afe2b62c68923ff465fe29e9ef9e5937b89508bf7e2969ee37f4f",
+  "protocol_sha256": "02e13ac839f84723c22a6d9e0e9b5d82ad760475254e476e4b962753d9b2103f",
+  "provider_config_sha256s": {
+    "configs/providers/anthropic-claude-sonnet-5.json": "6293cc2a9c8e1d0eccc3d5945120011a61ac7809b92248c72be9d3f0294fa922",
+    "configs/providers/nvidia-nemotron-3-super-bedrock.json": "ea3e266b038ae7187927492bd4ddad4c8f1c1e9fa85808f35135b7b6f6f0795a",
+    "configs/providers/openai-gpt-5.6-terra.json": "e8db2aba6542bd61b40a18e58807044d05da1b1cc86df8bbb77f9c23fa3ab654"
+  },
+  "requires_author_signoff": false,
+  "scenario_count": 100,
+  "schema_version": "2.0",
+  "signed_by": "Junru Zhu",
+  "signoff_statement": "I reviewed the benchmark, hypotheses, annotation rubric, prompts, exact model and region choices, judge, authorship, license, exclusions, analysis plan, and budget caps and authorize confirmatory data collection against the recorded hashes.",
+  "source_sha256s": {
+    "CITATION.cff": "1abf454cd67b32b077fad5a8a4724aaa055f2957b68178a95901af5a3fa65413",
+    "LICENSE": "bb86fab5273b6e8e01b40b93f79be9085f0001fc1319a8c671f261fd97ca6b56",
+    "scripts/generate_confirmatory_dataset.py": "958b4c65aea808aa574e23c2d7a81ef6a4267808746f24e5533e5d11b5405cb3",
+    "src/failure_transparent_agents/__init__.py": "2e7f3060df25e3f70929e2760f715d56b2d1195efb03b654382a021a7a640aee",
+    "src/failure_transparent_agents/__main__.py": "bbe69cf6181d94399452430ebb39017735288cb9c8eaabe89605dcf280f00807",
+    "src/failure_transparent_agents/adjudication.py": "a4f2690c1bd48187f9bd0046918782b9a896ba72c0e920b8e5f5e688a443ac1b",
+    "src/failure_transparent_agents/analysis.py": "83352ab8bc81f193bb091976213c2c2ea023bc7f41bc0346cbb3f01cb2233404",
+    "src/failure_transparent_agents/annotation.py": "24c9af836bed71910ba433589cb3e1868e8c089b476ba6cfeb9e31a3b1ae1e32",
+    "src/failure_transparent_agents/api_providers.py": "83ace704905f5c8b29a3cba03624c7e9672c215946c24fe3b3064b1464a08187",
+    "src/failure_transparent_agents/conditions.py": "0baf43cc5a7afe2b62c68923ff465fe29e9ef9e5937b89508bf7e2969ee37f4f",
+    "src/failure_transparent_agents/confirmatory.py": "523bbd82c6514cf07d84f0e4ab6b91aa5ca22100acce6e190018552a9acde6e5",
+    "src/failure_transparent_agents/evaluate.py": "07299a3241b161ecfe2063ef6add2e3cc7cd570058a2604e771e72c5185f62e8",
+    "src/failure_transparent_agents/execution.py": "7f3af7a8ec4740e6c7ca97a69bae0adf9e3cdbed3038b399b40221e38e09035f",
+    "src/failure_transparent_agents/experiment.py": "29021809692da83415bc40b7b30f968fc39608af6ee8ae0842f7b89ed396d0e8",
+    "src/failure_transparent_agents/freeze.py": "32cb88a3fb3f0985760e5718bb25a7d4e2f7dc127b6939008d7a33b2e3a4a8c0",
+    "src/failure_transparent_agents/full_scale_validation.py": "b7a2b165180053ef96ce285894c91cc70e71ad9c2c94159c559fddfe824da9c7",
+    "src/failure_transparent_agents/judge.py": "2b8cb76e5d9d434e26b5d015d93f49a2cd5046c50066078598dda79c7e6e060a",
+    "src/failure_transparent_agents/labels.py": "3863c5210f996b70f7b110c64307bcec9cd4a0e134dae2c392775abfd9ae5f08",
+    "src/failure_transparent_agents/model_verification.py": "63ee8dbd30e304bd369090af27d830b879ea0ec61e96a5d35a5de47844359dd5",
+    "src/failure_transparent_agents/preflight.py": "24e6d5a6c9f1e42480ba803ae3de5a992d2a91068f5bca7f39200540dd27fd21",
+    "src/failure_transparent_agents/prompting.py": "1150fa52fcb2586024c511af380ed3f72f3aa991a74dc742716d6cfec3ef5c13",
+    "src/failure_transparent_agents/providers.py": "cce0f033d95968671c48f2e3fc4d4cde0188a9c79abe69f0c6385bc5bfa4bb90",
+    "src/failure_transparent_agents/release.py": "ccaafdee0385cc066c2fdd6c690ab083edb295dbf50a8b397a3ca44c1b5d1279",
+    "src/failure_transparent_agents/sampling.py": "3b042fc1ee1dd6a4ed20f99564c7b8174d8d74ac58f4d75994dbff52daf419ad",
+    "src/failure_transparent_agents/schema.py": "7834c1bafbcc9183c38656648eac768dfd6e7dd2c8fbf99b7485f05b58cc5b27",
+    "src/failure_transparent_agents/simulator.py": "7ec955a410a2c52ab2155ef70d04d28c812a1a1038b783b13439203e5c64b4b7",
+    "src/failure_transparent_agents/statistics.py": "aabeec9cee7c7544d9d341a9dd937d833c36f1c525f67b8c8d40abaf25f70ca6"
+  }
+}

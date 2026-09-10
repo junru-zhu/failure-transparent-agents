@@ -1,0 +1,20 @@
+{
+  "api_key_env": "AWS_BEARER_TOKEN_BEDROCK",
+  "base_url": "https://bedrock-mantle.us-east-1.api.aws/v1",
+  "extra_body": {},
+  "extra_headers": {},
+  "max_budget_usd": 10.0,
+  "max_calls": 1200,
+  "max_output_tokens": 300,
+  "max_retries": 1,
+  "model": "nvidia.nemotron-super-3-120b",
+  "pricing": {
+    "cached_input_per_million": 0.15,
+    "input_per_million": 0.15,
+    "output_per_million": 0.65
+  },
+  "provider_name": "nvidia-bedrock",
+  "provider_type": "openai_chat_compatible",
+  "temperature": 0.2,
+  "timeout_seconds": 120
+}

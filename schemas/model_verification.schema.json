@@ -1,0 +1,172 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.org/failure-transparent-agents/model-verification.schema.json",
+  "title": "Model verification snapshot",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "status",
+    "verified_at",
+    "verification_scope",
+    "arms"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "status": {
+      "const": "verified"
+    },
+    "verified_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "verification_scope": {
+      "type": "string",
+      "minLength": 1
+    },
+    "arms": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "role",
+          "config",
+          "config_sha256",
+          "provider",
+          "model",
+          "region",
+          "provider_type",
+          "pricing_usd_per_million_tokens",
+          "documented_pricing_usd_per_million_tokens",
+          "reservation_pricing_policy",
+          "parameter_constraints",
+          "sources"
+        ],
+        "properties": {
+          "role": {
+            "enum": [
+              "primary",
+              "judge"
+            ]
+          },
+          "config": {
+            "type": "string",
+            "minLength": 1
+          },
+          "config_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "provider": {
+            "type": "string",
+            "minLength": 1
+          },
+          "model": {
+            "type": "string",
+            "minLength": 1
+          },
+          "region": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "provider_type": {
+            "type": "string",
+            "minLength": 1
+          },
+          "pricing_usd_per_million_tokens": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "input",
+              "cached_input",
+              "output"
+            ],
+            "properties": {
+              "input": {
+                "type": "number",
+                "minimum": 0
+              },
+              "cached_input": {
+                "type": "number",
+                "minimum": 0
+              },
+              "output": {
+                "type": "number",
+                "minimum": 0
+              }
+            }
+          },
+          "documented_pricing_usd_per_million_tokens": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "input",
+              "cached_input",
+              "output"
+            ],
+            "properties": {
+              "input": {
+                "type": "number",
+                "minimum": 0
+              },
+              "cached_input": {
+                "type": "number",
+                "minimum": 0
+              },
+              "output": {
+                "type": "number",
+                "minimum": 0
+              }
+            }
+          },
+          "reservation_pricing_policy": {
+            "enum": [
+              "documented-current-rate",
+              "conservative-higher-announced-rate"
+            ]
+          },
+          "parameter_constraints": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "sources": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "url",
+                "claims"
+              ],
+              "properties": {
+                "url": {
+                  "type": "string",
+                  "format": "uri",
+                  "pattern": "^https://"
+                },
+                "claims": {
+                  "type": "array",
+                  "minItems": 1,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

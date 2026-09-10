@@ -1,0 +1,24 @@
+{
+  "api_key_env": "OPENAI_API_KEY",
+  "base_url": "https://api.openai.com/v1",
+  "extra_body": {
+    "reasoning": {
+      "effort": "none"
+    }
+  },
+  "extra_headers": {},
+  "max_budget_usd": 20.0,
+  "max_calls": 1200,
+  "max_output_tokens": 300,
+  "max_retries": 1,
+  "model": "gpt-5.6-terra",
+  "pricing": {
+    "cached_input_per_million": 0.2,
+    "input_per_million": 2.0,
+    "output_per_million": 12.0
+  },
+  "provider_name": "openai",
+  "provider_type": "openai_responses",
+  "temperature": null,
+  "timeout_seconds": 120
+}

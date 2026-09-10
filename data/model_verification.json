@@ -1,0 +1,173 @@
+{
+  "schema_version": "1.0",
+  "status": "verified",
+  "verified_at": "2026-09-10T14:09:33-07:00",
+  "verification_scope": "Exact model IDs, interfaces, documented parameter constraints, regions, and token prices were checked against official provider documentation before author approval.",
+  "arms": [
+    {
+      "role": "primary",
+      "config": "configs/providers/anthropic-claude-sonnet-5.json",
+      "config_sha256": "6293cc2a9c8e1d0eccc3d5945120011a61ac7809b92248c72be9d3f0294fa922",
+      "provider": "anthropic",
+      "model": "claude-sonnet-5",
+      "region": null,
+      "provider_type": "anthropic_messages",
+      "pricing_usd_per_million_tokens": {
+        "input": 3.0,
+        "cached_input": 0.3,
+        "output": 15.0
+      },
+      "documented_pricing_usd_per_million_tokens": {
+        "input": 2.0,
+        "cached_input": 0.2,
+        "output": 10.0
+      },
+      "reservation_pricing_policy": "conservative-higher-announced-rate",
+      "parameter_constraints": {
+        "temperature": "unset",
+        "thinking": "adaptive-default"
+      },
+      "sources": [
+        {
+          "url": "https://platform.claude.com/docs/en/about-claude/models/whats-new-sonnet-5",
+          "claims": [
+            "Exact API model ID is claude-sonnet-5.",
+            "Sonnet 5 uses adaptive thinking and rejects non-default temperature, top_p, and top_k."
+          ]
+        },
+        {
+          "url": "https://platform.claude.com/docs/en/about-claude/pricing",
+          "claims": [
+            "Base input price is $2 per million tokens.",
+            "Cache-read input price is $0.20 per million tokens.",
+            "Output price is $10 per million tokens."
+          ]
+        },
+        {
+          "url": "https://platform.claude.com/docs/en/about-claude/models/migration-guide",
+          "claims": [
+            "The migration guide contains an August 31, 2026 transition notice to $3 input and $15 output per million tokens.",
+            "The reservation estimator uses that higher announced rate while the current pricing table continues to be recorded separately."
+          ]
+        }
+      ]
+    },
+    {
+      "role": "primary",
+      "config": "configs/providers/nvidia-nemotron-3-super-bedrock.json",
+      "config_sha256": "ea3e266b038ae7187927492bd4ddad4c8f1c1e9fa85808f35135b7b6f6f0795a",
+      "provider": "nvidia-bedrock",
+      "model": "nvidia.nemotron-super-3-120b",
+      "region": "us-east-1",
+      "provider_type": "openai_chat_compatible",
+      "pricing_usd_per_million_tokens": {
+        "input": 0.15,
+        "cached_input": 0.15,
+        "output": 0.65
+      },
+      "documented_pricing_usd_per_million_tokens": {
+        "input": 0.15,
+        "cached_input": 0.15,
+        "output": 0.65
+      },
+      "reservation_pricing_policy": "documented-current-rate",
+      "parameter_constraints": {
+        "cached_input_pricing": "conservative-equal-to-input",
+        "temperature": "0.2"
+      },
+      "sources": [
+        {
+          "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-nvidia-nemotron-super-3-120b.html",
+          "claims": [
+            "Exact Bedrock model ID is nvidia.nemotron-super-3-120b.",
+            "The model supports the OpenAI-compatible Chat Completions API.",
+            "The model is available in us-east-1."
+          ]
+        },
+        {
+          "url": "https://aws.amazon.com/bedrock/pricing/",
+          "claims": [
+            "Input price is $0.15 per million tokens.",
+            "Output price is $0.65 per million tokens.",
+            "No lower cache-read price is advertised, so the config conservatively uses the ordinary input price."
+          ]
+        },
+        {
+          "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/inference-api.html",
+          "claims": [
+            "Bedrock Mantle exposes OpenAI-compatible APIs.",
+            "Bearer-token authentication is supported for Mantle endpoints."
+          ]
+        }
+      ]
+    },
+    {
+      "role": "primary",
+      "config": "configs/providers/openai-gpt-5.6-terra.json",
+      "config_sha256": "e8db2aba6542bd61b40a18e58807044d05da1b1cc86df8bbb77f9c23fa3ab654",
+      "provider": "openai",
+      "model": "gpt-5.6-terra",
+      "region": null,
+      "provider_type": "openai_responses",
+      "pricing_usd_per_million_tokens": {
+        "input": 2.0,
+        "cached_input": 0.2,
+        "output": 12.0
+      },
+      "documented_pricing_usd_per_million_tokens": {
+        "input": 2.0,
+        "cached_input": 0.2,
+        "output": 12.0
+      },
+      "reservation_pricing_policy": "documented-current-rate",
+      "parameter_constraints": {
+        "reasoning_effort": "none",
+        "temperature": "unset"
+      },
+      "sources": [
+        {
+          "url": "https://developers.openai.com/api/docs/models/gpt-5.6-terra",
+          "claims": [
+            "Exact model ID is gpt-5.6-terra.",
+            "The model supports the Responses API and reasoning effort none.",
+            "Input, cached-input, and output prices are $2, $0.20, and $12 per million tokens."
+          ]
+        }
+      ]
+    },
+    {
+      "role": "judge",
+      "config": "configs/judges/openai-gpt-5.4-mini.json",
+      "config_sha256": "166f3e7b4b1d261c413281f0604b02a4aa1ce27d26e04813d965e1142ea20272",
+      "provider": "openai-judge",
+      "model": "gpt-5.4-mini",
+      "region": null,
+      "provider_type": "openai_responses",
+      "pricing_usd_per_million_tokens": {
+        "input": 0.75,
+        "cached_input": 0.075,
+        "output": 4.5
+      },
+      "documented_pricing_usd_per_million_tokens": {
+        "input": 0.75,
+        "cached_input": 0.075,
+        "output": 4.5
+      },
+      "reservation_pricing_policy": "documented-current-rate",
+      "parameter_constraints": {
+        "reasoning_effort": "none",
+        "temperature": "unset"
+      },
+      "sources": [
+        {
+          "url": "https://developers.openai.com/api/docs/models/gpt-5.4-mini",
+          "claims": [
+            "Exact model ID is gpt-5.4-mini.",
+            "The model supports the Responses API and reasoning effort none.",
+            "Input, cached-input, and output prices are $0.75, $0.075, and $4.50 per million tokens."
+          ]
+        }
+      ]
+    }
+  ]
+}

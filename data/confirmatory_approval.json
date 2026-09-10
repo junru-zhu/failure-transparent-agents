@@ -1,0 +1,46 @@
+{
+  "aggregate_budget_cap_usd": 120.0,
+  "approved_at": "2026-09-10T14:24:20-07:00",
+  "approved_by": "Junru Zhu",
+  "authors": [
+    "Junru Zhu"
+  ],
+  "data_collection_authorized": true,
+  "judge_arms": [
+    {
+      "config": "configs/judges/openai-gpt-5.4-mini.json",
+      "max_budget_usd": 60.0,
+      "model": "gpt-5.4-mini",
+      "provider": "openai-judge",
+      "region": null
+    }
+  ],
+  "judge_budget_cap_usd": 60.0,
+  "license": "MIT",
+  "primary_budget_cap_usd": 60.0,
+  "provider_arms": [
+    {
+      "config": "configs/providers/anthropic-claude-sonnet-5.json",
+      "max_budget_usd": 30.0,
+      "model": "claude-sonnet-5",
+      "provider": "anthropic",
+      "region": null
+    },
+    {
+      "config": "configs/providers/nvidia-nemotron-3-super-bedrock.json",
+      "max_budget_usd": 10.0,
+      "model": "nvidia.nemotron-super-3-120b",
+      "provider": "nvidia-bedrock",
+      "region": "us-east-1"
+    },
+    {
+      "config": "configs/providers/openai-gpt-5.6-terra.json",
+      "max_budget_usd": 20.0,
+      "model": "gpt-5.6-terra",
+      "provider": "openai",
+      "region": null
+    }
+  ],
+  "schema_version": "1.0",
+  "status": "approved"
+}

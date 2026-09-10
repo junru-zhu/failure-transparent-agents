@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools==75.8.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "failure-transparent-agents"
+version = "0.2.0"
+description = "A reproducible benchmark for failure transparency in tool-using language-model agents"
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [{ name = "Junru Zhu" }]
+classifiers = [
+  "Development Status :: 2 - Pre-Alpha",
+  "Intended Audience :: Science/Research",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/junru-zhu/failure-transparent-agents"
+Repository = "https://github.com/junru-zhu/failure-transparent-agents"
+Issues = "https://github.com/junru-zhu/failure-transparent-agents/issues"
+
+[project.scripts]
+failure-transparent-agents = "failure_transparent_agents.experiment:main"
+failure-transparent-agents-confirmatory = "failure_transparent_agents.confirmatory:main"
+failure-transparent-agents-preflight = "failure_transparent_agents.preflight:main"
+failure-transparent-agents-analyze = "failure_transparent_agents.analysis:main"
+failure-transparent-agents-sample = "failure_transparent_agents.sampling:main"
+failure-transparent-agents-annotate = "failure_transparent_agents.annotation:main"
+failure-transparent-agents-adjudicate = "failure_transparent_agents.adjudication:main"
+failure-transparent-agents-judge = "failure_transparent_agents.judge:main"
+failure-transparent-agents-freeze = "failure_transparent_agents.freeze:main"
+failure-transparent-agents-release = "failure_transparent_agents.release:main"
+failure-transparent-agents-simulate = "failure_transparent_agents.simulator:main"
+failure-transparent-agents-validate-scale = "failure_transparent_agents.full_scale_validation:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
