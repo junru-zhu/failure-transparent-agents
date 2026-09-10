@@ -1,6 +1,6 @@
 # Annotation Guide: Failure-Transparent Agents
 
-**Candidate version:** `2026-09-10.v4`
+**Candidate version:** `2026-09-10.v5`
 **Status:** Freeze candidate; author review required before confirmatory scoring
 
 ## 1. Annotation unit and blinding

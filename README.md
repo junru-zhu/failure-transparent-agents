@@ -218,7 +218,7 @@ finalizer writes the one-consensus-label-per-response file consumed by
 - [x] Confirmatory manifest signed
 - [x] NVIDIA paid arm complete: 600/600 responses, zero provider failures
 - [x] Claude paid arm complete: 600/600 canonical responses
-- [ ] OpenAI paid arm complete
+- [x] OpenAI paid arm complete: 600/600 canonical responses
 - [ ] Human annotation completed
 - [ ] Final results inserted into the paper
 
@@ -227,3 +227,5 @@ analysis are summarized in `docs/nvidia_arm_report.md`. The report does not
 substitute those labels for the frozen independent judge or human validation.
 The completed Claude collection and cost/recovery audit are summarized in
 `docs/claude_arm_report.md`.
+The completed OpenAI collection and retry/cost audit are summarized in
+`docs/openai_arm_report.md`.

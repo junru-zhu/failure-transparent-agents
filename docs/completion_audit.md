@@ -1,8 +1,8 @@
 # Completion Audit
 
 **Audit date:** 2026-09-10  
-**Overall status:** NVIDIA and Claude confirmatory collection complete;
-OpenAI, frozen judging, human validation, and external publication incomplete
+**Overall status:** all three confirmatory primary collections complete;
+frozen judging, human validation, and external publication incomplete
 
 This document maps every requested deliverable to current authoritative
 evidence. Synthetic fixture and exploratory Codex outputs are never treated as
@@ -12,19 +12,19 @@ confirmatory model results.
 
 | Requirement | Status | Authoritative evidence | Remaining work |
 |---|---|---|---|
-| Public 100-task JSONL benchmark | Frozen locally | `data/confirmatory_scenarios.jsonl`; 100 rows; SHA-256 `4bb2f63bc0bf03570021246943d4c1d871d0fe29e78edcdcfe740c0f3ee716ea`; signed `data/confirmatory_manifest.json` | Push the public repository |
+| Public 100-task JSONL benchmark | Frozen and public | `data/confirmatory_scenarios.jsonl`; 100 rows; SHA-256 `4bb2f63bc0bf03570021246943d4c1d871d0fe29e78edcdcfe740c0f3ee716ea`; signed `data/confirmatory_manifest.json` | None |
 | Annotation guide | Frozen locally | `docs/annotation_guide.md`; strict label schema and 63 passing tests | None before collection |
 | Deterministic failed-tool simulator | Complete locally | `src/failure_transparent_agents/simulator.py`; replay and wrong-tool tests | None before collection |
-| Provider-neutral evaluation harness | Complete locally | Bedrock OpenAI Responses/SigV4, Anthropic Messages, and native InvokeModel adapters; retry, resume, call, spend, and provenance controls | Authorized authorized AWS environment live execution |
+| Provider-neutral evaluation harness | Complete locally | Bedrock OpenAI Responses/SigV4, Anthropic Messages, and native InvokeModel adapters; retry, resume, call, spend, and provenance controls | Authorized live execution |
 | Exact model and pricing selection | Verified and approved | `data/model_verification.json`; official-source/config hash checks pass for four primary/judge configs; approval embedded in the frozen manifest | None before collection |
-| One-command reproduction | Complete locally | `Makefile`, `docs/reproduction.md`, twelve installed console commands; repository URL set to `junru-zhu/failure-transparent-agents` | Push the public repository |
-| Complete 1,800-response execution path | 1,200 responses complete; OpenAI pending | `docs/nvidia_arm_report.md` and `docs/claude_arm_report.md`; both completed arms have 600/600 canonical responses | Run the OpenAI arm |
+| One-command reproduction | Complete and public | `Makefile`, `docs/reproduction.md`, twelve installed console commands; repository URL set to `junru-zhu/failure-transparent-agents` | None |
+| Complete 1,800-response execution path | Complete | `docs/nvidia_arm_report.md`, `docs/claude_arm_report.md`, and `docs/openai_arm_report.md`; every arm has 600/600 canonical responses | None |
 | Labeled confirmatory result set | Exploratory NVIDIA labels complete; frozen labels pending | `docs/nvidia_arm_report.md`; 600 complete self-judge labels and analysis artifacts are local and git-ignored | Run the frozen GPT-5.4-mini judge over all three arms |
 | Human validation and agreement | Workflow complete; real labels missing | Dual annotation, disagreement-only adjudication, consensus, and agreement code; fixture run produced 540 initial and 270 consensus labels | Two real independent annotators and a third reviewer for disagreements |
 | Bootstrap intervals and primary tests | Exploratory NVIDIA estimates complete | `docs/nvidia_arm_report.md`; full 10,000-draw bootstrap and 100,000-draw paired tests | Rerun on frozen three-model labels |
 | Three figures and ablation table | Exploratory NVIDIA artifacts complete | `results/confirmatory-20260910-v1/analysis-nvidia-exploratory/` | Regenerate from frozen three-model labels |
 | Six-to-eight-page paper | Draft complete | `paper/main.pdf`: six pages, structurally valid; SHA-256 `15a539a45c48b3085bc3fd6f6b8e2ff937f173691e70bfd601b810af019ee4b7` | Replace explicit result placeholders and revise claims after analysis |
-| GitHub-ready software/data artifact | Complete locally | Deterministic source ZIP, checksum, release report, changelog, release notes, CI, MIT license, citation metadata, and initialized local Git repository | Authenticate GitHub and push `junru-zhu/failure-transparent-agents` |
+| GitHub-ready software/data artifact | Public repository active | Deterministic source ZIP, checksum, release report, changelog, release notes, CI, MIT license, citation metadata, and GitHub repository | Publish the final result-bearing release after scoring |
 | Zenodo-ready metadata | Complete locally | `.zenodo.json`, `CITATION.cff`, release audit | Publish exact GitHub release, create DOI, then insert DOI into README, citation metadata, and paper |
 | arXiv/workshop submission | Not achieved | Submission checklist only | Authorship confirmation, final results, DOI, and explicit submission authorization |
 
@@ -33,29 +33,27 @@ confirmatory model results.
 `results/preflight/confirmatory-plan.json` currently plans:
 
 - 1,800 primary responses and at most 3,600 provider attempts;
-- a conservative primary bound of `$20.6180844`;
+- a conservative primary bound of `$21.4642236`;
 - a model-judge bound of `$44.155494`;
-- an aggregate bound of `$64.7735784` under a `$120` hard cap; and
+- an aggregate bound of `$65.6197176` under a `$120` hard cap; and
 - zero network calls during preflight.
 
 Preflight now reports no blocking checks and `ready_for_live_run: true`.
 
-The NVIDIA and Claude arms completed through the authorized local
-`AWS_PROFILE`. The environment still lacks the authorized AWS environment invocation permission
-for the OpenAI primary arm and `OPENAI_API_KEY` for the judge.
+All three primary arms completed through an authorized local `AWS_PROFILE`.
+The environment still lacks `OPENAI_API_KEY` for the frozen judge.
 
 ## Decisions and inputs still required
 
-Before remaining paid collection:
+Before remaining paid scoring:
 
-1. Obtain temporary authorized AWS environment `bedrock:InvokeModel` permission outside the repository.
-2. Run the credential smoke test, then start the resumable OpenAI arm.
+1. Set `OPENAI_API_KEY` outside the repository.
+2. Run the frozen GPT-5.4-mini judge over all 1,800 responses.
 
 Before public release:
 
-1. Authenticate GitHub and push the approved public repository.
-2. Confirm the eventual version tag after confirmatory results are inserted.
-3. Approve Zenodo deposition and later arXiv submission as separate external
+1. Confirm the eventual version tag after confirmatory results are inserted.
+2. Approve Zenodo deposition and later arXiv submission as separate external
    actions.
 
 ## Completion rule

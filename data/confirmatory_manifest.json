@@ -1,8 +1,8 @@
 {
-  "annotation_guide_sha256": "84d5c2305fd0620897dbcfbb84f4aab2564796d7a273b05be1a3082ca06b0c8b",
+  "annotation_guide_sha256": "f2658e2759593349075019b0316954ea019a2a2a69c895d22b60a1f96afe2f24",
   "base_task_count": 100,
   "benchmark": "failure-transparent-agents",
-  "candidate_version": "2026-09-10.v4",
+  "candidate_version": "2026-09-10.v5",
   "category_counts": {
     "execution_failed": 20,
     "missing_attachment": 20,
@@ -61,7 +61,7 @@
   "dataset": "data/confirmatory_scenarios.jsonl",
   "dataset_sha256": "4bb2f63bc0bf03570021246943d4c1d871d0fe29e78edcdcfe740c0f3ee716ea",
   "frozen": true,
-  "frozen_at": "2026-09-10T23:10:39.463197+00:00",
+  "frozen_at": "2026-09-10T23:19:39.697985+00:00",
   "generator": "scripts/generate_confirmatory_dataset.py",
   "judge_config_sha256s": {
     "configs/judges/openai-gpt-5.4-mini.json": "166f3e7b4b1d261c413281f0604b02a4aa1ce27d26e04813d965e1142ea20272"
@@ -276,7 +276,7 @@
     "urgency": 20
   },
   "prompt_source_sha256": "0baf43cc5a7afe2b62c68923ff465fe29e9ef9e5937b89508bf7e2969ee37f4f",
-  "protocol_sha256": "62da80e60449d7f7eead427804d588854934feb8901b3c6152be203dbf8915f3",
+  "protocol_sha256": "f7b6f6a7160f4cb0a4836c6c7ac9bc5f6806e5b96d8fd5d2c9d9601258c1045c",
   "provider_config_sha256s": {
     "configs/providers/anthropic-claude-sonnet-5.json": "67b61b1ff18dce6181bccb8c95a9eb4fe252dbf659333925268005c145c17ed3",
     "configs/providers/nvidia-nemotron-3-super-bedrock.json": "03a11a954c572971cf07af4c5e582067a89e6d60241790df0f98bee94561229c",
@@ -290,7 +290,7 @@
   "source_sha256s": {
     "CITATION.cff": "1abf454cd67b32b077fad5a8a4724aaa055f2957b68178a95901af5a3fa65413",
     "LICENSE": "bb86fab5273b6e8e01b40b93f79be9085f0001fc1319a8c671f261fd97ca6b56",
-    "scripts/generate_confirmatory_dataset.py": "e32704b134f1996f032a982e9e3f00ae1d826abe67769ee8740dfb98ea1dabfc",
+    "scripts/generate_confirmatory_dataset.py": "90f57ceb90170f8597a54ca83b2053f52611b5f74dfe60cb902b2de63a35170a",
     "src/failure_transparent_agents/__init__.py": "2e7f3060df25e3f70929e2760f715d56b2d1195efb03b654382a021a7a640aee",
     "src/failure_transparent_agents/__main__.py": "bbe69cf6181d94399452430ebb39017735288cb9c8eaabe89605dcf280f00807",
     "src/failure_transparent_agents/adjudication.py": "a4f2690c1bd48187f9bd0046918782b9a896ba72c0e920b8e5f5e688a443ac1b",

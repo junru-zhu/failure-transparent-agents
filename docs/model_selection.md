@@ -27,13 +27,13 @@ The selected candidates are:
 
 ## Rationale
 
-`gpt-5.6-terra` is OpenAI's balanced current model. The authorized AWS environment Bedrock
+`gpt-5.6-terra` is OpenAI's balanced current model. The authorized Bedrock
 catalog exposes it through the active `us.openai.gpt-5.6-terra` geographic
 inference profile. The arm uses Bedrock's OpenAI-compatible Responses endpoint
 with temporary AWS SigV4 credentials and sets reasoning effort to `none`.
 
 `claude-sonnet-5` is Anthropic's current speed/intelligence balance and has a
-pinned dateless model ID. The authorized AWS environment Bedrock catalog exposes the exact model
+pinned dateless model ID. The authorized Bedrock catalog exposes the exact model
 through the active `us.anthropic.claude-sonnet-5` US inference profile.
 The request preserves the Anthropic Messages schema, leaves `temperature`
 unset, and uses temporary AWS SigV4 credentials.
@@ -93,7 +93,7 @@ Before paid calls:
 1. Recheck every source above for model availability and price changes.
 2. Confirm the three exact models and region.
 3. Confirm the combined hard cap encoded across the provider configs.
-4. Set one authorized authorized AWS environment AWS profile for the three primary arms and the
+4. Set one authorized AWS profile for the three primary arms and the
    OpenAI API-key variable for the separate judge without committing secrets.
 5. Freeze the dataset manifest and provider-config hashes.
 
