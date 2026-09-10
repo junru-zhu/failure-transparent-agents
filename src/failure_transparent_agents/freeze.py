@@ -361,8 +361,6 @@ def _config_approval_arm(config_path: str | Path) -> dict[str, Any]:
 
 
 def _region_from_config(provider: str, base_url: str) -> str | None:
-    if provider != "nvidia-bedrock":
-        return None
     hostname = urlparse(base_url).hostname or ""
     for prefix, suffix in (
         ("bedrock-mantle.", ".api.aws"),
@@ -372,7 +370,9 @@ def _region_from_config(provider: str, base_url: str) -> str | None:
             region = hostname[len(prefix) : -len(suffix)]
             if region:
                 return region
-    raise ValueError("nvidia-bedrock base_url does not encode an AWS region")
+    if provider == "nvidia-bedrock":
+        raise ValueError("nvidia-bedrock base_url does not encode an AWS region")
+    return None
 
 
 def _require_exact_fields(

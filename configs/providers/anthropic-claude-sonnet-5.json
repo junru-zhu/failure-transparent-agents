@@ -1,6 +1,6 @@
 {
-  "api_key_env": "ANTHROPIC_API_KEY",
-  "base_url": "https://api.anthropic.com",
+  "api_key_env": "AWS_PROFILE",
+  "base_url": "https://bedrock-runtime.us-east-1.amazonaws.com/model/us.anthropic.claude-sonnet-5",
   "extra_body": {},
   "extra_headers": {},
   "max_budget_usd": 30.0,
@@ -14,7 +14,7 @@
     "output_per_million": 15.0
   },
   "provider_name": "anthropic",
-  "provider_type": "anthropic_messages",
+  "provider_type": "aws_bedrock_anthropic_messages",
   "temperature": null,
   "timeout_seconds": 120
 }

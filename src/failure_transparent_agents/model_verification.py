@@ -39,7 +39,11 @@ SOURCE_FIELDS = {"url", "claims"}
 ALLOWED_SOURCE_HOSTS = {
     "openai": {"developers.openai.com"},
     "openai-judge": {"developers.openai.com"},
-    "anthropic": {"platform.claude.com"},
+    "anthropic": {
+        "aws.amazon.com",
+        "docs.aws.amazon.com",
+        "platform.claude.com",
+    },
     "nvidia-bedrock": {"aws.amazon.com", "docs.aws.amazon.com"},
 }
 
@@ -365,8 +369,6 @@ def _validate_sources(
 
 
 def _region(settings: ProviderSettings) -> str | None:
-    if settings.provider_name != "nvidia-bedrock":
-        return None
     hostname = urlparse(settings.base_url).hostname or ""
     for prefix, suffix in (
         ("bedrock-mantle.", ".api.aws"),
@@ -376,7 +378,9 @@ def _region(settings: ProviderSettings) -> str | None:
             region = hostname[len(prefix) : -len(suffix)]
             if region:
                 return region
-    raise ValueError("nvidia-bedrock base URL does not encode an AWS region")
+    if settings.provider_name == "nvidia-bedrock":
+        raise ValueError("nvidia-bedrock base URL does not encode an AWS region")
+    return None
 
 
 def _aware_iso8601(value: Any, name: str) -> datetime:

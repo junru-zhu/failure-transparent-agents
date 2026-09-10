@@ -1,6 +1,6 @@
 {
   "aggregate_budget_cap_usd": 120.0,
-  "approved_at": "2026-09-10T14:24:20-07:00",
+  "approved_at": "2026-09-10T15:43:11-07:00",
   "approved_by": "Junru Zhu",
   "authors": [
     "Junru Zhu"
@@ -24,7 +24,7 @@
       "max_budget_usd": 30.0,
       "model": "claude-sonnet-5",
       "provider": "anthropic",
-      "region": null
+      "region": "us-east-1"
     },
     {
       "config": "configs/providers/nvidia-nemotron-3-super-bedrock.json",

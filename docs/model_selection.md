@@ -22,7 +22,7 @@ The selected candidates are:
 | Family | Candidate | Interface |
 |---|---|---|
 | OpenAI | `gpt-5.6-terra` | OpenAI Responses API |
-| Anthropic | `claude-sonnet-5` | Anthropic Messages API |
+| Anthropic | `claude-sonnet-5` | Amazon Bedrock native InvokeModel |
 | NVIDIA/open weight | `nvidia.nemotron-super-3-120b` | Amazon Bedrock native InvokeModel |
 
 ## Rationale
@@ -33,9 +33,10 @@ failed-tool evidence and does not spend the short output budget on hidden
 reasoning tokens.
 
 `claude-sonnet-5` is Anthropic's current speed/intelligence balance and has a
-pinned dateless API model ID. Sonnet 5 currently rejects non-default sampling
-parameters, so the configuration leaves `temperature` unset and uses adaptive
-thinking defaults.
+pinned dateless model ID. The authorized AWS environment Bedrock catalog exposes the exact model
+through the active `us.anthropic.claude-sonnet-5` US inference profile.
+The request preserves the Anthropic Messages schema, leaves `temperature`
+unset, and uses temporary AWS SigV4 credentials.
 
 NVIDIA Nemotron 3 Super 120B is an open-weight hybrid MoE model designed for
 agentic workloads. Amazon Bedrock exposes the exact NVIDIA model through
@@ -51,15 +52,12 @@ prices used to enforce the hard cap:
 | Model | Current documented input/cache/output | Config reservation input/cache/output |
 |---|---|---|
 | GPT-5.6 Terra | 2.00 / 0.20 / 12.00 | 2.00 / 0.20 / 12.00 |
-| Claude Sonnet 5 | 2.00 / 0.20 / 10.00 | 3.00 / 0.30 / 15.00 |
+| Claude Sonnet 5 after 2026-08-31 | 3.00 / 0.30 / 15.00 | 3.00 / 0.30 / 15.00 |
 | Nemotron 3 Super 120B on Bedrock, us-east-1 | 0.15 / not separately listed / 0.65 | 0.15 / 0.15 / 0.65 |
 
-Anthropic's current pricing table lists $2 input and $10 output, while its
-migration guide also contains an August 31, 2026 transition notice to $3 and
-$15. Because that date has passed, the harness reserves at the higher announced
-rate while retaining the current table values separately in the verification
-snapshot. This avoids understating hard-cap exposure and must be rechecked
-immediately before freeze.
+The Claude experiment runs after the announced August 2026 transition and
+therefore uses the standard $3 input and $15 output rate per million tokens.
+The rate and Bedrock availability are rechecked immediately before freeze.
 
 The Nemotron cached-input price is conservatively set equal to ordinary input
 because the cited Bedrock price does not advertise a lower cache-read rate.
@@ -74,6 +72,10 @@ because the cited Bedrock price does not advertise a lower cache-read rate.
   `https://platform.claude.com/docs/en/about-claude/pricing`
 - Anthropic migration and transition notice:
   `https://platform.claude.com/docs/en/about-claude/models/migration-guide`
+- Amazon Bedrock Claude Sonnet 5:
+  `https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-anthropic-claude-sonnet-5.html`
+- Anthropic Messages request body on Bedrock:
+  `https://docs.aws.amazon.com/bedrock/latest/userguide/model-parameters-anthropic-claude-messages.html`
 - NVIDIA model ID:
   `https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-nvidia-nemotron-super-3-120b.html`
 - Amazon Bedrock NVIDIA pricing:
@@ -88,7 +90,7 @@ Before paid calls:
 1. Recheck every source above for model availability and price changes.
 2. Confirm the three exact models and region.
 3. Confirm the combined hard cap encoded across the provider configs.
-4. Set the two API-key variables and one authorized AWS profile without
+4. Set the OpenAI API-key variable and one authorized AWS profile without
    committing secrets.
 5. Freeze the dataset manifest and provider-config hashes.
 

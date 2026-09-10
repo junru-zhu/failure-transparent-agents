@@ -1,6 +1,6 @@
 # Research Protocol: Failure-Transparent Agents
 
-**Candidate version:** `2026-09-10.v2`  
+**Candidate version:** `2026-09-10.v3`
 **Protocol status:** Freeze candidate; author signoff required  
 **Pilot purpose:** Validate infrastructure and annotation logic only  
 **Confirmatory data status:** Not yet collected
@@ -95,7 +95,9 @@ judge config, and author freeze hashes the snapshot.
 ### 4.6 Candidate model arms
 
 - OpenAI `gpt-5.6-terra` through the Responses API.
-- Anthropic `claude-sonnet-5` through the Messages API.
+- Anthropic `claude-sonnet-5` through native Amazon Bedrock InvokeModel using
+  the `us.anthropic.claude-sonnet-5` US inference profile and temporary AWS
+  SigV4 credentials.
 - NVIDIA `nvidia.nemotron-super-3-120b` through Amazon Bedrock's
   native InvokeModel interface using temporary AWS SigV4 credentials.
 

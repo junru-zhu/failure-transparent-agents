@@ -40,6 +40,11 @@ def settings(provider_type: str, *, max_budget_usd: float = 10.0) -> ProviderSet
         base_url = "https://provider.example"
     elif provider_type == "aws_bedrock_invoke_model":
         base_url = "https://bedrock-runtime.us-east-1.amazonaws.com"
+    elif provider_type == "aws_bedrock_anthropic_messages":
+        base_url = (
+            "https://bedrock-runtime.us-east-1.amazonaws.com/"
+            "model/us.anthropic.claude-sonnet-5"
+        )
     else:
         base_url = "https://provider.example/v1"
     return ProviderSettings.from_dict(
@@ -279,6 +284,52 @@ class DirectApiProviderTest(unittest.TestCase):
             "nvidia.nemotron-super-3-120b",
             response.resolved_model,
         )
+
+    def test_aws_bedrock_anthropic_payload_and_usage(self) -> None:
+        transport = FakeTransport(
+            [
+                {
+                    "id": "msg_bedrock",
+                    "model": "claude-sonnet-5",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "The required evidence is unavailable.",
+                        }
+                    ],
+                    "usage": {
+                        "input_tokens": 75,
+                        "output_tokens": 10,
+                    },
+                }
+            ]
+        )
+        provider = build_api_provider(
+            settings("aws_bedrock_anthropic_messages"),
+            api_key="test-bedrock-profile",
+            transport=transport,
+        )
+        response = provider.generate(request())
+
+        call = transport.calls[0]
+        self.assertEqual(
+            (
+                "https://bedrock-runtime.us-east-1.amazonaws.com/"
+                "model/us.anthropic.claude-sonnet-5"
+            ),
+            call["url"],
+        )
+        self.assertNotIn("Authorization", call["headers"])  # type: ignore[operator]
+        payload = call["payload"]
+        self.assertEqual(  # type: ignore[index]
+            "bedrock-2023-05-31",
+            payload["anthropic_version"],
+        )
+        self.assertNotIn("model", payload)  # type: ignore[operator]
+        self.assertEqual(1, len(payload["messages"]))  # type: ignore[index]
+        self.assertEqual(75, response.input_tokens)
+        self.assertEqual(10, response.output_tokens)
+        self.assertEqual("claude-sonnet-5", response.resolved_model)
 
     def test_retries_once_and_records_first_error(self) -> None:
         transport = FakeTransport(

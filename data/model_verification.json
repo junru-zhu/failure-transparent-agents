@@ -1,28 +1,28 @@
 {
   "schema_version": "1.0",
   "status": "verified",
-  "verified_at": "2026-09-10T15:14:52-07:00",
+  "verified_at": "2026-09-10T15:43:11-07:00",
   "verification_scope": "Exact model IDs, interfaces, authentication transports, documented parameter constraints, regions, and token prices were checked against official provider documentation before collection.",
   "arms": [
     {
       "role": "primary",
       "config": "configs/providers/anthropic-claude-sonnet-5.json",
-      "config_sha256": "6293cc2a9c8e1d0eccc3d5945120011a61ac7809b92248c72be9d3f0294fa922",
+      "config_sha256": "67b61b1ff18dce6181bccb8c95a9eb4fe252dbf659333925268005c145c17ed3",
       "provider": "anthropic",
       "model": "claude-sonnet-5",
-      "region": null,
-      "provider_type": "anthropic_messages",
+      "region": "us-east-1",
+      "provider_type": "aws_bedrock_anthropic_messages",
       "pricing_usd_per_million_tokens": {
         "input": 3.0,
         "cached_input": 0.3,
         "output": 15.0
       },
       "documented_pricing_usd_per_million_tokens": {
-        "input": 2.0,
-        "cached_input": 0.2,
-        "output": 10.0
+        "input": 3.0,
+        "cached_input": 0.3,
+        "output": 15.0
       },
-      "reservation_pricing_policy": "conservative-higher-announced-rate",
+      "reservation_pricing_policy": "documented-current-rate",
       "parameter_constraints": {
         "temperature": "unset",
         "thinking": "adaptive-default"
@@ -38,16 +38,31 @@
         {
           "url": "https://platform.claude.com/docs/en/about-claude/pricing",
           "claims": [
-            "Base input price is $2 per million tokens.",
-            "Cache-read input price is $0.20 per million tokens.",
-            "Output price is $10 per million tokens."
+            "Standard input price is $3 per million tokens.",
+            "Standard cache-read input price is $0.30 per million tokens.",
+            "Standard output price is $15 per million tokens."
           ]
         },
         {
           "url": "https://platform.claude.com/docs/en/about-claude/models/migration-guide",
           "claims": [
             "The migration guide contains an August 31, 2026 transition notice to $3 input and $15 output per million tokens.",
-            "The reservation estimator uses that higher announced rate while the current pricing table continues to be recorded separately."
+            "The experiment runs after the transition and therefore reserves at the standard rate."
+          ]
+        },
+        {
+          "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-anthropic-claude-sonnet-5.html",
+          "claims": [
+            "Amazon Bedrock exposes the exact Anthropic Claude Sonnet 5 model.",
+            "The US geographic inference profile is us.anthropic.claude-sonnet-5.",
+            "The model supports native Bedrock runtime invocation and is billed through AWS Marketplace."
+          ]
+        },
+        {
+          "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-parameters-anthropic-claude-messages.html",
+          "claims": [
+            "Native InvokeModel requests use the Anthropic Messages schema.",
+            "The request body uses anthropic_version bedrock-2023-05-31."
           ]
         }
       ]

@@ -1342,7 +1342,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     encoded = encode_scenarios(scenarios)
     manifest = {
         "benchmark": "failure-transparent-agents",
-        "candidate_version": "2026-09-10.v2",
+        "candidate_version": "2026-09-10.v3",
         "dataset": str(args.output),
         "dataset_sha256": hashlib.sha256(encoded.encode("utf-8")).hexdigest(),
         "schema_version": "2.0",

@@ -162,6 +162,7 @@ class ProviderSettings:
             "anthropic_messages",
             "openai_chat_compatible",
             "aws_bedrock_invoke_model",
+            "aws_bedrock_anthropic_messages",
         }:
             raise ValueError(f"unsupported provider_type {provider_type!r}")
         temperature_value = value["temperature"]
@@ -753,13 +754,42 @@ class AwsBedrockInvokeModelProvider(OpenAICompatibleChatProvider):
         return self._merge_extra_body(payload)
 
 
+class AwsBedrockAnthropicMessagesProvider(AnthropicMessagesProvider):
+    """Anthropic Messages schema over native Bedrock InvokeModel."""
+
+    def _endpoint(self) -> str:
+        return self.settings.base_url
+
+    def _headers(self) -> dict[str, str]:
+        return {"Content-Type": "application/json"}
+
+    def _payload(
+        self,
+        system_instruction: str,
+        user_message: str,
+    ) -> dict[str, Any]:
+        payload: dict[str, Any] = {
+            "anthropic_version": "bedrock-2023-05-31",
+            "system": system_instruction,
+            "messages": [{"role": "user", "content": user_message}],
+            "max_tokens": self.settings.max_output_tokens,
+        }
+        if self.settings.temperature is not None:
+            payload["temperature"] = self.settings.temperature
+        return self._merge_extra_body(payload)
+
+
 def build_api_provider(
     settings: ProviderSettings,
     *,
     api_key: str | None = None,
     transport: JsonTransport | None = None,
 ) -> DirectApiProvider:
-    if settings.provider_type == "aws_bedrock_invoke_model":
+    aws_provider_types = {
+        "aws_bedrock_invoke_model": AwsBedrockInvokeModelProvider,
+        "aws_bedrock_anthropic_messages": AwsBedrockAnthropicMessagesProvider,
+    }
+    if settings.provider_type in aws_provider_types:
         profile = api_key or os.environ.get(settings.api_key_env)
         if not profile:
             raise ValueError(
@@ -769,9 +799,9 @@ def build_api_provider(
         resolved_transport = transport or AwsCliJsonTransport(
             profile=profile,
             region=_aws_bedrock_region(settings.base_url),
-            model=settings.model,
+            model=_aws_bedrock_model_id(settings),
         )
-        return AwsBedrockInvokeModelProvider(
+        return aws_provider_types[settings.provider_type](
             settings,
             api_key=profile,
             transport=resolved_transport,
@@ -799,6 +829,16 @@ def _aws_bedrock_region(base_url: str) -> str:
             if region:
                 return region
     raise ValueError("Bedrock base_url does not encode an AWS region")
+
+
+def _aws_bedrock_model_id(settings: ProviderSettings) -> str:
+    path = urlparse(settings.base_url).path
+    prefix = "/model/"
+    if path.startswith(prefix):
+        model_id = path[len(prefix) :].strip("/")
+        if model_id:
+            return model_id
+    return settings.model
 
 
 def load_provider_settings(path: str) -> ProviderSettings:

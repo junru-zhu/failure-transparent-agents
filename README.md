@@ -166,15 +166,15 @@ make human-sample RUN_ID=confirmatory-20260910-v1
 make analyze RUN_ID=confirmatory-20260910-v1
 ```
 
-The live targets require `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, and an
-authorized `AWS_PROFILE`. The NVIDIA arm uses temporary AWS SigV4 credentials
-through native Bedrock InvokeModel, so no bearer API key is stored. All arms
-enforce config hashes, call caps, and dollar caps; progress is resumable with
+The live targets require `OPENAI_API_KEY` and an authorized `AWS_PROFILE`.
+The Claude and NVIDIA arms use temporary AWS SigV4 credentials through native
+Bedrock InvokeModel, so no bearer API key is stored. All arms enforce config
+hashes, call caps, and dollar caps; progress is resumable with
 `RESUME=--resume`.
 
 Freezing rejects a pending or incomplete approval record. The approved record
 must name the author and MIT license, match every exact provider/model config,
-record `us-east-1` for the NVIDIA arm, match the GPT-5.4-mini judge, and
+record `us-east-1` for the Claude and NVIDIA arms, match the GPT-5.4-mini judge, and
 authorize the $60 primary plus $60 judge caps. Its hash and contents become
 part of the frozen manifest.
 
@@ -216,10 +216,13 @@ finalizer writes the one-consensus-label-per-response file consumed by
 - [x] API budget approved
 - [x] Confirmatory manifest signed
 - [x] NVIDIA paid arm complete: 600/600 responses, zero provider failures
-- [ ] OpenAI and Anthropic paid arms complete
+- [x] Claude paid arm complete: 600/600 canonical responses
+- [ ] OpenAI paid arm complete
 - [ ] Human annotation completed
 - [ ] Final results inserted into the paper
 
 The completed NVIDIA collection and explicitly exploratory self-judge
 analysis are summarized in `docs/nvidia_arm_report.md`. The report does not
 substitute those labels for the frozen independent judge or human validation.
+The completed Claude collection and cost/recovery audit are summarized in
+`docs/claude_arm_report.md`.
