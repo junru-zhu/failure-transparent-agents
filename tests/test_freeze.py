@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
+from urllib.parse import urlparse
 
 from failure_transparent_agents.freeze import (
     freeze_confirmatory_manifest,
@@ -279,7 +280,7 @@ def _write_approval(
                         "config": str(provider_config),
                         "provider": provider["provider_name"],
                         "model": provider["model"],
-                        "region": None,
+                        "region": _config_region(provider),
                         "max_budget_usd": provider_cap,
                     }
                 ],
@@ -328,7 +329,9 @@ def _write_model_verification(
                 "config_sha256": file_sha256(config_path),
                 "provider": settings.provider_name,
                 "model": settings.model,
-                "region": None,
+                "region": _config_region(
+                    json.loads(config_path.read_text(encoding="utf-8"))
+                ),
                 "provider_type": settings.provider_type,
                 "pricing_usd_per_million_tokens": {
                     "input": settings.pricing.input_per_million,
@@ -391,6 +394,15 @@ def _unfrozen_repository_manifest() -> dict[str, object]:
     candidate["frozen"] = False
     candidate["requires_author_signoff"] = True
     return candidate
+
+
+def _config_region(config: dict[str, object]) -> str | None:
+    hostname = urlparse(str(config["base_url"])).hostname or ""
+    prefix = "bedrock-runtime."
+    suffix = ".amazonaws.com"
+    if hostname.startswith(prefix) and hostname.endswith(suffix):
+        return hostname[len(prefix) : -len(suffix)]
+    return None
 
 
 if __name__ == "__main__":

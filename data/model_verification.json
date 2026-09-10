@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
   "status": "verified",
-  "verified_at": "2026-09-10T15:43:11-07:00",
+  "verified_at": "2026-09-10T16:10:18-07:00",
   "verification_scope": "Exact model IDs, interfaces, authentication transports, documented parameter constraints, regions, and token prices were checked against official provider documentation before collection.",
   "arms": [
     {
@@ -119,20 +119,20 @@
     {
       "role": "primary",
       "config": "configs/providers/openai-gpt-5.6-terra.json",
-      "config_sha256": "e8db2aba6542bd61b40a18e58807044d05da1b1cc86df8bbb77f9c23fa3ab654",
+      "config_sha256": "211805028bfd3132e85fad07741e8fdec05d4a796a37bcc0804c36a849983ce7",
       "provider": "openai",
-      "model": "gpt-5.6-terra",
-      "region": null,
-      "provider_type": "openai_responses",
+      "model": "us.openai.gpt-5.6-terra",
+      "region": "us-east-1",
+      "provider_type": "aws_bedrock_openai_responses",
       "pricing_usd_per_million_tokens": {
-        "input": 2.0,
-        "cached_input": 0.2,
-        "output": 12.0
+        "input": 2.2,
+        "cached_input": 0.22,
+        "output": 13.2
       },
       "documented_pricing_usd_per_million_tokens": {
-        "input": 2.0,
-        "cached_input": 0.2,
-        "output": 12.0
+        "input": 2.2,
+        "cached_input": 0.22,
+        "output": 13.2
       },
       "reservation_pricing_policy": "documented-current-rate",
       "parameter_constraints": {
@@ -143,9 +143,16 @@
         {
           "url": "https://developers.openai.com/api/docs/models/gpt-5.6-terra",
           "claims": [
-            "Exact model ID is gpt-5.6-terra.",
-            "The model supports the Responses API and reasoning effort none.",
-            "Input, cached-input, and output prices are $2, $0.20, and $12 per million tokens."
+            "The underlying model is GPT-5.6 Terra.",
+            "The model supports the Responses API and reasoning effort none."
+          ]
+        },
+        {
+          "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-openai-gpt-oss-56.html",
+          "claims": [
+            "Amazon Bedrock exposes GPT-5.6 Terra through the us.openai.gpt-5.6-terra US geographic inference profile.",
+            "The OpenAI-compatible Responses endpoint accepts AWS Signature Version 4 authentication.",
+            "US geographic routing prices are $2.20 input, $0.22 cached input, and $13.20 output per million tokens."
           ]
         }
       ]

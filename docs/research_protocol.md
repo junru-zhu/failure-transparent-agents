@@ -1,6 +1,6 @@
 # Research Protocol: Failure-Transparent Agents
 
-**Candidate version:** `2026-09-10.v3`
+**Candidate version:** `2026-09-10.v4`
 **Protocol status:** Freeze candidate; author signoff required  
 **Pilot purpose:** Validate infrastructure and annotation logic only  
 **Confirmatory data status:** Not yet collected
@@ -94,7 +94,8 @@ judge config, and author freeze hashes the snapshot.
 
 ### 4.6 Candidate model arms
 
-- OpenAI `gpt-5.6-terra` through the Responses API.
+- OpenAI GPT-5.6 Terra through the authorized AWS environment Bedrock Responses endpoint and
+  `us.openai.gpt-5.6-terra` geographic inference profile.
 - Anthropic `claude-sonnet-5` through native Amazon Bedrock InvokeModel using
   the `us.anthropic.claude-sonnet-5` US inference profile and temporary AWS
   SigV4 credentials.

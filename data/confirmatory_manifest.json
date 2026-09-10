@@ -1,8 +1,8 @@
 {
-  "annotation_guide_sha256": "cdc59ef3adda7ac668aa4a26792e88044230c1f7ce5ed95dd5f4829858c618ef",
+  "annotation_guide_sha256": "84d5c2305fd0620897dbcfbb84f4aab2564796d7a273b05be1a3082ca06b0c8b",
   "base_task_count": 100,
   "benchmark": "failure-transparent-agents",
-  "candidate_version": "2026-09-10.v3",
+  "candidate_version": "2026-09-10.v4",
   "category_counts": {
     "execution_failed": 20,
     "missing_attachment": 20,
@@ -12,7 +12,7 @@
   },
   "collection_approval": {
     "aggregate_budget_cap_usd": 120.0,
-    "approved_at": "2026-09-10T15:43:11-07:00",
+    "approved_at": "2026-09-10T16:10:18-07:00",
     "approved_by": "Junru Zhu",
     "authors": [
       "Junru Zhu"
@@ -48,20 +48,20 @@
       {
         "config": "configs/providers/openai-gpt-5.6-terra.json",
         "max_budget_usd": 20.0,
-        "model": "gpt-5.6-terra",
+        "model": "us.openai.gpt-5.6-terra",
         "provider": "openai",
-        "region": null
+        "region": "us-east-1"
       }
     ],
     "schema_version": "1.0",
     "status": "approved"
   },
   "collection_approval_path": "data/confirmatory_approval.json",
-  "collection_approval_sha256": "310937012aa378b114acacecd8568807126bb47e6c090b65f39afe907a1b3911",
+  "collection_approval_sha256": "acd4492cc1d0b8ffb22f7b3268ee5675b8691c35b43249ab533ddc57aca40186",
   "dataset": "data/confirmatory_scenarios.jsonl",
   "dataset_sha256": "4bb2f63bc0bf03570021246943d4c1d871d0fe29e78edcdcfe740c0f3ee716ea",
   "frozen": true,
-  "frozen_at": "2026-09-10T22:56:29.682485+00:00",
+  "frozen_at": "2026-09-10T23:10:39.463197+00:00",
   "generator": "scripts/generate_confirmatory_dataset.py",
   "judge_config_sha256s": {
     "configs/judges/openai-gpt-5.4-mini.json": "166f3e7b4b1d261c413281f0604b02a4aa1ce27d26e04813d965e1142ea20272"
@@ -218,35 +218,42 @@
       },
       {
         "config": "configs/providers/openai-gpt-5.6-terra.json",
-        "config_sha256": "e8db2aba6542bd61b40a18e58807044d05da1b1cc86df8bbb77f9c23fa3ab654",
+        "config_sha256": "211805028bfd3132e85fad07741e8fdec05d4a796a37bcc0804c36a849983ce7",
         "documented_pricing_usd_per_million_tokens": {
-          "cached_input": 0.2,
-          "input": 2.0,
-          "output": 12.0
+          "cached_input": 0.22,
+          "input": 2.2,
+          "output": 13.2
         },
-        "model": "gpt-5.6-terra",
+        "model": "us.openai.gpt-5.6-terra",
         "parameter_constraints": {
           "reasoning_effort": "none",
           "temperature": "unset"
         },
         "pricing_usd_per_million_tokens": {
-          "cached_input": 0.2,
-          "input": 2.0,
-          "output": 12.0
+          "cached_input": 0.22,
+          "input": 2.2,
+          "output": 13.2
         },
         "provider": "openai",
-        "provider_type": "openai_responses",
-        "region": null,
+        "provider_type": "aws_bedrock_openai_responses",
+        "region": "us-east-1",
         "reservation_pricing_policy": "documented-current-rate",
         "role": "primary",
         "sources": [
           {
             "claims": [
-              "Exact model ID is gpt-5.6-terra.",
-              "The model supports the Responses API and reasoning effort none.",
-              "Input, cached-input, and output prices are $2, $0.20, and $12 per million tokens."
+              "The underlying model is GPT-5.6 Terra.",
+              "The model supports the Responses API and reasoning effort none."
             ],
             "url": "https://developers.openai.com/api/docs/models/gpt-5.6-terra"
+          },
+          {
+            "claims": [
+              "Amazon Bedrock exposes GPT-5.6 Terra through the us.openai.gpt-5.6-terra US geographic inference profile.",
+              "The OpenAI-compatible Responses endpoint accepts AWS Signature Version 4 authentication.",
+              "US geographic routing prices are $2.20 input, $0.22 cached input, and $13.20 output per million tokens."
+            ],
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-openai-gpt-oss-56.html"
           }
         ]
       }
@@ -254,13 +261,13 @@
     "path": "data/model_verification.json",
     "ready": true,
     "schema_version": "1.0",
-    "sha256": "515b3d90632e4b3e7b375f905078b3a73769393213030ab07c1518129df3780d",
+    "sha256": "ee62a6381cb34256e6f6c9893b736b823f2e0e225ddd975ef3e479653f3e580d",
     "status": "verified",
     "verification_scope": "Exact model IDs, interfaces, authentication transports, documented parameter constraints, regions, and token prices were checked against official provider documentation before collection.",
-    "verified_at": "2026-09-10T15:43:11-07:00"
+    "verified_at": "2026-09-10T16:10:18-07:00"
   },
   "model_verification_path": "data/model_verification.json",
-  "model_verification_sha256": "515b3d90632e4b3e7b375f905078b3a73769393213030ab07c1518129df3780d",
+  "model_verification_sha256": "ee62a6381cb34256e6f6c9893b736b823f2e0e225ddd975ef3e479653f3e580d",
   "pressure_type_counts": {
     "conceal_failure": 20,
     "expected_answer": 20,
@@ -269,11 +276,11 @@
     "urgency": 20
   },
   "prompt_source_sha256": "0baf43cc5a7afe2b62c68923ff465fe29e9ef9e5937b89508bf7e2969ee37f4f",
-  "protocol_sha256": "b4a9ba80cdac5a100af9d1482089957b4939f9651e4a3f217cf451733b9698f2",
+  "protocol_sha256": "62da80e60449d7f7eead427804d588854934feb8901b3c6152be203dbf8915f3",
   "provider_config_sha256s": {
     "configs/providers/anthropic-claude-sonnet-5.json": "67b61b1ff18dce6181bccb8c95a9eb4fe252dbf659333925268005c145c17ed3",
     "configs/providers/nvidia-nemotron-3-super-bedrock.json": "03a11a954c572971cf07af4c5e582067a89e6d60241790df0f98bee94561229c",
-    "configs/providers/openai-gpt-5.6-terra.json": "e8db2aba6542bd61b40a18e58807044d05da1b1cc86df8bbb77f9c23fa3ab654"
+    "configs/providers/openai-gpt-5.6-terra.json": "211805028bfd3132e85fad07741e8fdec05d4a796a37bcc0804c36a849983ce7"
   },
   "requires_author_signoff": false,
   "scenario_count": 100,
@@ -283,13 +290,13 @@
   "source_sha256s": {
     "CITATION.cff": "1abf454cd67b32b077fad5a8a4724aaa055f2957b68178a95901af5a3fa65413",
     "LICENSE": "bb86fab5273b6e8e01b40b93f79be9085f0001fc1319a8c671f261fd97ca6b56",
-    "scripts/generate_confirmatory_dataset.py": "2decf019247cf53880b1a5ecd6dd61a142b5cb8e338abd42603cd19b6de660fe",
+    "scripts/generate_confirmatory_dataset.py": "e32704b134f1996f032a982e9e3f00ae1d826abe67769ee8740dfb98ea1dabfc",
     "src/failure_transparent_agents/__init__.py": "2e7f3060df25e3f70929e2760f715d56b2d1195efb03b654382a021a7a640aee",
     "src/failure_transparent_agents/__main__.py": "bbe69cf6181d94399452430ebb39017735288cb9c8eaabe89605dcf280f00807",
     "src/failure_transparent_agents/adjudication.py": "a4f2690c1bd48187f9bd0046918782b9a896ba72c0e920b8e5f5e688a443ac1b",
     "src/failure_transparent_agents/analysis.py": "83352ab8bc81f193bb091976213c2c2ea023bc7f41bc0346cbb3f01cb2233404",
     "src/failure_transparent_agents/annotation.py": "24c9af836bed71910ba433589cb3e1868e8c089b476ba6cfeb9e31a3b1ae1e32",
-    "src/failure_transparent_agents/api_providers.py": "78bd5dfb079bcb62f58a75be360885f999a06f570b234d9b4eed6576b84777cb",
+    "src/failure_transparent_agents/api_providers.py": "d9031c960b444f3006fb0f8feaa87114dceb4d314af17e2005447fc362fcda15",
     "src/failure_transparent_agents/conditions.py": "0baf43cc5a7afe2b62c68923ff465fe29e9ef9e5937b89508bf7e2969ee37f4f",
     "src/failure_transparent_agents/confirmatory.py": "523bbd82c6514cf07d84f0e4ab6b91aa5ca22100acce6e190018552a9acde6e5",
     "src/failure_transparent_agents/evaluate.py": "07299a3241b161ecfe2063ef6add2e3cc7cd570058a2604e771e72c5185f62e8",
@@ -299,7 +306,7 @@
     "src/failure_transparent_agents/full_scale_validation.py": "b7a2b165180053ef96ce285894c91cc70e71ad9c2c94159c559fddfe824da9c7",
     "src/failure_transparent_agents/judge.py": "2b8cb76e5d9d434e26b5d015d93f49a2cd5046c50066078598dda79c7e6e060a",
     "src/failure_transparent_agents/labels.py": "3863c5210f996b70f7b110c64307bcec9cd4a0e134dae2c392775abfd9ae5f08",
-    "src/failure_transparent_agents/model_verification.py": "775d110a5f9ff97aee50ddcb546889d881b9de375444772dff4eb04a0cbe41be",
+    "src/failure_transparent_agents/model_verification.py": "0d231cdb8e93280d48e541a7181429b6e3aac0c8f8ed4cd9f06354bcc798a816",
     "src/failure_transparent_agents/preflight.py": "24e6d5a6c9f1e42480ba803ae3de5a992d2a91068f5bca7f39200540dd27fd21",
     "src/failure_transparent_agents/prompting.py": "1150fa52fcb2586024c511af380ed3f72f3aa991a74dc742716d6cfec3ef5c13",
     "src/failure_transparent_agents/providers.py": "cce0f033d95968671c48f2e3fc4d4cde0188a9c79abe69f0c6385bc5bfa4bb90",

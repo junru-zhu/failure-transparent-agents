@@ -15,7 +15,7 @@ confirmatory model results.
 | Public 100-task JSONL benchmark | Frozen locally | `data/confirmatory_scenarios.jsonl`; 100 rows; SHA-256 `4bb2f63bc0bf03570021246943d4c1d871d0fe29e78edcdcfe740c0f3ee716ea`; signed `data/confirmatory_manifest.json` | Push the public repository |
 | Annotation guide | Frozen locally | `docs/annotation_guide.md`; strict label schema and 63 passing tests | None before collection |
 | Deterministic failed-tool simulator | Complete locally | `src/failure_transparent_agents/simulator.py`; replay and wrong-tool tests | None before collection |
-| Provider-neutral evaluation harness | Complete locally | Direct OpenAI Responses, Anthropic Messages, and native Bedrock InvokeModel/SigV4 adapters; retry, resume, call, spend, and provenance controls | Credentials and authorized live execution |
+| Provider-neutral evaluation harness | Complete locally | Bedrock OpenAI Responses/SigV4, Anthropic Messages, and native InvokeModel adapters; retry, resume, call, spend, and provenance controls | Authorized authorized AWS environment live execution |
 | Exact model and pricing selection | Verified and approved | `data/model_verification.json`; official-source/config hash checks pass for four primary/judge configs; approval embedded in the frozen manifest | None before collection |
 | One-command reproduction | Complete locally | `Makefile`, `docs/reproduction.md`, twelve installed console commands; repository URL set to `junru-zhu/failure-transparent-agents` | Push the public repository |
 | Complete 1,800-response execution path | 1,200 responses complete; OpenAI pending | `docs/nvidia_arm_report.md` and `docs/claude_arm_report.md`; both completed arms have 600/600 canonical responses | Run the OpenAI arm |
@@ -41,14 +41,15 @@ confirmatory model results.
 Preflight now reports no blocking checks and `ready_for_live_run: true`.
 
 The NVIDIA and Claude arms completed through the authorized local
-`AWS_PROFILE`. The environment still lacks `OPENAI_API_KEY`.
+`AWS_PROFILE`. The environment still lacks the authorized AWS environment invocation permission
+for the OpenAI primary arm and `OPENAI_API_KEY` for the judge.
 
 ## Decisions and inputs still required
 
 Before remaining paid collection:
 
-1. Set the OpenAI credential outside the repository.
-2. Run its credential smoke test, then start the resumable OpenAI arm.
+1. Obtain temporary authorized AWS environment `bedrock:InvokeModel` permission outside the repository.
+2. Run the credential smoke test, then start the resumable OpenAI arm.
 
 Before public release:
 

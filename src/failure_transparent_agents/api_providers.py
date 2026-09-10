@@ -3,6 +3,9 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from datetime import datetime, timezone
+import hashlib
+import hmac
 import json
 import os
 from pathlib import Path
@@ -13,7 +16,7 @@ import time
 from typing import Any, Mapping, Protocol
 import urllib.error
 import urllib.request
-from urllib.parse import urlparse
+from urllib.parse import parse_qsl, quote, urlencode, urlparse
 
 from .prompting import build_system_instruction, build_user_message
 from .providers import (
@@ -163,6 +166,7 @@ class ProviderSettings:
             "openai_chat_compatible",
             "aws_bedrock_invoke_model",
             "aws_bedrock_anthropic_messages",
+            "aws_bedrock_openai_responses",
         }:
             raise ValueError(f"unsupported provider_type {provider_type!r}")
         temperature_value = value["temperature"]
@@ -354,6 +358,137 @@ class AwsCliJsonTransport:
                     "AWS Bedrock CLI returned a non-object JSON response"
                 )
             return decoded, {}
+
+
+class AwsSigV4JsonTransport:
+    """POST JSON to an AWS endpoint with temporary profile credentials."""
+
+    def __init__(
+        self,
+        *,
+        profile: str,
+        region: str,
+        service: str = "bedrock",
+        aws_command: str = "aws",
+        runner: Any = None,
+    ) -> None:
+        self.profile = _nonempty_string(profile, "AWS profile")
+        self.region = _nonempty_string(region, "AWS region")
+        self.service = _nonempty_string(service, "AWS service")
+        self.aws_command = _nonempty_string(aws_command, "AWS command")
+        self._runner = runner or subprocess.run
+        self._credential_lock = threading.Lock()
+        self._cached_credentials: dict[str, str] | None = None
+        self._credentials_loaded_at = 0.0
+
+    def post(
+        self,
+        url: str,
+        *,
+        headers: Mapping[str, str],
+        payload: Mapping[str, Any],
+        timeout_seconds: float,
+    ) -> tuple[dict[str, Any], Mapping[str, str]]:
+        body = json.dumps(payload, separators=(",", ":")).encode("utf-8")
+        credentials = self._credentials(timeout_seconds)
+        signed_headers = _aws_sigv4_headers(
+            method="POST",
+            url=url,
+            headers=headers,
+            body=body,
+            credentials=credentials,
+            region=self.region,
+            service=self.service,
+            now=datetime.now(timezone.utc),
+        )
+        request = urllib.request.Request(
+            url,
+            data=body,
+            headers=signed_headers,
+            method="POST",
+        )
+        try:
+            with urllib.request.urlopen(
+                request,
+                timeout=timeout_seconds,
+            ) as response:
+                decoded = json.loads(response.read().decode("utf-8"))
+                if not isinstance(decoded, dict):
+                    raise ProviderError(
+                        "AWS endpoint returned a non-object JSON response"
+                    )
+                return decoded, dict(response.headers.items())
+        except urllib.error.HTTPError as error:
+            body_text = error.read().decode("utf-8", errors="replace")
+            raise ProviderError(
+                f"AWS endpoint HTTP {error.code}: {_truncate(body_text)}"
+            ) from error
+        except urllib.error.URLError as error:
+            raise ProviderError(f"AWS endpoint network error: {error.reason}") from error
+        except (TimeoutError, OSError) as error:
+            raise ProviderError(f"AWS endpoint transport error: {error}") from error
+        except json.JSONDecodeError as error:
+            raise ProviderError("AWS endpoint returned invalid JSON") from error
+
+    def _credentials(self, timeout_seconds: float) -> dict[str, str]:
+        with self._credential_lock:
+            now = time.monotonic()
+            if (
+                self._cached_credentials is not None
+                and now - self._credentials_loaded_at < 300
+            ):
+                return dict(self._cached_credentials)
+            try:
+                completed = self._runner(
+                    [
+                        self.aws_command,
+                        "configure",
+                        "export-credentials",
+                        "--profile",
+                        self.profile,
+                        "--format",
+                        "process",
+                    ],
+                    check=False,
+                    capture_output=True,
+                    text=True,
+                    timeout=min(timeout_seconds, 30),
+                )
+            except FileNotFoundError as error:
+                raise ProviderError(
+                    f"AWS CLI executable was not found: {self.aws_command!r}"
+                ) from error
+            except subprocess.TimeoutExpired as error:
+                raise ProviderError(
+                    "AWS profile credential export exceeded 30 seconds"
+                ) from error
+            if completed.returncode != 0:
+                detail = completed.stderr.strip() or "credential export failed"
+                raise ProviderError(
+                    f"AWS credential export exited with status "
+                    f"{completed.returncode}: {_truncate(detail)}"
+                )
+            try:
+                value = json.loads(completed.stdout)
+            except json.JSONDecodeError as error:
+                raise ProviderError(
+                    "AWS credential export returned invalid JSON"
+                ) from error
+            if not isinstance(value, dict):
+                raise ProviderError("AWS credential export returned a non-object")
+            credentials = {
+                "access_key": _credential_string(value, "AccessKeyId"),
+                "secret_key": _credential_string(value, "SecretAccessKey"),
+            }
+            token = value.get("SessionToken")
+            if token is not None:
+                credentials["session_token"] = _credential_string(
+                    value,
+                    "SessionToken",
+                )
+            self._cached_credentials = credentials
+            self._credentials_loaded_at = now
+            return dict(credentials)
 
 
 class DirectApiProvider(ModelProvider):
@@ -779,6 +914,16 @@ class AwsBedrockAnthropicMessagesProvider(AnthropicMessagesProvider):
         return self._merge_extra_body(payload)
 
 
+class AwsBedrockOpenAIResponsesProvider(OpenAIResponsesProvider):
+    """OpenAI Responses schema over Bedrock's SigV4-compatible endpoint."""
+
+    def _headers(self) -> dict[str, str]:
+        return {
+            "Content-Type": "application/json",
+            **self.settings.extra_headers,
+        }
+
+
 def build_api_provider(
     settings: ProviderSettings,
     *,
@@ -788,6 +933,7 @@ def build_api_provider(
     aws_provider_types = {
         "aws_bedrock_invoke_model": AwsBedrockInvokeModelProvider,
         "aws_bedrock_anthropic_messages": AwsBedrockAnthropicMessagesProvider,
+        "aws_bedrock_openai_responses": AwsBedrockOpenAIResponsesProvider,
     }
     if settings.provider_type in aws_provider_types:
         profile = api_key or os.environ.get(settings.api_key_env)
@@ -796,11 +942,17 @@ def build_api_provider(
                 f"missing AWS profile environment variable "
                 f"{settings.api_key_env}"
             )
-        resolved_transport = transport or AwsCliJsonTransport(
-            profile=profile,
-            region=_aws_bedrock_region(settings.base_url),
-            model=_aws_bedrock_model_id(settings),
-        )
+        if settings.provider_type == "aws_bedrock_openai_responses":
+            resolved_transport = transport or AwsSigV4JsonTransport(
+                profile=profile,
+                region=_aws_bedrock_region(settings.base_url),
+            )
+        else:
+            resolved_transport = transport or AwsCliJsonTransport(
+                profile=profile,
+                region=_aws_bedrock_region(settings.base_url),
+                model=_aws_bedrock_model_id(settings),
+            )
         return aws_provider_types[settings.provider_type](
             settings,
             api_key=profile,
@@ -839,6 +991,118 @@ def _aws_bedrock_model_id(settings: ProviderSettings) -> str:
         if model_id:
             return model_id
     return settings.model
+
+
+def _aws_sigv4_headers(
+    *,
+    method: str,
+    url: str,
+    headers: Mapping[str, str],
+    body: bytes,
+    credentials: Mapping[str, str],
+    region: str,
+    service: str,
+    now: datetime,
+) -> dict[str, str]:
+    parsed = urlparse(url)
+    if parsed.scheme != "https" or not parsed.hostname:
+        raise ProviderError("AWS SigV4 URL must be an absolute HTTPS URL")
+    timestamp = now.astimezone(timezone.utc)
+    amz_date = timestamp.strftime("%Y%m%dT%H%M%SZ")
+    date_stamp = timestamp.strftime("%Y%m%d")
+    payload_hash = hashlib.sha256(body).hexdigest()
+    canonical_headers = {
+        name.casefold(): " ".join(str(value).strip().split())
+        for name, value in headers.items()
+    }
+    canonical_headers.update(
+        {
+            "host": parsed.netloc,
+            "x-amz-content-sha256": payload_hash,
+            "x-amz-date": amz_date,
+        }
+    )
+    session_token = credentials.get("session_token")
+    if session_token:
+        canonical_headers["x-amz-security-token"] = session_token
+    signed_header_names = sorted(canonical_headers)
+    signed_headers = ";".join(signed_header_names)
+    canonical_header_block = "".join(
+        f"{name}:{canonical_headers[name]}\n" for name in signed_header_names
+    )
+    canonical_query = urlencode(
+        sorted(parse_qsl(parsed.query, keep_blank_values=True)),
+        doseq=True,
+        quote_via=quote,
+        safe="-_.~",
+    )
+    canonical_request = "\n".join(
+        [
+            method.upper(),
+            quote(parsed.path or "/", safe="/-_.~"),
+            canonical_query,
+            canonical_header_block,
+            signed_headers,
+            payload_hash,
+        ]
+    )
+    credential_scope = f"{date_stamp}/{region}/{service}/aws4_request"
+    string_to_sign = "\n".join(
+        [
+            "AWS4-HMAC-SHA256",
+            amz_date,
+            credential_scope,
+            hashlib.sha256(canonical_request.encode("utf-8")).hexdigest(),
+        ]
+    )
+    secret_key = credentials.get("secret_key")
+    access_key = credentials.get("access_key")
+    if not secret_key or not access_key:
+        raise ProviderError("AWS SigV4 credentials are incomplete")
+    date_key = hmac.new(
+        f"AWS4{secret_key}".encode("utf-8"),
+        date_stamp.encode("utf-8"),
+        hashlib.sha256,
+    ).digest()
+    region_key = hmac.new(date_key, region.encode("utf-8"), hashlib.sha256).digest()
+    service_key = hmac.new(
+        region_key,
+        service.encode("utf-8"),
+        hashlib.sha256,
+    ).digest()
+    signing_key = hmac.new(
+        service_key,
+        b"aws4_request",
+        hashlib.sha256,
+    ).digest()
+    signature = hmac.new(
+        signing_key,
+        string_to_sign.encode("utf-8"),
+        hashlib.sha256,
+    ).hexdigest()
+    result = dict(headers)
+    result.update(
+        {
+            "Host": parsed.netloc,
+            "X-Amz-Content-Sha256": payload_hash,
+            "X-Amz-Date": amz_date,
+            "Authorization": (
+                "AWS4-HMAC-SHA256 "
+                f"Credential={access_key}/{credential_scope}, "
+                f"SignedHeaders={signed_headers}, Signature={signature}"
+            ),
+        }
+    )
+    if session_token:
+        result["X-Amz-Security-Token"] = session_token
+    return result
+
+
+def _credential_string(value: Mapping[str, Any], key: str) -> str:
+    item = value.get(key)
+    if not isinstance(item, str) or not item:
+        raise ProviderError(f"AWS credential export omitted {key}")
+    return item
 
 
 def load_provider_settings(path: str) -> ProviderSettings:

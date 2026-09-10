@@ -37,7 +37,11 @@ ARM_FIELDS = {
 PRICE_FIELDS = {"input", "cached_input", "output"}
 SOURCE_FIELDS = {"url", "claims"}
 ALLOWED_SOURCE_HOSTS = {
-    "openai": {"developers.openai.com"},
+    "openai": {
+        "aws.amazon.com",
+        "developers.openai.com",
+        "docs.aws.amazon.com",
+    },
     "openai-judge": {"developers.openai.com"},
     "anthropic": {
         "aws.amazon.com",

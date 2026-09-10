@@ -166,7 +166,8 @@ make human-sample RUN_ID=confirmatory-20260910-v1
 make analyze RUN_ID=confirmatory-20260910-v1
 ```
 
-The live targets require `OPENAI_API_KEY` and an authorized `AWS_PROFILE`.
+The primary live targets require an authorized `AWS_PROFILE`; the independent
+judge additionally requires `OPENAI_API_KEY`.
 The Claude and NVIDIA arms use temporary AWS SigV4 credentials through native
 Bedrock InvokeModel, so no bearer API key is stored. All arms enforce config
 hashes, call caps, and dollar caps; progress is resumable with
@@ -201,7 +202,7 @@ finalizer writes the one-consensus-label-per-response file consumed by
 - [x] Offline pilot validated
 - [x] Gated Codex CLI adapter implemented for unscored live capture
 - [x] 100-distinct-task benchmark candidate generated
-- [x] Direct OpenAI, Anthropic, and NVIDIA/Bedrock adapters implemented
+- [x] OpenAI-compatible and native Bedrock adapters implemented
 - [x] Hard budget, call-cap, retry, and resume controls implemented
 - [x] Blinded model judge and 270-item human sampler implemented
 - [x] Resumable dual-human annotation and blinded adjudication implemented

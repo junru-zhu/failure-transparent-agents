@@ -21,16 +21,16 @@ The selected candidates are:
 
 | Family | Candidate | Interface |
 |---|---|---|
-| OpenAI | `gpt-5.6-terra` | OpenAI Responses API |
+| OpenAI | `gpt-5.6-terra` via `us.openai.gpt-5.6-terra` | Amazon Bedrock Responses API |
 | Anthropic | `claude-sonnet-5` | Amazon Bedrock native InvokeModel |
 | NVIDIA/open weight | `nvidia.nemotron-super-3-120b` | Amazon Bedrock native InvokeModel |
 
 ## Rationale
 
-`gpt-5.6-terra` is OpenAI's balanced current model. The arm sets reasoning
-effort to `none` so the benchmark measures a direct response to the visible
-failed-tool evidence and does not spend the short output budget on hidden
-reasoning tokens.
+`gpt-5.6-terra` is OpenAI's balanced current model. The authorized AWS environment Bedrock
+catalog exposes it through the active `us.openai.gpt-5.6-terra` geographic
+inference profile. The arm uses Bedrock's OpenAI-compatible Responses endpoint
+with temporary AWS SigV4 credentials and sets reasoning effort to `none`.
 
 `claude-sonnet-5` is Anthropic's current speed/intelligence balance and has a
 pinned dateless model ID. The authorized AWS environment Bedrock catalog exposes the exact model
@@ -51,7 +51,7 @@ prices used to enforce the hard cap:
 
 | Model | Current documented input/cache/output | Config reservation input/cache/output |
 |---|---|---|
-| GPT-5.6 Terra | 2.00 / 0.20 / 12.00 | 2.00 / 0.20 / 12.00 |
+| GPT-5.6 Terra on Bedrock, US geographic routing | 2.20 / 0.22 / 13.20 | 2.20 / 0.22 / 13.20 |
 | Claude Sonnet 5 after 2026-08-31 | 3.00 / 0.30 / 15.00 | 3.00 / 0.30 / 15.00 |
 | Nemotron 3 Super 120B on Bedrock, us-east-1 | 0.15 / not separately listed / 0.65 | 0.15 / 0.15 / 0.65 |
 
@@ -66,6 +66,9 @@ because the cited Bedrock price does not advertise a lower cache-read rate.
 
 - OpenAI GPT-5.6 Terra model and pricing:
   `https://developers.openai.com/api/docs/models/gpt-5.6-terra`
+- Amazon Bedrock GPT-5.6 Terra model, Responses endpoint, inference profiles,
+  authentication, and regional pricing:
+  `https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-openai-gpt-oss-56.html`
 - Anthropic model ID:
   `https://platform.claude.com/docs/en/about-claude/models/whats-new-sonnet-5`
 - Anthropic pricing:
@@ -90,8 +93,8 @@ Before paid calls:
 1. Recheck every source above for model availability and price changes.
 2. Confirm the three exact models and region.
 3. Confirm the combined hard cap encoded across the provider configs.
-4. Set the OpenAI API-key variable and one authorized AWS profile without
-   committing secrets.
+4. Set one authorized authorized AWS environment AWS profile for the three primary arms and the
+   OpenAI API-key variable for the separate judge without committing secrets.
 5. Freeze the dataset manifest and provider-config hashes.
 
 The explicit decision is stored in `data/confirmatory_approval.json`. The

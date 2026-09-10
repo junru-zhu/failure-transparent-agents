@@ -1,7 +1,9 @@
 import unittest
+from datetime import datetime, timezone
 
 from failure_transparent_agents.api_providers import (
     ProviderSettings,
+    _aws_sigv4_headers,
     build_api_provider,
 )
 from failure_transparent_agents.conditions import Condition
@@ -44,6 +46,10 @@ def settings(provider_type: str, *, max_budget_usd: float = 10.0) -> ProviderSet
         base_url = (
             "https://bedrock-runtime.us-east-1.amazonaws.com/"
             "model/us.anthropic.claude-sonnet-5"
+        )
+    elif provider_type == "aws_bedrock_openai_responses":
+        base_url = (
+            "https://bedrock-runtime.us-east-1.amazonaws.com/openai/v1"
         )
     else:
         base_url = "https://provider.example/v1"
@@ -330,6 +336,76 @@ class DirectApiProviderTest(unittest.TestCase):
         self.assertEqual(75, response.input_tokens)
         self.assertEqual(10, response.output_tokens)
         self.assertEqual("claude-sonnet-5", response.resolved_model)
+
+    def test_aws_bedrock_openai_responses_payload_and_usage(self) -> None:
+        transport = FakeTransport(
+            [
+                {
+                    "id": "resp_bedrock",
+                    "model": "us.openai.gpt-5.6-terra",
+                    "output_text": "The required evidence is unavailable.",
+                    "usage": {
+                        "input_tokens": 72,
+                        "input_tokens_details": {"cached_tokens": 4},
+                        "output_tokens": 9,
+                        "output_tokens_details": {"reasoning_tokens": 0},
+                    },
+                }
+            ]
+        )
+        provider = build_api_provider(
+            settings("aws_bedrock_openai_responses"),
+            api_key="test-bedrock-profile",
+            transport=transport,
+        )
+        response = provider.generate(request())
+
+        call = transport.calls[0]
+        self.assertEqual(
+            (
+                "https://bedrock-runtime.us-east-1.amazonaws.com/"
+                "openai/v1/responses"
+            ),
+            call["url"],
+        )
+        self.assertNotIn("Authorization", call["headers"])  # type: ignore[operator]
+        payload = call["payload"]
+        self.assertEqual("exact-model-id", payload["model"])  # type: ignore[index]
+        self.assertFalse(payload["store"])  # type: ignore[index]
+        self.assertEqual(4, response.cached_input_tokens)
+        self.assertEqual(0, response.reasoning_tokens)
+        self.assertEqual("us.openai.gpt-5.6-terra", response.resolved_model)
+
+    def test_aws_sigv4_headers_sign_bedrock_request(self) -> None:
+        headers = _aws_sigv4_headers(
+            method="POST",
+            url=(
+                "https://bedrock-runtime.us-east-1.amazonaws.com/"
+                "openai/v1/responses"
+            ),
+            headers={"Content-Type": "application/json"},
+            body=b'{"input":"test"}',
+            credentials={
+                "access_key": "AKIDEXAMPLE",
+                "secret_key": "secret",
+                "session_token": "token",
+            },
+            region="us-east-1",
+            service="bedrock",
+            now=datetime(2026, 9, 10, 20, 30, tzinfo=timezone.utc),
+        )
+        self.assertEqual("20260910T203000Z", headers["X-Amz-Date"])
+        self.assertEqual("token", headers["X-Amz-Security-Token"])
+        self.assertIn(
+            "Credential=AKIDEXAMPLE/20260910/us-east-1/bedrock/aws4_request",
+            headers["Authorization"],
+        )
+        self.assertIn(
+            "SignedHeaders=content-type;host;x-amz-content-sha256;"
+            "x-amz-date;x-amz-security-token",
+            headers["Authorization"],
+        )
+        self.assertNotIn("secret", headers["Authorization"])
 
     def test_retries_once_and_records_first_error(self) -> None:
         transport = FakeTransport(

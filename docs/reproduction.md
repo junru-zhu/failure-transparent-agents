@@ -1,6 +1,6 @@
 # Reproduction Guide
 
-Requirements: Python 3.12, three provider credentials, and an author-frozen
+Requirements: Python 3.12, provider credentials, and an author-frozen
 manifest. Runtime code has no third-party Python dependencies.
 
 ## 1. Validate without network access
@@ -57,14 +57,15 @@ deviation-log entry.
 Set these outside the repository:
 
 ```text
-OPENAI_API_KEY
 AWS_PROFILE
+OPENAI_API_KEY
 ```
 
 Never place the OpenAI API key or AWS credential material in JSON configs,
 shell scripts, notebooks, logs, or commits. `AWS_PROFILE` contains only the
 local profile name; the AWS CLI resolves temporary SigV4 credentials outside
-the repository for both the Claude and NVIDIA arms.
+the repository for all three primary arms. `OPENAI_API_KEY` is required only
+for the separate GPT-5.4-mini judge.
 
 ## 4. Run the three primary arms
 

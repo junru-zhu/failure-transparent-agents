@@ -1,7 +1,7 @@
 # Confirmatory Deviation Log
 
-The NVIDIA primary arm completed on 2026-09-10. OpenAI and Anthropic
-collection has not begun.
+The NVIDIA and Anthropic primary arms completed on 2026-09-10. OpenAI
+collection is pending authorized AWS environment invocation permission.
 
 After author freeze, append one entry per change:
 
@@ -11,6 +11,7 @@ After author freeze, append one entry per change:
 | 2026-09-10 | 2026-09-10.v2 | collection | Replaced the NVIDIA arm's Bedrock bearer/Mantle transport with native Bedrock InvokeModel using temporary AWS SigV4 profile credentials; retained the exact model, region, prompts, parameters, token limits, prices, retries, and budget cap; repeated tests, model verification, and author freeze before confirmatory collection. | The approved authorized AWS environment account provides temporary AWS credentials, avoiding creation or storage of an API key. | No expected model-behavior change; the request uses the same system/user message schema and records the transport change for reproducibility. | Junru Zhu |
 | 2026-09-10 | exploratory-nvidia-v1 | scoring | Ran a separate Nemotron self-judge diagnostic over the completed NVIDIA arm. The first 300-token scoring attempt was stopped after truncation errors; the replacement used an unfrozen local 800-token configuration with one correction retry, followed by an eight-record targeted retry and one deterministic evidence-span formatting repair. | The frozen GPT-5.4-mini judge credential was unavailable, while an interim report was requested. | No impact on frozen confirmatory scoring or primary responses. All resulting behavioral estimates are explicitly exploratory and must be replaced by frozen judge plus human-validation results for final claims. | Junru Zhu |
 | 2026-09-10 | 2026-09-10.v3 | collection | Replaced the Claude arm's direct Anthropic API transport with native Bedrock InvokeModel through the active `us.anthropic.claude-sonnet-5` US inference profile in authorized AWS environment; retained the exact Claude Sonnet 5 model, Messages request semantics, output limit, retries, and $30 arm cap; updated the approved region to `us-east-1` and repeated verification and author freeze before collection. | The author requested authorized AWS environment execution without creating or storing an Anthropic API key. | No expected model-family change. Cross-region inference may route among supported US Regions and is disclosed as a transport/environment deviation. | Junru Zhu |
+| 2026-09-10 | 2026-09-10.v4 | collection | Replaced the OpenAI arm's direct API transport with the authorized AWS environment Bedrock OpenAI-compatible Responses endpoint and active `us.openai.gpt-5.6-terra` US geographic inference profile; retained GPT-5.6 Terra, Responses semantics, reasoning effort `none`, output limit, retries, and the $20 arm cap; updated the approved region and Bedrock prices and repeated tests, verification, and author freeze before collection. | The author requested authorized AWS environment execution without storing an OpenAI API key for the primary model. | No expected base-model-family change. Geographic inference routing and the 10% Bedrock regional price premium are disclosed. | Junru Zhu |
 
 Stages are `collection`, `scoring`, `analysis`, or `presentation`. Never edit or
 delete an earlier entry; corrections receive a new row.
