@@ -59,10 +59,13 @@ Set these outside the repository:
 ```text
 OPENAI_API_KEY
 ANTHROPIC_API_KEY
-AWS_BEARER_TOKEN_BEDROCK
+AWS_PROFILE
 ```
 
-Never place them in JSON configs, shell scripts, notebooks, logs, or commits.
+Never place API keys or AWS credential material in JSON configs, shell
+scripts, notebooks, logs, or commits. `AWS_PROFILE` contains only the local
+profile name; the AWS CLI resolves temporary SigV4 credentials outside the
+repository.
 
 ## 4. Run the three primary arms
 

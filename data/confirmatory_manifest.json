@@ -61,7 +61,7 @@
   "dataset": "data/confirmatory_scenarios.jsonl",
   "dataset_sha256": "4bb2f63bc0bf03570021246943d4c1d871d0fe29e78edcdcfe740c0f3ee716ea",
   "frozen": true,
-  "frozen_at": "2026-09-10T21:27:29.685506+00:00",
+  "frozen_at": "2026-09-10T22:16:05.638031+00:00",
   "generator": "scripts/generate_confirmatory_dataset.py",
   "judge_config_sha256s": {
     "configs/judges/openai-gpt-5.4-mini.json": "166f3e7b4b1d261c413281f0604b02a4aa1ce27d26e04813d965e1142ea20272"
@@ -154,7 +154,7 @@
       },
       {
         "config": "configs/providers/nvidia-nemotron-3-super-bedrock.json",
-        "config_sha256": "ea3e266b038ae7187927492bd4ddad4c8f1c1e9fa85808f35135b7b6f6f0795a",
+        "config_sha256": "03a11a954c572971cf07af4c5e582067a89e6d60241790df0f98bee94561229c",
         "documented_pricing_usd_per_million_tokens": {
           "cached_input": 0.15,
           "input": 0.15,
@@ -171,7 +171,7 @@
           "output": 0.65
         },
         "provider": "nvidia-bedrock",
-        "provider_type": "openai_chat_compatible",
+        "provider_type": "aws_bedrock_invoke_model",
         "region": "us-east-1",
         "reservation_pricing_policy": "documented-current-rate",
         "role": "primary",
@@ -179,7 +179,7 @@
           {
             "claims": [
               "Exact Bedrock model ID is nvidia.nemotron-super-3-120b.",
-              "The model supports the OpenAI-compatible Chat Completions API.",
+              "The model supports native Bedrock InvokeModel requests with the chat-completions message schema.",
               "The model is available in us-east-1."
             ],
             "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-nvidia-nemotron-super-3-120b.html"
@@ -194,10 +194,10 @@
           },
           {
             "claims": [
-              "Bedrock Mantle exposes OpenAI-compatible APIs.",
-              "Bearer-token authentication is supported for Mantle endpoints."
+              "The AWS CLI exposes bedrock-runtime invoke-model.",
+              "AWS profile credentials are SigV4-signed without storing a bearer API key in the benchmark."
             ],
-            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/inference-api.html"
+            "url": "https://docs.aws.amazon.com/cli/latest/reference/bedrock-runtime/invoke-model.html"
           }
         ]
       },
@@ -239,13 +239,13 @@
     "path": "data/model_verification.json",
     "ready": true,
     "schema_version": "1.0",
-    "sha256": "11c8f849d276c70f53197c122f24f68b4deafbd311c78d633c42c204d55e9ba3",
+    "sha256": "4e0a33181c31d9f0045fd062eaf2a034da91347a47546d8124bfa324065a6b03",
     "status": "verified",
-    "verification_scope": "Exact model IDs, interfaces, documented parameter constraints, regions, and token prices were checked against official provider documentation before author approval.",
-    "verified_at": "2026-09-10T14:09:33-07:00"
+    "verification_scope": "Exact model IDs, interfaces, authentication transports, documented parameter constraints, regions, and token prices were checked against official provider documentation before collection.",
+    "verified_at": "2026-09-10T15:14:52-07:00"
   },
   "model_verification_path": "data/model_verification.json",
-  "model_verification_sha256": "11c8f849d276c70f53197c122f24f68b4deafbd311c78d633c42c204d55e9ba3",
+  "model_verification_sha256": "4e0a33181c31d9f0045fd062eaf2a034da91347a47546d8124bfa324065a6b03",
   "pressure_type_counts": {
     "conceal_failure": 20,
     "expected_answer": 20,
@@ -254,10 +254,10 @@
     "urgency": 20
   },
   "prompt_source_sha256": "0baf43cc5a7afe2b62c68923ff465fe29e9ef9e5937b89508bf7e2969ee37f4f",
-  "protocol_sha256": "02e13ac839f84723c22a6d9e0e9b5d82ad760475254e476e4b962753d9b2103f",
+  "protocol_sha256": "ae785ae0abbe9ed92a835a2e75b98d92893aab89a1fa331c7242f7d6ae829205",
   "provider_config_sha256s": {
     "configs/providers/anthropic-claude-sonnet-5.json": "6293cc2a9c8e1d0eccc3d5945120011a61ac7809b92248c72be9d3f0294fa922",
-    "configs/providers/nvidia-nemotron-3-super-bedrock.json": "ea3e266b038ae7187927492bd4ddad4c8f1c1e9fa85808f35135b7b6f6f0795a",
+    "configs/providers/nvidia-nemotron-3-super-bedrock.json": "03a11a954c572971cf07af4c5e582067a89e6d60241790df0f98bee94561229c",
     "configs/providers/openai-gpt-5.6-terra.json": "e8db2aba6542bd61b40a18e58807044d05da1b1cc86df8bbb77f9c23fa3ab654"
   },
   "requires_author_signoff": false,
@@ -274,17 +274,17 @@
     "src/failure_transparent_agents/adjudication.py": "a4f2690c1bd48187f9bd0046918782b9a896ba72c0e920b8e5f5e688a443ac1b",
     "src/failure_transparent_agents/analysis.py": "83352ab8bc81f193bb091976213c2c2ea023bc7f41bc0346cbb3f01cb2233404",
     "src/failure_transparent_agents/annotation.py": "24c9af836bed71910ba433589cb3e1868e8c089b476ba6cfeb9e31a3b1ae1e32",
-    "src/failure_transparent_agents/api_providers.py": "83ace704905f5c8b29a3cba03624c7e9672c215946c24fe3b3064b1464a08187",
+    "src/failure_transparent_agents/api_providers.py": "d5dd0cf3ca8295b26af3c3bff8afe81d8037c6f32a5270c179c229fb173b5017",
     "src/failure_transparent_agents/conditions.py": "0baf43cc5a7afe2b62c68923ff465fe29e9ef9e5937b89508bf7e2969ee37f4f",
     "src/failure_transparent_agents/confirmatory.py": "523bbd82c6514cf07d84f0e4ab6b91aa5ca22100acce6e190018552a9acde6e5",
     "src/failure_transparent_agents/evaluate.py": "07299a3241b161ecfe2063ef6add2e3cc7cd570058a2604e771e72c5185f62e8",
     "src/failure_transparent_agents/execution.py": "7f3af7a8ec4740e6c7ca97a69bae0adf9e3cdbed3038b399b40221e38e09035f",
     "src/failure_transparent_agents/experiment.py": "29021809692da83415bc40b7b30f968fc39608af6ee8ae0842f7b89ed396d0e8",
-    "src/failure_transparent_agents/freeze.py": "32cb88a3fb3f0985760e5718bb25a7d4e2f7dc127b6939008d7a33b2e3a4a8c0",
+    "src/failure_transparent_agents/freeze.py": "ff0b7dc8d283085e94f31d4822e7fac2c62ad033a7f305a1d265ce3714a03e6b",
     "src/failure_transparent_agents/full_scale_validation.py": "b7a2b165180053ef96ce285894c91cc70e71ad9c2c94159c559fddfe824da9c7",
     "src/failure_transparent_agents/judge.py": "2b8cb76e5d9d434e26b5d015d93f49a2cd5046c50066078598dda79c7e6e060a",
     "src/failure_transparent_agents/labels.py": "3863c5210f996b70f7b110c64307bcec9cd4a0e134dae2c392775abfd9ae5f08",
-    "src/failure_transparent_agents/model_verification.py": "63ee8dbd30e304bd369090af27d830b879ea0ec61e96a5d35a5de47844359dd5",
+    "src/failure_transparent_agents/model_verification.py": "a4f41690d4fd075711ce39d096af36db09e442a7b9e4e5fb03c26b88810c2ca5",
     "src/failure_transparent_agents/preflight.py": "24e6d5a6c9f1e42480ba803ae3de5a992d2a91068f5bca7f39200540dd27fd21",
     "src/failure_transparent_agents/prompting.py": "1150fa52fcb2586024c511af380ed3f72f3aa991a74dc742716d6cfec3ef5c13",
     "src/failure_transparent_agents/providers.py": "cce0f033d95968671c48f2e3fc4d4cde0188a9c79abe69f0c6385bc5bfa4bb90",

@@ -1,6 +1,6 @@
 {
-  "api_key_env": "AWS_BEARER_TOKEN_BEDROCK",
-  "base_url": "https://bedrock-mantle.us-east-1.api.aws/v1",
+  "api_key_env": "AWS_PROFILE",
+  "base_url": "https://bedrock-runtime.us-east-1.amazonaws.com",
   "extra_body": {},
   "extra_headers": {},
   "max_budget_usd": 10.0,
@@ -14,7 +14,7 @@
     "output_per_million": 0.65
   },
   "provider_name": "nvidia-bedrock",
-  "provider_type": "openai_chat_compatible",
+  "provider_type": "aws_bedrock_invoke_model",
   "temperature": 0.2,
   "timeout_seconds": 120
 }

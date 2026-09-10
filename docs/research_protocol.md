@@ -97,7 +97,7 @@ judge config, and author freeze hashes the snapshot.
 - OpenAI `gpt-5.6-terra` through the Responses API.
 - Anthropic `claude-sonnet-5` through the Messages API.
 - NVIDIA `nvidia.nemotron-super-3-120b` through Amazon Bedrock's
-  OpenAI-compatible endpoint.
+  native InvokeModel interface using temporary AWS SigV4 credentials.
 
 Model configs and prices are freeze candidates. Availability and pricing are
 rechecked immediately before paid collection.

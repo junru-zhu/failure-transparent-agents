@@ -1,8 +1,8 @@
 {
   "schema_version": "1.0",
   "status": "verified",
-  "verified_at": "2026-09-10T14:09:33-07:00",
-  "verification_scope": "Exact model IDs, interfaces, documented parameter constraints, regions, and token prices were checked against official provider documentation before author approval.",
+  "verified_at": "2026-09-10T15:14:52-07:00",
+  "verification_scope": "Exact model IDs, interfaces, authentication transports, documented parameter constraints, regions, and token prices were checked against official provider documentation before collection.",
   "arms": [
     {
       "role": "primary",
@@ -55,11 +55,11 @@
     {
       "role": "primary",
       "config": "configs/providers/nvidia-nemotron-3-super-bedrock.json",
-      "config_sha256": "ea3e266b038ae7187927492bd4ddad4c8f1c1e9fa85808f35135b7b6f6f0795a",
+      "config_sha256": "03a11a954c572971cf07af4c5e582067a89e6d60241790df0f98bee94561229c",
       "provider": "nvidia-bedrock",
       "model": "nvidia.nemotron-super-3-120b",
       "region": "us-east-1",
-      "provider_type": "openai_chat_compatible",
+      "provider_type": "aws_bedrock_invoke_model",
       "pricing_usd_per_million_tokens": {
         "input": 0.15,
         "cached_input": 0.15,
@@ -80,7 +80,7 @@
           "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-nvidia-nemotron-super-3-120b.html",
           "claims": [
             "Exact Bedrock model ID is nvidia.nemotron-super-3-120b.",
-            "The model supports the OpenAI-compatible Chat Completions API.",
+            "The model supports native Bedrock InvokeModel requests with the chat-completions message schema.",
             "The model is available in us-east-1."
           ]
         },
@@ -93,10 +93,10 @@
           ]
         },
         {
-          "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/inference-api.html",
+          "url": "https://docs.aws.amazon.com/cli/latest/reference/bedrock-runtime/invoke-model.html",
           "claims": [
-            "Bedrock Mantle exposes OpenAI-compatible APIs.",
-            "Bearer-token authentication is supported for Mantle endpoints."
+            "The AWS CLI exposes bedrock-runtime invoke-model.",
+            "AWS profile credentials are SigV4-signed without storing a bearer API key in the benchmark."
           ]
         }
       ]

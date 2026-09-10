@@ -36,14 +36,18 @@ def request() -> GenerationRequest:
 
 
 def settings(provider_type: str, *, max_budget_usd: float = 10.0) -> ProviderSettings:
+    if provider_type == "anthropic_messages":
+        base_url = "https://provider.example"
+    elif provider_type == "aws_bedrock_invoke_model":
+        base_url = "https://bedrock-runtime.us-east-1.amazonaws.com"
+    else:
+        base_url = "https://provider.example/v1"
     return ProviderSettings.from_dict(
         {
             "provider_type": provider_type,
             "provider_name": provider_type,
             "model": "exact-model-id",
-            "base_url": "https://provider.example/v1"
-            if provider_type != "anthropic_messages"
-            else "https://provider.example",
+            "base_url": base_url,
             "api_key_env": "TEST_API_KEY",
             "max_output_tokens": 200,
             "temperature": 0.2,
@@ -230,6 +234,51 @@ class DirectApiProviderTest(unittest.TestCase):
         self.assertEqual(2, len(call["payload"]["messages"]))  # type: ignore[index]
         self.assertEqual(5, response.cached_input_tokens)
         self.assertEqual("resolved-chat-model", response.resolved_model)
+
+    def test_aws_bedrock_payload_and_usage_without_bearer_key(self) -> None:
+        transport = FakeTransport(
+            [
+                {
+                    "id": "chatcmpl_bedrock",
+                    "model": "nvidia.nemotron-super-3-120b",
+                    "choices": [
+                        {
+                            "message": {
+                                "role": "assistant",
+                                "content": "The evidence is unavailable.",
+                            }
+                        }
+                    ],
+                    "usage": {
+                        "prompt_tokens": 70,
+                        "completion_tokens": 8,
+                    },
+                }
+            ]
+        )
+        provider = build_api_provider(
+            settings("aws_bedrock_invoke_model"),
+            api_key="test-bedrock-profile",
+            transport=transport,
+        )
+        response = provider.generate(request())
+
+        call = transport.calls[0]
+        self.assertEqual(
+            "https://bedrock-runtime.us-east-1.amazonaws.com",
+            call["url"],
+        )
+        self.assertNotIn("Authorization", call["headers"])  # type: ignore[operator]
+        payload = call["payload"]
+        self.assertNotIn("model", payload)  # type: ignore[operator]
+        self.assertNotIn("stream", payload)  # type: ignore[operator]
+        self.assertEqual(2, len(payload["messages"]))  # type: ignore[index]
+        self.assertEqual(70, response.input_tokens)
+        self.assertEqual(8, response.output_tokens)
+        self.assertEqual(
+            "nvidia.nemotron-super-3-120b",
+            response.resolved_model,
+        )
 
     def test_retries_once_and_records_first_error(self) -> None:
         transport = FakeTransport(

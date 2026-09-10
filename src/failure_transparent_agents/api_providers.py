@@ -5,11 +5,15 @@ from __future__ import annotations
 from dataclasses import dataclass
 import json
 import os
+from pathlib import Path
+import subprocess
+import tempfile
 import threading
 import time
 from typing import Any, Mapping, Protocol
 import urllib.error
 import urllib.request
+from urllib.parse import urlparse
 
 from .prompting import build_system_instruction, build_user_message
 from .providers import (
@@ -157,6 +161,7 @@ class ProviderSettings:
             "openai_responses",
             "anthropic_messages",
             "openai_chat_compatible",
+            "aws_bedrock_invoke_model",
         }:
             raise ValueError(f"unsupported provider_type {provider_type!r}")
         temperature_value = value["temperature"]
@@ -254,6 +259,100 @@ class UrllibJsonTransport:
             raise ProviderError(f"provider transport error: {error}") from error
         except json.JSONDecodeError as error:
             raise ProviderError("provider returned invalid JSON") from error
+
+
+class AwsCliJsonTransport:
+    """Invoke one Bedrock model with temporary SigV4 credentials via AWS CLI."""
+
+    def __init__(
+        self,
+        *,
+        profile: str,
+        region: str,
+        model: str,
+        aws_command: str = "aws",
+        runner: Any = None,
+    ) -> None:
+        self.profile = _nonempty_string(profile, "AWS profile")
+        self.region = _nonempty_string(region, "AWS region")
+        self.model = _nonempty_string(model, "Bedrock model")
+        self.aws_command = _nonempty_string(aws_command, "AWS command")
+        self._runner = runner or subprocess.run
+
+    def post(
+        self,
+        url: str,
+        *,
+        headers: Mapping[str, str],
+        payload: Mapping[str, Any],
+        timeout_seconds: float,
+    ) -> tuple[dict[str, Any], Mapping[str, str]]:
+        del url, headers
+        with tempfile.TemporaryDirectory(prefix="fta-bedrock-") as directory:
+            root = Path(directory)
+            request_path = root / "request.json"
+            response_path = root / "response.json"
+            request_path.write_text(
+                json.dumps(payload, separators=(",", ":")),
+                encoding="utf-8",
+            )
+            command = [
+                self.aws_command,
+                "bedrock-runtime",
+                "invoke-model",
+                "--profile",
+                self.profile,
+                "--region",
+                self.region,
+                "--model-id",
+                self.model,
+                "--content-type",
+                "application/json",
+                "--accept",
+                "application/json",
+                "--cli-binary-format",
+                "raw-in-base64-out",
+                "--body",
+                f"fileb://{request_path}",
+                str(response_path),
+            ]
+            try:
+                completed = self._runner(
+                    command,
+                    check=False,
+                    capture_output=True,
+                    text=True,
+                    timeout=timeout_seconds,
+                )
+            except FileNotFoundError as error:
+                raise ProviderError(
+                    f"AWS CLI executable was not found: {self.aws_command!r}"
+                ) from error
+            except subprocess.TimeoutExpired as error:
+                raise ProviderError(
+                    f"Bedrock invocation exceeded {timeout_seconds:g} seconds"
+                ) from error
+            if completed.returncode != 0:
+                detail = completed.stderr.strip() or completed.stdout.strip()
+                raise ProviderError(
+                    f"AWS Bedrock CLI exited with status "
+                    f"{completed.returncode}: {_truncate(detail)}"
+                )
+            try:
+                decoded = json.loads(response_path.read_text(encoding="utf-8"))
+            except FileNotFoundError as error:
+                raise ProviderError(
+                    "AWS Bedrock CLI produced no response file"
+                ) from error
+            except json.JSONDecodeError as error:
+                raise ProviderError(
+                    "AWS Bedrock CLI returned invalid JSON"
+                ) from error
+            if not isinstance(decoded, dict):
+                raise ProviderError(
+                    "AWS Bedrock CLI returned a non-object JSON response"
+                )
+            return decoded, {}
 
 
 class DirectApiProvider(ModelProvider):
@@ -628,12 +727,55 @@ class OpenAICompatibleChatProvider(DirectApiProvider):
         }
 
 
+class AwsBedrockInvokeModelProvider(OpenAICompatibleChatProvider):
+    """Native Bedrock InvokeModel adapter using AWS profile/SigV4 auth."""
+
+    def _endpoint(self) -> str:
+        return self.settings.base_url
+
+    def _headers(self) -> dict[str, str]:
+        return {"Content-Type": "application/json"}
+
+    def _payload(
+        self,
+        system_instruction: str,
+        user_message: str,
+    ) -> dict[str, Any]:
+        payload: dict[str, Any] = {
+            "messages": [
+                {"role": "system", "content": system_instruction},
+                {"role": "user", "content": user_message},
+            ],
+            "max_tokens": self.settings.max_output_tokens,
+        }
+        if self.settings.temperature is not None:
+            payload["temperature"] = self.settings.temperature
+        return self._merge_extra_body(payload)
+
+
 def build_api_provider(
     settings: ProviderSettings,
     *,
     api_key: str | None = None,
     transport: JsonTransport | None = None,
 ) -> DirectApiProvider:
+    if settings.provider_type == "aws_bedrock_invoke_model":
+        profile = api_key or os.environ.get(settings.api_key_env)
+        if not profile:
+            raise ValueError(
+                f"missing AWS profile environment variable "
+                f"{settings.api_key_env}"
+            )
+        resolved_transport = transport or AwsCliJsonTransport(
+            profile=profile,
+            region=_aws_bedrock_region(settings.base_url),
+            model=settings.model,
+        )
+        return AwsBedrockInvokeModelProvider(
+            settings,
+            api_key=profile,
+            transport=resolved_transport,
+        )
     providers = {
         "openai_responses": OpenAIResponsesProvider,
         "anthropic_messages": AnthropicMessagesProvider,
@@ -644,6 +786,19 @@ def build_api_provider(
         api_key=api_key,
         transport=transport,
     )
+
+
+def _aws_bedrock_region(base_url: str) -> str:
+    hostname = urlparse(base_url).hostname or ""
+    for prefix, suffix in (
+        ("bedrock-mantle.", ".api.aws"),
+        ("bedrock-runtime.", ".amazonaws.com"),
+    ):
+        if hostname.startswith(prefix) and hostname.endswith(suffix):
+            region = hostname[len(prefix) : -len(suffix)]
+            if region:
+                return region
+    raise ValueError("Bedrock base_url does not encode an AWS region")
 
 
 def load_provider_settings(path: str) -> ProviderSettings:

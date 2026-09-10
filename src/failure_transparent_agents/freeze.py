@@ -364,14 +364,15 @@ def _region_from_config(provider: str, base_url: str) -> str | None:
     if provider != "nvidia-bedrock":
         return None
     hostname = urlparse(base_url).hostname or ""
-    prefix = "bedrock-mantle."
-    suffix = ".api.aws"
-    if not hostname.startswith(prefix) or not hostname.endswith(suffix):
-        raise ValueError("nvidia-bedrock base_url does not encode an AWS region")
-    region = hostname[len(prefix) : -len(suffix)]
-    if not region:
-        raise ValueError("nvidia-bedrock base_url has an empty AWS region")
-    return region
+    for prefix, suffix in (
+        ("bedrock-mantle.", ".api.aws"),
+        ("bedrock-runtime.", ".amazonaws.com"),
+    ):
+        if hostname.startswith(prefix) and hostname.endswith(suffix):
+            region = hostname[len(prefix) : -len(suffix)]
+            if region:
+                return region
+    raise ValueError("nvidia-bedrock base_url does not encode an AWS region")
 
 
 def _require_exact_fields(

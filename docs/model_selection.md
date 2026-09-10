@@ -23,7 +23,7 @@ The selected candidates are:
 |---|---|---|
 | OpenAI | `gpt-5.6-terra` | OpenAI Responses API |
 | Anthropic | `claude-sonnet-5` | Anthropic Messages API |
-| NVIDIA/open weight | `nvidia.nemotron-super-3-120b` | Amazon Bedrock OpenAI-compatible Chat Completions |
+| NVIDIA/open weight | `nvidia.nemotron-super-3-120b` | Amazon Bedrock native InvokeModel |
 
 ## Rationale
 
@@ -38,9 +38,10 @@ parameters, so the configuration leaves `temperature` unset and uses adaptive
 thinking defaults.
 
 NVIDIA Nemotron 3 Super 120B is an open-weight hybrid MoE model designed for
-agentic workloads. Amazon Bedrock exposes the exact NVIDIA model through an
-OpenAI-compatible endpoint with published per-token pricing, avoiding an
-unpriced trial endpoint.
+agentic workloads. Amazon Bedrock exposes the exact NVIDIA model through
+native InvokeModel with the chat-completions message schema and published
+per-token pricing. Collection uses temporary AWS SigV4 credentials rather than
+persisting a bearer API key.
 
 ## Documented and reservation pricing
 
@@ -77,8 +78,8 @@ because the cited Bedrock price does not advertise a lower cache-read rate.
   `https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-nvidia-nemotron-super-3-120b.html`
 - Amazon Bedrock NVIDIA pricing:
   `https://aws.amazon.com/bedrock/pricing/`
-- Bedrock OpenAI-compatible authentication:
-  `https://docs.aws.amazon.com/bedrock/latest/userguide/inference-chat-completions-mantle.html`
+- Bedrock InvokeModel CLI:
+  `https://docs.aws.amazon.com/cli/latest/reference/bedrock-runtime/invoke-model.html`
 
 ## Approval gate
 
@@ -87,7 +88,8 @@ Before paid calls:
 1. Recheck every source above for model availability and price changes.
 2. Confirm the three exact models and region.
 3. Confirm the combined hard cap encoded across the provider configs.
-4. Set the three API-key environment variables without committing secrets.
+4. Set the two API-key variables and one authorized AWS profile without
+   committing secrets.
 5. Freeze the dataset manifest and provider-config hashes.
 
 The explicit decision is stored in `data/confirmatory_approval.json`. The

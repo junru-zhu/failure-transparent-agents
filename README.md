@@ -166,9 +166,11 @@ make human-sample RUN_ID=confirmatory-20260910-v1
 make analyze RUN_ID=confirmatory-20260910-v1
 ```
 
-The live targets require `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, and
-`AWS_BEARER_TOKEN_BEDROCK`. They enforce config hashes, call caps, and dollar
-caps; progress is resumable with `RESUME=--resume`.
+The live targets require `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, and an
+authorized `AWS_PROFILE`. The NVIDIA arm uses temporary AWS SigV4 credentials
+through native Bedrock InvokeModel, so no bearer API key is stored. All arms
+enforce config hashes, call caps, and dollar caps; progress is resumable with
+`RESUME=--resume`.
 
 Freezing rejects a pending or incomplete approval record. The approved record
 must name the author and MIT license, match every exact provider/model config,
@@ -213,6 +215,11 @@ finalizer writes the one-consensus-label-per-response file consumed by
 - [x] Human annotation rubric reviewed and author-frozen
 - [x] API budget approved
 - [x] Confirmatory manifest signed
-- [ ] Paid experiment run
+- [x] NVIDIA paid arm complete: 600/600 responses, zero provider failures
+- [ ] OpenAI and Anthropic paid arms complete
 - [ ] Human annotation completed
 - [ ] Final results inserted into the paper
+
+The completed NVIDIA collection and explicitly exploratory self-judge
+analysis are summarized in `docs/nvidia_arm_report.md`. The report does not
+substitute those labels for the frozen independent judge or human validation.

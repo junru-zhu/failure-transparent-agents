@@ -1,12 +1,15 @@
 # Confirmatory Deviation Log
 
-No confirmatory collection has begun.
+The NVIDIA primary arm completed on 2026-09-10. OpenAI and Anthropic
+collection has not begun.
 
 After author freeze, append one entry per change:
 
 | Date | Version | Stage | Change | Reason | Expected impact | Approved by |
 |---|---|---|---|---|---|---|
 | 2026-09-10 | 2026-09-10.v2 | presentation | Corrected the release audit to read the frozen manifest's `signed_by` field instead of the nonexistent top-level `approved_by` field; regenerated the identical dataset candidate and repeated author freeze before collection. | The first post-freeze release audit incorrectly reported that the signed manifest lacked author signoff. | None on scenarios, prompts, collection, scoring, or analysis; release readiness is now reported correctly. | Junru Zhu |
+| 2026-09-10 | 2026-09-10.v2 | collection | Replaced the NVIDIA arm's Bedrock bearer/Mantle transport with native Bedrock InvokeModel using temporary AWS SigV4 profile credentials; retained the exact model, region, prompts, parameters, token limits, prices, retries, and budget cap; repeated tests, model verification, and author freeze before confirmatory collection. | The approved authorized AWS environment account provides temporary AWS credentials, avoiding creation or storage of an API key. | No expected model-behavior change; the request uses the same system/user message schema and records the transport change for reproducibility. | Junru Zhu |
+| 2026-09-10 | exploratory-nvidia-v1 | scoring | Ran a separate Nemotron self-judge diagnostic over the completed NVIDIA arm. The first 300-token scoring attempt was stopped after truncation errors; the replacement used an unfrozen local 800-token configuration with one correction retry, followed by an eight-record targeted retry and one deterministic evidence-span formatting repair. | The frozen GPT-5.4-mini judge credential was unavailable, while an interim report was requested. | No impact on frozen confirmatory scoring or primary responses. All resulting behavioral estimates are explicitly exploratory and must be replaced by frozen judge plus human-validation results for final claims. | Junru Zhu |
 
 Stages are `collection`, `scoring`, `analysis`, or `presentation`. Never edit or
 delete an earlier entry; corrections receive a new row.

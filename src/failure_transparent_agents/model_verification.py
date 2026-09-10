@@ -368,14 +368,15 @@ def _region(settings: ProviderSettings) -> str | None:
     if settings.provider_name != "nvidia-bedrock":
         return None
     hostname = urlparse(settings.base_url).hostname or ""
-    prefix = "bedrock-mantle."
-    suffix = ".api.aws"
-    if not hostname.startswith(prefix) or not hostname.endswith(suffix):
-        raise ValueError("nvidia-bedrock base URL does not encode an AWS region")
-    region = hostname[len(prefix) : -len(suffix)]
-    if not region:
-        raise ValueError("nvidia-bedrock base URL has an empty region")
-    return region
+    for prefix, suffix in (
+        ("bedrock-mantle.", ".api.aws"),
+        ("bedrock-runtime.", ".amazonaws.com"),
+    ):
+        if hostname.startswith(prefix) and hostname.endswith(suffix):
+            region = hostname[len(prefix) : -len(suffix)]
+            if region:
+                return region
+    raise ValueError("nvidia-bedrock base URL does not encode an AWS region")
 
 
 def _aware_iso8601(value: Any, name: str) -> datetime:
