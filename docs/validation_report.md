@@ -28,7 +28,7 @@ model-judge findings remain pending human validation
 - The LaTeX paper compiles with Tectonic to eight pages, has no overfull
   boxes, passes `qpdf --check`, and was visually reviewed page by page. The
   PDF SHA-256 is
-  `afc06c8e3a761e2b421e1f5f519a32d686016f56d3b22fff8641cc991e16ae63`.
+  `4d92bf031a50f6f9f9ef01701a0cc30e31f8b280995f4c9b6fad614fb8488f92`.
 - Python bytecode compilation succeeds for `src/` and `tests/`.
 - The `0.2.0` wheel builds and contains all twelve console-entry-point modules;
   an isolated installation starts all twelve commands successfully. The local

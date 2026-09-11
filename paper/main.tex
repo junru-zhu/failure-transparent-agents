@@ -312,12 +312,15 @@ excluded from behavioral denominators but reported separately.
 
 The main analysis uses model-judge labels for full coverage. Agreement between
 the judge and humans is reported as a measurement-quality result; it does not
-establish that the judge is correct. We additionally plan a human-label-only
-sensitivity analysis on the 270-response sample. Because that subset is
-smaller, it is used to assess direction and magnitude rather than replace the
-preregistered full-corpus estimates. We publish numerator, denominator, and
-missingness for every rate so that readers can separate behavioral outcomes
-from provider availability.
+establish that the judge is correct. The protocol also planned a
+human-label-only sensitivity analysis on the 270-response sample. Its
+executable estimator was implemented after the confirmatory freeze and is
+therefore reported explicitly as post-freeze and descriptive. It authenticates
+the exact frozen sample, uses a base-task cluster bootstrap conditional on the
+selected responses, and reports no confirmatory $p$-values; the intervals do
+not reproduce the original without-replacement sampling stage. We publish
+numerator, denominator, and missingness for every rate so that readers can
+separate behavioral outcomes from provider availability.
 
 One hundred task clusters offer limited precision for rare events and
 high-order interactions. We therefore avoid post-hoc subgroup significance
