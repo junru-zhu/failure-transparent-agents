@@ -21,6 +21,9 @@ from .model_verification import validate_model_verification
 from .schema import load_scenarios
 
 
+SOURCE_DRIFT_BLOCKER = "scientific source changed after author signoff"
+
+
 def build_preflight_plan(
     *,
     dataset_path: str | Path,
@@ -229,7 +232,7 @@ def build_preflight_plan(
             verify_frozen_sources(manifest)
         except ValueError:
             frozen_source_hashes_ok = False
-            failures.append("scientific source changed after author signoff")
+            failures.append(SOURCE_DRIFT_BLOCKER)
     primary_preflight_cost = sum(
         float(arm["preflight_max_cost_usd"]) for arm in arms
     )
@@ -394,7 +397,43 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--repeats", type=int, default=2)
     parser.add_argument("--output", type=Path)
+    parser.add_argument(
+        "--completed-run-validation",
+        action="store_true",
+        help=(
+            "Validate an already completed collection after later source changes. "
+            "This mode never authorizes a live run and succeeds only when source "
+            "drift is the sole blocking check."
+        ),
+    )
     return parser
+
+
+def completed_run_validation(plan: dict[str, Any]) -> dict[str, Any]:
+    """Summarize CI safety for an already completed, frozen collection."""
+
+    blocking_checks = list(plan["blocking_checks"])
+    unexpected = [
+        issue for issue in blocking_checks if issue != SOURCE_DRIFT_BLOCKER
+    ]
+    passed = (
+        bool(plan["dataset_frozen"])
+        and bool(plan["collection_approval"]["ready"])
+        and bool(plan["model_verification"]["ready"])
+        and not unexpected
+    )
+    return {
+        "mode": "completed_run_validation",
+        "passed": passed,
+        "live_run_authorized": False,
+        "source_snapshot_matches_original_freeze": bool(
+            plan["frozen_source_hashes_ok"]
+        ),
+        "accepted_post_freeze_source_drift": (
+            SOURCE_DRIFT_BLOCKER in blocking_checks
+        ),
+        "unexpected_blocking_checks": unexpected,
+    }
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -414,6 +453,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         model_verification_path=args.model_verification,
         repeats=args.repeats,
     )
+    if args.completed_run_validation:
+        plan["completed_run_validation"] = completed_run_validation(plan)
     encoded = json.dumps(plan, indent=2, sort_keys=True) + "\n"
     if args.output:
         args.output.parent.mkdir(parents=True, exist_ok=True)
@@ -423,6 +464,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         "dataset requires author freeze",
         "collection approval requires explicit authorization",
     }
+    if args.completed_run_validation:
+        return 0 if plan["completed_run_validation"]["passed"] else 2
     return (
         0
         if all(issue in expected_gates for issue in plan["blocking_checks"])

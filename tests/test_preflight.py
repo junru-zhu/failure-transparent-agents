@@ -2,7 +2,11 @@ import json
 from pathlib import Path
 import unittest
 
-from failure_transparent_agents.preflight import build_preflight_plan
+from failure_transparent_agents.preflight import (
+    SOURCE_DRIFT_BLOCKER,
+    build_preflight_plan,
+    completed_run_validation,
+)
 
 
 ROOT = Path(__file__).parents[1]
@@ -64,6 +68,43 @@ class ConfirmatoryPreflightTest(unittest.TestCase):
         self.assertEqual(
             not plan["blocking_checks"],
             plan["ready_for_live_run"],
+        )
+
+    def test_completed_run_validation_never_authorizes_collection(self) -> None:
+        plan = {
+            "dataset_frozen": True,
+            "collection_approval": {"ready": True},
+            "model_verification": {"ready": True},
+            "frozen_source_hashes_ok": False,
+            "blocking_checks": [SOURCE_DRIFT_BLOCKER],
+        }
+
+        validation = completed_run_validation(plan)
+
+        self.assertTrue(validation["passed"])
+        self.assertFalse(validation["live_run_authorized"])
+        self.assertTrue(validation["accepted_post_freeze_source_drift"])
+        self.assertEqual([], validation["unexpected_blocking_checks"])
+
+    def test_completed_run_validation_rejects_other_blockers(self) -> None:
+        plan = {
+            "dataset_frozen": True,
+            "collection_approval": {"ready": True},
+            "model_verification": {"ready": True},
+            "frozen_source_hashes_ok": False,
+            "blocking_checks": [
+                SOURCE_DRIFT_BLOCKER,
+                "openai/model: frozen config hash",
+            ],
+        }
+
+        validation = completed_run_validation(plan)
+
+        self.assertFalse(validation["passed"])
+        self.assertFalse(validation["live_run_authorized"])
+        self.assertEqual(
+            ["openai/model: frozen config hash"],
+            validation["unexpected_blocking_checks"],
         )
 
 

@@ -148,7 +148,7 @@ and difficulty.
 ```bash
 make test
 make pilot
-make preflight
+make preflight-completed
 ```
 
 The runtime uses only the Python standard library. Offline preflight makes zero
@@ -191,10 +191,15 @@ Core validation:
 make demo
 make check-dataset
 make test
-make preflight
+make preflight-completed
 make full-scale-validation
 make release-audit
 ```
+
+`make preflight-completed` validates the frozen, already collected experiment
+while explicitly refusing to authorize new live collection from the
+post-release source tree. `make preflight` remains the strict launch gate for a
+new author-frozen run.
 
 The current public run used:
 

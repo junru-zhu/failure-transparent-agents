@@ -18,7 +18,8 @@ RAW_ARGS := --raw $(RESULT_ROOT)/primary/openai/raw_results.jsonl \
 	--raw $(RESULT_ROOT)/primary/anthropic/raw_results.jsonl \
 	--raw $(RESULT_ROOT)/primary/nvidia/raw_results.jsonl
 
-.PHONY: test demo pilot dataset check-dataset preflight full-scale-validation freeze \
+.PHONY: test demo pilot dataset check-dataset preflight preflight-completed \
+	full-scale-validation freeze \
 	confirmatory confirmatory-openai confirmatory-anthropic confirmatory-nvidia \
 	judge human-sample annotate-human prepare-adjudication \
 	annotate-adjudication finalize-adjudication analyze human-sensitivity \
@@ -50,6 +51,11 @@ check-dataset:
 preflight:
 	PYTHONPATH=$(PYTHONPATH) $(PYTHON) -m failure_transparent_agents.preflight \
 		--output results/preflight/confirmatory-plan.json
+
+preflight-completed:
+	PYTHONPATH=$(PYTHONPATH) $(PYTHON) -m failure_transparent_agents.preflight \
+		--completed-run-validation \
+		--output results/preflight/completed-run-validation.json
 
 full-scale-validation:
 	PYTHONPATH=$(PYTHONPATH) $(PYTHON) -m failure_transparent_agents.full_scale_validation \

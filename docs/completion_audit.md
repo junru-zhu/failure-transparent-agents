@@ -39,7 +39,11 @@ confirmatory model results.
 - an aggregate bound of `$65.6197176` under a `$120` hard cap; and
 - zero network calls during preflight.
 
-Preflight now reports no blocking checks and `ready_for_live_run: true`.
+The original freeze-time preflight reported no blocking checks and
+`ready_for_live_run: true`. The current post-release source tree intentionally
+differs from that frozen snapshot, so strict `make preflight` refuses to
+authorize new collection. `make preflight-completed` validates the completed
+run while preserving `live_run_authorized: false`.
 
 All three primary arms and the frozen GPT-5.4-mini judge completed. Judging
 used 2,624 calls and `$3.68948475` of the `$60` hard cap, plus a
