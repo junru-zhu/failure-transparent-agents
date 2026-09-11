@@ -164,6 +164,7 @@ make confirmatory RUN_ID=confirmatory-20260910-v1
 make judge RUN_ID=confirmatory-20260910-v1
 make human-sample RUN_ID=confirmatory-20260910-v1
 make analyze RUN_ID=confirmatory-20260910-v1
+make human-sensitivity RUN_ID=confirmatory-20260910-v1
 ```
 
 The primary live targets require an authorized `AWS_PROFILE`; the independent
@@ -183,7 +184,19 @@ The human-sample target writes a condition/model-blinded packet and a separate
 private key. Two annotators use the resumable terminal workflow independently;
 a third reviewer receives only disagreements and blinded annotations. The
 finalizer writes the one-consensus-label-per-response file consumed by
-`make analyze`.
+`make analyze` and `make human-sensitivity`. The full analysis uses all 1,800
+frozen model-judge labels; the sensitivity target uses the 270 human-consensus
+labels, authenticates their response IDs against the frozen private sample
+key and manifest, and reports post-freeze descriptive clustered-bootstrap
+differences without confirmatory p-values. Those intervals are conditional on
+the selected 270-response sample rather than population-level confirmatory
+confidence intervals.
+
+After the human and author-review gates pass, `make final-release-all` builds
+two deterministic artifacts: a clean committed source snapshot and a
+disclosure-aware scientific-results ZIP. The results ZIP omits provider
+request IDs, retry-error details, the private sample key, independent
+annotator files, and private execution-environment identifiers.
 
 ## Research integrity
 
@@ -209,10 +222,11 @@ finalizer writes the one-consensus-label-per-response file consumed by
 - [x] Clustered inference, agreement, figures, and LaTeX table implemented
 - [x] Full 1,800-response synthetic pipeline validation passed
 - [x] Release wheel and GitHub/Zenodo metadata validated
-- [x] Six-page LaTeX preprint draft compiled and visually reviewed
+- [x] Eight-page LaTeX preprint draft compiled and visually reviewed
 - [x] Machine-enforced authorship/model/region/license/budget approval gate
 - [x] GitHub/Zenodo release metadata prepared
 - [x] Deterministic release archive and metadata audit implemented
+- [x] Fail-closed final publication gate and sanitized results builder implemented
 - [x] Human annotation rubric reviewed and author-frozen
 - [x] API budget approved
 - [x] Confirmatory manifest signed

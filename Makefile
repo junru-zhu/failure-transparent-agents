@@ -8,6 +8,9 @@ RELEASE_OUTPUT_DIR ?= dist
 RELEASE_ARCHIVE ?= $(RELEASE_OUTPUT_DIR)/failure-transparent-agents-0.2.0-release-candidate.zip
 RESUME ?=
 WORKERS ?= 4
+HUMAN_FIRST_LABELS ?= $(RESULT_ROOT)/human/human_labels-human-a.jsonl
+HUMAN_SECOND_LABELS ?= $(RESULT_ROOT)/human/human_labels-human-b.jsonl
+PUBLICATION_APPROVAL ?= data/publication_approval.json
 DATASET := data/confirmatory_scenarios.jsonl
 DATASET_MANIFEST := data/confirmatory_manifest.json
 RAW_ARGS := --raw $(RESULT_ROOT)/primary/openai/raw_results.jsonl \
@@ -17,8 +20,9 @@ RAW_ARGS := --raw $(RESULT_ROOT)/primary/openai/raw_results.jsonl \
 .PHONY: test pilot dataset check-dataset preflight full-scale-validation freeze \
 	confirmatory confirmatory-openai confirmatory-anthropic confirmatory-nvidia \
 	judge human-sample annotate-human prepare-adjudication \
-	annotate-adjudication finalize-adjudication analyze release-audit \
-	release-bundle release-wheel clean
+	annotate-adjudication finalize-adjudication analyze human-sensitivity \
+	release-audit final-publication-gate release-bundle final-release-bundle \
+	final-results-bundle final-release-all release-wheel clean
 
 test:
 	PYTHONPATH=$(PYTHONPATH) $(PYTHON) -m unittest discover -s tests -v
@@ -134,21 +138,61 @@ finalize-adjudication:
 analyze:
 	PYTHONPATH=$(PYTHONPATH) $(PYTHON) -m failure_transparent_agents.analysis \
 		$(RAW_ARGS) \
-		--labels $(RESULT_ROOT)/judge/model_judge_labels.jsonl \
-		--model-judge-labels $(RESULT_ROOT)/judge/model_judge_labels.jsonl \
+		--labels $(RESULT_ROOT)/judge/model_judge_labels_complete.jsonl \
+		--model-judge-labels $(RESULT_ROOT)/judge/model_judge_labels_complete.jsonl \
 		--human-labels $(RESULT_ROOT)/human/human_labels.jsonl \
 		--output-dir $(RESULT_ROOT)/analysis \
 		--bootstrap-repetitions 10000 \
 		--permutation-repetitions 100000 \
 		--seed 20260910
 
+human-sensitivity:
+	PYTHONPATH=$(PYTHONPATH) $(PYTHON) -m failure_transparent_agents.sensitivity \
+		$(RAW_ARGS) \
+		--human-labels $(RESULT_ROOT)/human/human_labels.jsonl \
+		--sample-key $(RESULT_ROOT)/human/human_sample_key.jsonl \
+		--sample-manifest $(RESULT_ROOT)/human/human_sample_manifest.json \
+		--model-judge-labels $(RESULT_ROOT)/judge/model_judge_labels_complete.jsonl \
+		--output-dir $(RESULT_ROOT)/analysis-human-sensitivity \
+		--bootstrap-repetitions 10000 \
+		--seed 20260910 \
+		--expected-sample-size 270
+
 release-audit:
 	PYTHONPATH=$(PYTHONPATH) $(PYTHON) -m failure_transparent_agents.release \
 		--audit-only
 
+final-publication-gate:
+	PYTHONPATH=$(PYTHONPATH) $(PYTHON) -m failure_transparent_agents.publication_gate \
+		--root $(CURDIR) \
+		--results-root $(RESULT_ROOT) \
+		--first-labels $(HUMAN_FIRST_LABELS) \
+		--second-labels $(HUMAN_SECOND_LABELS) \
+		--approval $(PUBLICATION_APPROVAL)
+
 release-bundle:
 	PYTHONPATH=$(PYTHONPATH) $(PYTHON) -m failure_transparent_agents.release \
 		--output-dir $(RELEASE_OUTPUT_DIR)
+
+final-release-bundle:
+	PYTHONPATH=$(PYTHONPATH) $(PYTHON) -m failure_transparent_agents.final_release \
+		--root $(CURDIR) \
+		--results-root $(RESULT_ROOT) \
+		--first-labels $(HUMAN_FIRST_LABELS) \
+		--second-labels $(HUMAN_SECOND_LABELS) \
+		--approval $(PUBLICATION_APPROVAL) \
+		--output-dir $(RELEASE_OUTPUT_DIR)
+
+final-results-bundle:
+	PYTHONPATH=$(PYTHONPATH) $(PYTHON) -m failure_transparent_agents.public_results \
+		--root $(CURDIR) \
+		--results-root $(RESULT_ROOT) \
+		--first-labels $(HUMAN_FIRST_LABELS) \
+		--second-labels $(HUMAN_SECOND_LABELS) \
+		--approval $(PUBLICATION_APPROVAL) \
+		--output-dir $(RELEASE_OUTPUT_DIR)
+
+final-release-all: final-release-bundle final-results-bundle
 
 release-wheel: release-bundle
 	PYTHONPATH=$(PYTHONPATH) $(PYTHON) -m failure_transparent_agents.release \

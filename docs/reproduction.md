@@ -142,9 +142,11 @@ human--human agreement and hash-addressed adjudication manifests.
 
 ```bash
 make analyze RUN_ID="$FTA_RUN_ID"
+make human-sensitivity RUN_ID="$FTA_RUN_ID"
 ```
 
-Outputs include:
+The full-corpus target uses the complete frozen model-judge label set and
+reports model--human agreement on the 270 consensus labels. Outputs include:
 
 - joined labeled JSONL;
 - rates and paired comparisons as CSV;
@@ -155,6 +157,16 @@ Outputs include:
 
 The default analysis uses 10,000 hierarchical bootstrap draws and 100,000
 sign-flip draws with seed `20260910`.
+
+The separate human-sensitivity target uses only the 270 human-consensus
+responses. It first requires an exact ID and hash match against the frozen
+`human_sample_key.jsonl` and `human_sample_manifest.json`. Because the
+stratified sample does not necessarily retain complete response-level pairs
+across conditions, it reports post-freeze descriptive condition differences
+with a base-task cluster bootstrap and no confirmatory p-values. The intervals
+are conditional on the selected sample and do not reproduce the original
+without-replacement sampling stage. It also requires complete 270/270
+agreement coverage for all six labels against the frozen model judge.
 
 ## 8. Audit and build the release candidate
 
@@ -173,6 +185,27 @@ excluded.
 Before freeze, `local_release_ready` can be true while
 `publication_ready` remains false. The remaining publication blockers and
 post-publication DOI updates are listed explicitly in the JSON report.
+
+`make release-audit` and `make release-bundle` produce a source release
+candidate. They do not authorize publication. After real human validation and
+the provider/request-ID review, complete `data/publication_approval.json` and
+run `make final-publication-gate` before a final tag or GitHub release. The
+legacy `release.py --require-publication-ready` flag reflects only the frozen
+source-candidate audit and must not be used as final scientific authorization.
+Use:
+
+```bash
+make final-release-all RUN_ID="$FTA_RUN_ID" \
+  HUMAN_FIRST_LABELS="results/$FTA_RUN_ID/human/human_labels-human-a.jsonl" \
+  HUMAN_SECOND_LABELS="results/$FTA_RUN_ID/human/human_labels-human-b.jsonl"
+```
+
+This command reruns the fail-closed scientific gate, requires a clean fully
+tracked Git snapshot for the source ZIP, performs an expanded private-data
+scan, and builds a separate sanitized results ZIP. The results bundle includes
+authorized model responses, parsed labels, human consensus labels, aggregate
+agreement, analysis tables, and figures. It never includes the private sample
+key, independent annotator files, raw provider request IDs, or retry errors.
 
 ## 9. Build the release wheel
 

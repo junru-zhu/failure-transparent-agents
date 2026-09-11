@@ -1,0 +1,17 @@
+{
+  "schema_version": "1.0",
+  "status": "pending",
+  "approved_by": "",
+  "approved_at": null,
+  "version_tag": "",
+  "human_validation_reviewed": false,
+  "github_release_authorized": false,
+  "raw_request_ids_disposition": "pending",
+  "provider_output_dispositions": {
+    "openai_judge": "pending",
+    "openai_primary_bedrock": "pending",
+    "anthropic_bedrock": "pending",
+    "nvidia_bedrock": "pending"
+  },
+  "notes": "Approve only after real human consensus, sensitivity analysis, provider-output review, request-ID review, final version selection, and release-note review."
+}

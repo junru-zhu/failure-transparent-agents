@@ -20,6 +20,8 @@ the benchmark protocol.
   correction, efficiency reporting, three SVG figures, and a LaTeX table.
 - Six-page freeze-candidate paper and release metadata for GitHub and Zenodo.
 - Deterministic release audit and source archive with embedded file hashes.
+- Post-freeze authenticated human-sensitivity analysis, fail-closed final
+  publication gate, clean-commit source release, and sanitized results bundle.
 
 ### Validation
 
@@ -30,4 +32,5 @@ the benchmark protocol.
 - Frozen GPT-5.4-mini judging completed with 1,800/1,800 schema-valid labels.
 - Full-corpus clustered analysis, three figures, and the preliminary
   result-bearing paper are complete.
-- Human agreement and human-label sensitivity analysis remain pending.
+- Human agreement and execution of the human-label sensitivity analysis remain
+  pending real independent annotations.

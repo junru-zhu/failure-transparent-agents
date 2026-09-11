@@ -33,7 +33,9 @@ failure-transparent-agents-annotate = "failure_transparent_agents.annotation:mai
 failure-transparent-agents-adjudicate = "failure_transparent_agents.adjudication:main"
 failure-transparent-agents-judge = "failure_transparent_agents.judge:main"
 failure-transparent-agents-freeze = "failure_transparent_agents.freeze:main"
+failure-transparent-agents-final-release = "failure_transparent_agents.final_release:main"
 failure-transparent-agents-release = "failure_transparent_agents.release:main"
+failure-transparent-agents-results-release = "failure_transparent_agents.public_results:main"
 failure-transparent-agents-simulate = "failure_transparent_agents.simulator:main"
 failure-transparent-agents-validate-scale = "failure_transparent_agents.full_scale_validation:main"
 

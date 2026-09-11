@@ -53,3 +53,28 @@
 - [ ] Workshop submission is treated separately from the preprint.
 
 External publication is never performed by the harness.
+
+`make release-audit` validates the source release candidate only. It does not
+substitute for the scientific or authorization checks above. Before creating a
+final tag, run:
+
+```bash
+make final-publication-gate RUN_ID=<run> \
+  HUMAN_FIRST_LABELS=<first-human-file> \
+  HUMAN_SECOND_LABELS=<second-human-file>
+```
+
+The final gate fails closed until real human labels, six-label agreement,
+adjudication/consensus manifests, human sensitivity outputs, request-ID
+disposition, provider-output dispositions, version approval, and explicit
+GitHub release authorization are present.
+
+- [ ] Run `make final-release-all`, not the legacy source-only
+  `--require-publication-ready` option.
+- [ ] Confirm the source worktree is clean and every packaged source file is
+  tracked in the release commit.
+- [ ] Inspect the results-bundle manifest and verify the expected 1,800 public
+  labeled responses, or document every provider arm excluded by approval.
+- [ ] Confirm the results ZIP contains no request IDs, retry errors, private
+  sample key, independent annotator files, credentials, local user paths, or
+  private execution-environment identifiers.

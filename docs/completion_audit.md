@@ -18,14 +18,14 @@ confirmatory model results.
 | Deterministic failed-tool simulator | Complete locally | `src/failure_transparent_agents/simulator.py`; replay and wrong-tool tests | None before collection |
 | Provider-neutral evaluation harness | Complete locally | Bedrock OpenAI Responses/SigV4, Anthropic Messages, and native InvokeModel adapters; retry, resume, call, spend, and provenance controls | Authorized live execution |
 | Exact model and pricing selection | Verified and approved | `data/model_verification.json`; official-source/config hash checks pass for four primary/judge configs; approval embedded in the frozen manifest | None before collection |
-| One-command reproduction | Complete and public | `Makefile`, `docs/reproduction.md`, twelve installed console commands; repository URL set to `junru-zhu/failure-transparent-agents` | None |
+| One-command reproduction | Complete and public | `Makefile`, `docs/reproduction.md`, fourteen installed console commands; repository URL set to `junru-zhu/failure-transparent-agents` | None |
 | Complete 1,800-response execution path | Complete | `docs/nvidia_arm_report.md`, `docs/claude_arm_report.md`, and `docs/openai_arm_report.md`; every arm has 600/600 canonical responses | None |
 | Labeled confirmatory result set | Frozen model-judge labels complete | `docs/model_judge_report.md`; 1,800/1,800 schema-valid labels; final label SHA-256 `d864203bda8e3fde4cfce5f9688c1870c30c724d5e1a5837f249031789398809` | Validate against human consensus labels |
 | Human validation and agreement | Workflow complete; real labels missing | Dual annotation, disagreement-only adjudication, consensus, and agreement code; fixture run produced 540 initial and 270 consensus labels | Two real independent annotators and a third reviewer for disagreements |
-| Bootstrap intervals and primary tests | Frozen full-corpus analysis complete | `docs/model_judge_report.md`; 10,000-draw bootstrap and 100,000-draw paired tests over 100 task clusters | Add human-label sensitivity analysis |
+| Bootstrap intervals and primary tests | Frozen full-corpus analysis complete; human-sensitivity implementation tested | `docs/model_judge_report.md`; 10,000-draw bootstrap and 100,000-draw paired tests over 100 task clusters; separate descriptive cluster-bootstrap sensitivity command | Run the sensitivity command after real human consensus labels exist |
 | Three figures and ablation table | Frozen model-judge artifacts complete | `results/confirmatory-20260910-v1/analysis-model-judge/` | Recheck after human validation and package for release |
 | Six-to-eight-page paper | Preliminary result-bearing draft complete | `paper/main.tex` and eight-page `paper/main.pdf`; SHA-256 `afc06c8e3a761e2b421e1f5f519a32d686016f56d3b22fff8641cc991e16ae63`; model-judge results and figures explicitly marked pending human validation | Insert agreement and human sensitivity results, then final visual review |
-| GitHub-ready software/data artifact | Public repository active | Deterministic source ZIP, checksum, release report, changelog, release notes, CI, MIT license, citation metadata, and GitHub repository | Publish the final result-bearing release after scoring |
+| GitHub-ready software/data artifact | Public repository active; final builders implemented | Deterministic clean-commit source ZIP plus a separate disclosure-aware scientific-results ZIP; checksums, release report, changelog, release notes, CI, MIT license, and citation metadata | Run both final builders after human validation and explicit approval, then publish |
 | Zenodo-ready metadata | Complete locally | `.zenodo.json`, `CITATION.cff`, release audit | Publish exact GitHub release, create DOI, then insert DOI into README, citation metadata, and paper |
 | arXiv/workshop submission | Not achieved | Submission checklist only | Authorship confirmation, final results, DOI, and explicit submission authorization |
 
@@ -61,6 +61,7 @@ Before public release:
 
 ## Completion rule
 
-The research objective is not complete until real provider outputs, blinded
-model labels, real human consensus labels, empirical analysis, final paper
-results, and the authorized public archive exist and have been verified.
+The research objective is not complete until blinded real-human validation,
+agreement and sensitivity analyses, final figures and tables, and the paper
+all support the same claims. Provider collection and frozen model judging are
+already complete; no additional paid API calls are required.

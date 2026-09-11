@@ -18,7 +18,9 @@ tool or evidence source fails.
 - clustered bootstrap and paired randomization analysis;
 - three publication figures and one ablation table generator;
 - an eight-page LaTeX paper with preliminary model-judge results; and
-- deterministic source archive, checksum, and embedded file manifest.
+- deterministic source archive, checksum, and embedded file manifest; and
+- a fail-closed final scientific publication gate with separate clean-source
+  and sanitized scientific-results archive builders.
 
 ## Validation
 
@@ -40,6 +42,8 @@ The full-corpus estimates use a frozen, blinded model judge and remain
 preliminary until the preregistered 270-response sample receives two
 independent human annotations, disagreement adjudication, and agreement
 analysis. Synthetic fixture outputs remain prohibited from scientific use.
+The post-freeze human sensitivity implementation authenticates the exact
+frozen sample and reports descriptive, sample-conditional intervals only.
 
 Repository publication, Zenodo deposition, DOI insertion, and preprint
 submission remain separate authorized actions.
@@ -60,3 +64,8 @@ make release-wheel
 
 The release bundle contains an embedded `release-manifest.json`; its sibling
 `.sha256` file authenticates the archive itself.
+
+After human validation and explicit publication approval, use
+`make final-release-all` to create the clean source snapshot and sanitized
+scientific-results ZIP. The legacy source-only
+`--require-publication-ready` option is not final scientific authorization.
