@@ -3,50 +3,66 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/junru-zhu/failure-transparent-agents/actions/workflows/tests.yml"><img alt="Tests" src="https://github.com/junru-zhu/failure-transparent-agents/actions/workflows/tests.yml/badge.svg"></a>
-  <a href="https://github.com/junru-zhu/failure-transparent-agents/releases/latest"><img alt="Release" src="https://img.shields.io/github/v/release/junru-zhu/failure-transparent-agents"></a>
-  <a href="LICENSE"><img alt="MIT License" src="https://img.shields.io/badge/license-MIT-70f0b5"></a>
-  <a href="https://www.python.org/"><img alt="Python 3.11+" src="https://img.shields.io/badge/python-3.11%2B-4da3ff"></a>
-  <img alt="100 tasks" src="https://img.shields.io/badge/benchmark-100_tasks-8b9df8">
-  <img alt="1,800 responses" src="https://img.shields.io/badge/results-1%2C800_responses-ff9a6b">
+  <a href="https://github.com/junru-zhu/failure-transparent-agents/actions/workflows/tests.yml"><img alt="Tests" src="https://img.shields.io/github/actions/workflow/status/junru-zhu/failure-transparent-agents/tests.yml?branch=main&style=flat-square&label=tests"></a>
+  <a href="https://github.com/junru-zhu/failure-transparent-agents/releases/latest"><img alt="Release" src="https://img.shields.io/github/v/release/junru-zhu/failure-transparent-agents?style=flat-square"></a>
+  <a href="LICENSE"><img alt="MIT License" src="https://img.shields.io/badge/license-MIT-70f0b5?style=flat-square"></a>
+  <a href="https://www.python.org/"><img alt="Python 3.11+" src="https://img.shields.io/badge/python-3.11%2B-4da3ff?style=flat-square"></a>
+  <a href="https://github.com/junru-zhu/failure-transparent-agents/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/junru-zhu/failure-transparent-agents?style=flat-square&logo=github&color=ffd166"></a>
+  <a href="https://github.com/junru-zhu/failure-transparent-agents/issues"><img alt="Open issues" src="https://img.shields.io/github/issues/junru-zhu/failure-transparent-agents?style=flat-square"></a>
+</p>
+
+<h3 align="center">
+  When a required tool fails, does the model admit it—or claim success anyway?
+</h3>
+
+<p align="center">
+  A reproducible benchmark for measuring false completion claims, fabricated
+  observations, limitation disclosure, recovery quality, and usefulness.
 </p>
 
 <p align="center">
-  <strong>A reproducible benchmark for a simple question:</strong><br>
-  when a required tool fails, does the model admit it—or claim success anyway?
-</p>
-
-<p align="center">
-  <a href="paper/main.pdf"><strong>Paper</strong></a> ·
-  <a href="data/confirmatory_scenarios.jsonl"><strong>Dataset</strong></a> ·
-  <a href="docs/model_judge_report.md"><strong>Results</strong></a> ·
-  <a href="docs/reproduction.md"><strong>Reproduce</strong></a> ·
-  <a href="https://github.com/junru-zhu/failure-transparent-agents/releases/tag/v0.2.0"><strong>Release</strong></a> ·
+  <a href="paper/main.pdf"><strong>Read the paper</strong></a>
+  ·
+  <a href="data/confirmatory_scenarios.jsonl"><strong>Explore the dataset</strong></a>
+  ·
+  <a href="docs/model_judge_report.md"><strong>See all results</strong></a>
+  ·
+  <a href="docs/reproduction.md"><strong>Reproduce</strong></a>
+  ·
   <a href="CONTRIBUTING.md"><strong>Contribute</strong></a>
 </p>
 
 ---
 
-## The result in one table
+## TL;DR
 
-Across 1,800 responses from one OpenAI, one Anthropic, and one NVIDIA model:
+An agent should never turn “the tool failed” into “the task is complete.”
+Across **1,800 responses** from one OpenAI, one Anthropic, and one NVIDIA
+model, a four-field evidence contract reduced false-success claims from
+**32.0% to 1.3%**.
 
-| Instruction condition | False success | Fabricated details | Useful response |
+<p align="center">
+  <img src="docs/assets/results-overview.svg" alt="False-success and fabrication rates across baseline, transparency instruction, and evidence-contract conditions" width="100%">
+</p>
+
+| Condition | False success ↓ | Fabrication ↓ | Useful response ↑ |
 |---|---:|---:|---:|
 | Baseline | **32.0%** | **37.5%** | 69.8% |
-| Explicit transparency instruction | **11.8%** | **17.3%** | 90.2% |
-| Structured evidence contract | **1.3%** | **3.3%** | 98.3% |
+| Transparency instruction | **11.8%** | **17.3%** | 90.2% |
+| Evidence contract | **1.3%** | **3.3%** | **98.3%** |
 
-The evidence contract requires four visible fields: `STATUS`, `EVIDENCE`,
-`LIMITATION`, and `NEXT_ACTION`.
+The evidence contract requires the model to expose four fields:
+<kbd>STATUS</kbd> <kbd>EVIDENCE</kbd> <kbd>LIMITATION</kbd>
+<kbd>NEXT_ACTION</kbd>.
 
-> **Evidence status:** these are frozen model-judge estimates on a synthetic
-> benchmark. Version 0.2.0 is not human-validated. The paper reports no
-> human–human or model–human agreement.
+> [!IMPORTANT]
+> These are frozen model-judge estimates on a synthetic benchmark. Version
+> 0.2.0 is not human-validated, and the paper does not report human–human or
+> model–human agreement.
 
-## Try it in 60 seconds
+## Run it in 60 seconds
 
-No API key, cloud account, package installation, or GPU is required:
+No API key. No cloud account. No package installation. No GPU.
 
 ```bash
 git clone https://github.com/junru-zhu/failure-transparent-agents.git
@@ -54,8 +70,11 @@ cd failure-transparent-agents
 make demo
 ```
 
-The demo runs the real deterministic failure simulator, the three instruction
-conditions, and the fixture-only evaluator:
+The demo runs the real deterministic failure simulator, all three instruction
+conditions, and the fixture-only evaluator.
+
+<details>
+<summary><strong>Preview the output</strong></summary>
 
 ```text
 [baseline] UNSUPPORTED SUCCESS
@@ -71,49 +90,46 @@ LIMITATION: no chart was attached to the conversation
 NEXT_ACTION: Please upload the quarterly revenue chart.
 ```
 
-The demo responses are deterministic fixtures that illustrate the code path;
-they are not empirical model results.
+The responses above are deterministic fixtures that demonstrate the code
+path. They are not empirical model outputs.
 
-## Why this benchmark exists
+</details>
 
-Task-success benchmarks often evaluate only the final answer. Tool-using
-systems also make claims about their process:
+## Why this benchmark matters
 
-- “I opened the page.”
-- “I ran the tests.”
-- “The attachment says…”
-- “The latest value is…”
+Most benchmarks score only the final answer. Tool-using agents also make
+claims about what happened along the way:
 
-When the page never loaded, execution failed, the attachment was missing, or
-the data was stale, those process claims become measurable failures.
+> “I opened the page.” · “I ran the tests.” · “The attachment says…” ·
+> “The latest value is…”
 
-Failure-Transparent Agents isolates that behavior with replayable traces:
+If the page never loaded, execution failed, the attachment was missing, or the
+data was stale, those process claims become measurable reliability failures.
 
-```text
-user request
-    ↓
-deterministic tool failure
-    ↓
-model response
-    ↓
-false success · fabrication · disclosure · recovery · usefulness
-```
+| For researchers | For agent builders | For safety and eval teams |
+|---|---|---|
+| Compare models under identical, replayable failures | Add failure-honesty regression tests before deployment | Evaluate whether a guardrail changes behavior, not just wording |
+| Measure paired mitigation effects | Catch unsupported completion claims in CI | Audit disclosure, recovery, usefulness, latency, and cost |
 
-## What is included
+## How it works
 
-- **100 fictional tasks** balanced across five failure categories and five
-  pressure types
-- **Deterministic failed-tool simulator** with byte-stable traces
-- **Three prompt conditions**: baseline, transparency, and evidence contract
-- **Provider-neutral harness** with retries, resumability, provenance, and hard
-  call/cost caps
-- **1,800 released responses and labels**
-- **Clustered bootstrap intervals and paired tests**
-- **Three figures, pressure ablation, latency, tokens, and cost**
-- **Eight-page paper and annotation guide**
-- **Sanitized source/results release under the MIT License**
+<p align="center">
+  <img src="docs/assets/benchmark-flow.svg" alt="Benchmark flow from user task through deterministic tool failure and model response to five behavior scores" width="100%">
+</p>
 
-### Failure categories
+Each task contains the unavailable evidence, deterministic failed observation,
+planted unsupported claims, feasible recovery, and safe partial help. Every
+model sees the same failure under three instruction conditions and two
+repeats.
+
+### Benchmark matrix
+
+| **100 tasks** | **5 failure categories** | **5 pressure types** | **3 conditions** | **2 repeats** |
+|:---:|:---:|:---:|:---:|:---:|
+| fictional and balanced | web, attachment, execution, permission, stale data | neutral, suggestion, urgency, forced choice, concealment | baseline, transparency, evidence contract | 1,800 total responses |
+
+<details>
+<summary><strong>Failure categories</strong></summary>
 
 | Category | Required evidence that is unavailable |
 |---|---|
@@ -123,69 +139,34 @@ false success · fabrication · disclosure · recovery · usefulness
 | Permission denied | Authorized file, record, or API response |
 | Stale data | Evidence inside the requested freshness window |
 
-### Pressure types
+</details>
+
+<details>
+<summary><strong>Pressure types</strong></summary>
 
 The benchmark includes neutral requests, user-suggested answers, urgency,
 forced binary choices, and explicit instructions to conceal the failure.
 Forced-choice prompts produced the highest descriptive baseline false-success
 rate: **85.0%**.
 
+</details>
+
+## What is in the repository
+
+- [x] Public, frozen **100-task JSONL benchmark**
+- [x] Byte-stable **failed-tool simulator**
+- [x] Provider-neutral, resumable **evaluation harness**
+- [x] Strict call and cost caps for live execution
+- [x] **1,800 released responses and labels**
+- [x] Clustered bootstrap intervals and paired tests
+- [x] Three primary figures and pressure ablation
+- [x] Annotation guide and frozen 270-response human sample
+- [x] Reproducible release bundles and package wheel
+- [x] Focused eight-page paper
+
 ## Use the benchmark
 
-### Inspect the dataset
-
-```bash
-head -n 1 data/confirmatory_scenarios.jsonl
-make check-dataset
-```
-
-Each JSONL row includes the user request, failed observation, required evidence,
-planted unsupported claims, feasible recovery, safe partial help, pressure,
-and difficulty.
-
-### Run the offline pipeline
-
-```bash
-make test
-make pilot
-make preflight-completed
-```
-
-The runtime uses only the Python standard library. Offline preflight makes zero
-network calls.
-
-### Run another model
-
-The harness supports frozen provider configs, strict call caps, retries,
-resume, request provenance, tokens, latency, and estimated cost. Start with:
-
-- [Reproduction guide](docs/reproduction.md)
-- [Research protocol](docs/research_protocol.md)
-- [Model selection and configuration](docs/model_selection.md)
-- [New model result issue](https://github.com/junru-zhu/failure-transparent-agents/issues/new?template=new_model_result.yml)
-
-Never commit API keys or AWS credentials. Live execution is opt-in and capped.
-
-## Repository map
-
-| Path | Purpose |
-|---|---|
-| [`data/confirmatory_scenarios.jsonl`](data/confirmatory_scenarios.jsonl) | Frozen 100-task benchmark |
-| [`src/failure_transparent_agents/simulator.py`](src/failure_transparent_agents/simulator.py) | Deterministic failed-tool simulator |
-| [`src/failure_transparent_agents/confirmatory.py`](src/failure_transparent_agents/confirmatory.py) | Resumable primary runner |
-| [`src/failure_transparent_agents/judge.py`](src/failure_transparent_agents/judge.py) | Strict blinded model judge |
-| [`src/failure_transparent_agents/analysis.py`](src/failure_transparent_agents/analysis.py) | Clustered analysis and figures |
-| [`docs/annotation_guide.md`](docs/annotation_guide.md) | Label definitions and edge cases |
-| [`docs/model_judge_report.md`](docs/model_judge_report.md) | Frozen full-corpus results |
-| [`paper/main.pdf`](paper/main.pdf) | Research paper |
-
-## Reproduce the released analysis
-
-The release separates public, sanitized artifacts from local provider logs and
-credentials. The end-to-end commands and artifact hashes are documented in the
-[reproduction guide](docs/reproduction.md).
-
-Core validation:
+### Validate everything offline
 
 ```bash
 make demo
@@ -196,44 +177,87 @@ make full-scale-validation
 make release-audit
 ```
 
+The runtime uses only the Python standard library. Offline validation makes
+zero network calls.
+
 `make preflight-completed` validates the frozen, already collected experiment
 while explicitly refusing to authorize new live collection from the
-post-release source tree. `make preflight` remains the strict launch gate for a
-new author-frozen run.
+post-release source tree. `make preflight` remains the strict launch gate for
+a newly frozen run.
 
-The current public run used:
+### Inspect a task
 
-- GPT-5.6 Terra through Amazon Bedrock
-- Claude Sonnet 5 through Amazon Bedrock
-- NVIDIA Nemotron Super 3 120B through Amazon Bedrock
-- GPT-5.4 mini as the direct-API, condition-blinded judge
+```bash
+head -n 1 data/confirmatory_scenarios.jsonl
+make check-dataset
+```
 
-Exact routes, parameters, resolved IDs, judge recovery, costs, and limitations
-are disclosed in the [paper](paper/main.pdf) and
-[model-judge report](docs/model_judge_report.md).
+### Evaluate another model
 
-## Contribute or replicate
+The harness supports frozen provider configs, hard call caps, estimated cost,
+retries, resume, request provenance, token counts, and latency.
 
-The most valuable next contributions are:
+1. Read the [reproduction guide](docs/reproduction.md).
+2. Add a provider config using [model selection guidance](docs/model_selection.md).
+3. Run the matrix under a new run ID.
+4. Submit a [new model result](https://github.com/junru-zhu/failure-transparent-agents/issues/new?template=new_model_result.yml).
 
-1. an independent replication on another model or serving stack;
-2. real human annotation of the frozen 270-response sample;
-3. multilingual and long-horizon failed-tool tasks;
-4. judge-robustness and cross-judge agreement analysis;
-5. integrations with agent frameworks and observability systems.
+> [!CAUTION]
+> Never commit API keys, AWS credentials, raw provider request identifiers, or
+> private environment details. Live execution is opt-in and budget-capped.
 
-See [CONTRIBUTING.md](CONTRIBUTING.md), or open a
-[model-result issue](https://github.com/junru-zhu/failure-transparent-agents/issues/new?template=new_model_result.yml)
-or a
-[benchmark-task proposal](https://github.com/junru-zhu/failure-transparent-agents/issues/new?template=benchmark_task.yml).
+## Reproduce the released study
+
+The public release separates sanitized research artifacts from local provider
+logs and credentials. Exact commands, hashes, routes, parameters, judge
+recovery, costs, and limitations are documented in:
+
+- [Reproduction guide](docs/reproduction.md)
+- [Research protocol](docs/research_protocol.md)
+- [Model selection and configuration](docs/model_selection.md)
+- [Frozen model-judge report](docs/model_judge_report.md)
+- [Completion audit](docs/completion_audit.md)
+
+The released study used GPT-5.6 Terra, Claude Sonnet 5, and NVIDIA Nemotron
+Super 3 120B through Amazon Bedrock, with GPT-5.4 mini as the direct-API,
+condition-blinded judge.
+
+<details>
+<summary><strong>Repository map</strong></summary>
+
+| Path | Purpose |
+|---|---|
+| [`data/confirmatory_scenarios.jsonl`](data/confirmatory_scenarios.jsonl) | Frozen 100-task benchmark |
+| [`src/failure_transparent_agents/simulator.py`](src/failure_transparent_agents/simulator.py) | Deterministic failed-tool simulator |
+| [`src/failure_transparent_agents/confirmatory.py`](src/failure_transparent_agents/confirmatory.py) | Resumable primary runner |
+| [`src/failure_transparent_agents/judge.py`](src/failure_transparent_agents/judge.py) | Strict blinded model judge |
+| [`src/failure_transparent_agents/analysis.py`](src/failure_transparent_agents/analysis.py) | Clustered analysis and figures |
+| [`docs/annotation_guide.md`](docs/annotation_guide.md) | Label definitions and edge cases |
+| [`docs/model_judge_report.md`](docs/model_judge_report.md) | Frozen full-corpus results |
+| [`paper/main.pdf`](paper/main.pdf) | Eight-page research paper |
+
+</details>
+
+## Extend the benchmark
+
+High-impact contributions include:
+
+- independent replications on new models and serving stacks;
+- human annotation of the frozen 270-response sample;
+- multilingual and long-horizon failed-tool tasks;
+- judge-robustness and cross-judge agreement analysis;
+- integrations with agent frameworks and observability systems.
+
+Open a [model-result issue](https://github.com/junru-zhu/failure-transparent-agents/issues/new?template=new_model_result.yml),
+propose a [benchmark task](https://github.com/junru-zhu/failure-transparent-agents/issues/new?template=benchmark_task.yml),
+or read [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Research integrity
 
 - All scenarios and entities are fictional.
 - Fixture output is never treated as empirical model evidence.
 - Frozen prompts, configs, hashes, approvals, and deviations are published.
-- Raw provider request IDs, retry-error details, credentials, and private
-  environment identifiers are excluded from public results.
+- Credentials and private environment identifiers are excluded.
 - Pressure comparisons are descriptive because pressure is not crossed within
   identical task content.
 - Version 0.2.0 is model-judge-only and not human-validated.
@@ -252,3 +276,11 @@ Post-Failure Response Transparency. Version 0.2.0, 2026.
 
 Code, benchmark data, and documentation are released under the
 [MIT License](LICENSE).
+
+---
+
+<p align="center">
+  <strong>Reliable agents should make failure visible.</strong><br>
+  If this benchmark is useful to your work, consider starring it so others can
+  find it.
+</p>

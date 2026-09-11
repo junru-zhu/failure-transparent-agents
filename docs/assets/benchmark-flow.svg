@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="300" viewBox="0 0 1200 300" role="img" aria-labelledby="title desc">
+  <title id="title">Failure-Transparent Agents benchmark flow</title>
+  <desc id="desc">A user task enters a deterministic failed-tool simulator. The model receives the failed observation under one of three instruction conditions. The response is scored for false success, fabrication, disclosure, recovery, and usefulness.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#091526"/>
+      <stop offset="1" stop-color="#102d3c"/>
+    </linearGradient>
+    <linearGradient id="line" x1="0" x2="1">
+      <stop offset="0" stop-color="#5d9cff"/>
+      <stop offset="1" stop-color="#70f0b5"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-30%" width="140%" height="160%">
+      <feDropShadow dx="0" dy="9" stdDeviation="12" flood-color="#000" flood-opacity=".24"/>
+    </filter>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0l10 5-10 5z" fill="#65c9c3"/>
+    </marker>
+  </defs>
+
+  <rect width="1200" height="300" rx="28" fill="url(#bg)"/>
+  <text x="48" y="48" fill="#f5f9ff" font-family="Inter,Arial,sans-serif" font-size="24" font-weight="800">One controlled failure. Five measurable behaviors.</text>
+  <text x="48" y="76" fill="#9fb4c9" font-family="Inter,Arial,sans-serif" font-size="15">Every trace is deterministic and replayable.</text>
+
+  <path d="M250 170H326M570 170h76M850 170h78" fill="none" stroke="url(#line)" stroke-width="4" marker-end="url(#arrow)"/>
+
+  <g transform="translate(48 112)" filter="url(#shadow)">
+    <rect width="202" height="116" rx="20" fill="#0b2035" stroke="#315679"/>
+    <circle cx="34" cy="34" r="17" fill="#5793ff" opacity=".22"/>
+    <path d="M27 34h14M34 27v14" stroke="#82b7ff" stroke-width="2.5" stroke-linecap="round"/>
+    <text x="60" y="39" fill="#dce9f7" font-family="Inter,Arial,sans-serif" font-size="18" font-weight="800">USER TASK</text>
+    <text x="22" y="76" fill="#9eb5ca" font-family="Inter,Arial,sans-serif" font-size="14">100 fictional scenarios</text>
+    <text x="22" y="98" fill="#7892aa" font-family="Inter,Arial,sans-serif" font-size="13">5 categories × 5 pressures</text>
+  </g>
+
+  <g transform="translate(326 100)" filter="url(#shadow)">
+    <rect width="244" height="140" rx="20" fill="#321c29" stroke="#a95162"/>
+    <circle cx="36" cy="38" r="18" fill="#ff7f76" opacity=".22"/>
+    <path d="M30 32l12 12m0-12L30 44" stroke="#ff9b91" stroke-width="3" stroke-linecap="round"/>
+    <text x="66" y="43" fill="#ffe2e3" font-family="Inter,Arial,sans-serif" font-size="18" font-weight="800">FAILED TOOL</text>
+    <text x="24" y="80" fill="#d9adb5" font-family="Inter,Arial,sans-serif" font-size="14">missing · denied · failed · stale</text>
+    <rect x="24" y="98" width="196" height="24" rx="12" fill="#4b2633"/>
+    <text x="122" y="115" fill="#f1bdc4" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="12" font-weight="700">BYTE-STABLE TRACE</text>
+  </g>
+
+  <g transform="translate(646 100)" filter="url(#shadow)">
+    <rect width="204" height="140" rx="20" fill="#152343" stroke="#4e67a2"/>
+    <circle cx="36" cy="38" r="18" fill="#8b9df8" opacity=".22"/>
+    <path d="M28 37h16M31 31h10M31 43h10" stroke="#aeb9ff" stroke-width="2.5" stroke-linecap="round"/>
+    <text x="66" y="43" fill="#e5e8ff" font-family="Inter,Arial,sans-serif" font-size="18" font-weight="800">MODEL</text>
+    <text x="24" y="79" fill="#b7c0ea" font-family="Inter,Arial,sans-serif" font-size="14">baseline · transparency</text>
+    <text x="24" y="101" fill="#b7c0ea" font-family="Inter,Arial,sans-serif" font-size="14">evidence contract</text>
+    <text x="24" y="124" fill="#7f8fbd" font-family="Inter,Arial,sans-serif" font-size="12">3 providers · 2 repeats</text>
+  </g>
+
+  <g transform="translate(928 89)" filter="url(#shadow)">
+    <rect width="224" height="162" rx="20" fill="#10362f" stroke="#45a985"/>
+    <circle cx="36" cy="38" r="18" fill="#70f0b5" opacity=".22"/>
+    <path d="M28 38l5 5 11-13" fill="none" stroke="#8ff7c9" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="66" y="43" fill="#ddfff2" font-family="Inter,Arial,sans-serif" font-size="18" font-weight="800">SCORE</text>
+    <g fill="#bce8d8" font-family="Inter,Arial,sans-serif" font-size="13">
+      <text x="24" y="76">false success</text>
+      <text x="126" y="76">fabrication</text>
+      <text x="24" y="101">disclosure</text>
+      <text x="126" y="101">recovery</text>
+      <text x="24" y="126">usefulness</text>
+    </g>
+    <rect x="24" y="139" width="176" height="4" rx="2" fill="url(#line)"/>
+  </g>
+</svg>
