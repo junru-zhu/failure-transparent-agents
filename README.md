@@ -5,8 +5,10 @@ A reproducible benchmark for measuring whether tool-using language-model agents 
 The repository contains an author-signed, frozen benchmark and complete
 experiment pipeline. All 1,800 confirmatory primary responses and all 1,800
 frozen model-judge labels have been collected. The full-corpus statistical
-analysis is complete; the remaining scientific gate is independent human
-validation of the preregistered 270-response blinded sample.
+analysis is complete. Version 0.2.0 is an author-approved model-judge-only
+release and is not human-validated. On 2026-09-11, author Junru Zhu decided
+to omit human validation from this release while preserving the blinded
+270-response workflow as an optional future validation path.
 
 ## Research question
 
@@ -102,9 +104,10 @@ all workers.
 
 Live records deliberately contain `"evaluation": null`. The current heuristic
 evaluator recognizes planted fixture strings only and must not be used to score
-real model outputs. A blinded rubric-based judge and human validation are still
-required before reporting findings. Codex reports token usage but not a dollar
-cost through this adapter, so `estimated_cost_usd` is `null`.
+real model outputs. Benchmark findings in this release use the separate frozen,
+blinded rubric-based model judge and must be described as not human-validated.
+Codex reports token usage but not a dollar cost through this adapter, so
+`estimated_cost_usd` is `null`.
 
 ## Validate and preflight
 
@@ -129,12 +132,12 @@ bootstrap analysis, figures, and LaTeX table using synthetic fixtures. Its
 manifest sets `scientific_use_prohibited: true`; these artifacts validate
 software only and are never model findings.
 
-## Build a release candidate
+## Build the v0.2.0 release
 
 ```bash
 make release-audit
-make release-bundle
-make release-wheel
+make model-only-release-all RUN_ID=confirmatory-20260910-v1
+make model-only-release-wheel
 ```
 
 The audit checks version, author, license, dataset hash, required public
@@ -149,9 +152,10 @@ have the pinned build backend available; override it with
 `WHEEL_PYTHON=python3.11` when needed.
 
 Before author freeze, the audit is expected to report publication blockers
-while still returning `local_release_ready: true`. Publication readiness also
-requires the approved freeze and the final public repository URL. Zenodo DOI
-insertion is a documented post-publication action.
+while still returning `local_release_ready: true`. For v0.2.0, publication
+authorization records author Junru Zhu, approves all model-output
+dispositions, and requires removal of raw request IDs. Zenodo DOI insertion
+remains a separate post-publication action.
 
 ## Freeze and run
 
@@ -162,9 +166,7 @@ Complete `docs/dataset_review.md` and explicitly approve
 make freeze SIGNER="Junru Zhu"
 make confirmatory RUN_ID=confirmatory-20260910-v1
 make judge RUN_ID=confirmatory-20260910-v1
-make human-sample RUN_ID=confirmatory-20260910-v1
 make analyze RUN_ID=confirmatory-20260910-v1
-make human-sensitivity RUN_ID=confirmatory-20260910-v1
 ```
 
 The primary live targets require an authorized `AWS_PROFILE`; the independent
@@ -180,23 +182,26 @@ record `us-east-1` for the Claude and NVIDIA arms, match the GPT-5.4-mini judge,
 authorize the $60 primary plus $60 judge caps. Its hash and contents become
 part of the frozen manifest.
 
-The human-sample target writes a condition/model-blinded packet and a separate
-private key. Two annotators use the resumable terminal workflow independently;
-a third reviewer receives only disagreements and blinded annotations. The
-finalizer writes the one-consensus-label-per-response file consumed by
-`make analyze` and `make human-sensitivity`. The full analysis uses all 1,800
-frozen model-judge labels; the sensitivity target uses the 270 human-consensus
-labels, authenticates their response IDs against the frozen private sample
-key and manifest, and reports post-freeze descriptive clustered-bootstrap
-differences without confirmatory p-values. Those intervals are conditional on
-the selected 270-response sample rather than population-level confirmatory
-confidence intervals.
+The full v0.2.0 analysis uses all 1,800 frozen model-judge labels. No human
+annotations, human--human agreement, model--human agreement, or human-label
+sensitivity results are claimed for this release.
 
-After the human and author-review gates pass, `make final-release-all` builds
-two deterministic artifacts: a clean committed source snapshot and a
-disclosure-aware scientific-results ZIP. The results ZIP omits provider
-request IDs, retry-error details, the private sample key, independent
-annotator files, and private execution-environment identifiers.
+The human-sample and annotation commands remain available as an optional
+future validation workflow. If used later, they create a condition/model-
+blinded packet, independent labels, disagreement adjudication, consensus
+labels, agreement estimates, and descriptive human-label sensitivity
+intervals. Those future results are not part of v0.2.0.
+
+```bash
+make human-sample RUN_ID=confirmatory-20260910-v1
+```
+
+For the authorized v0.2.0 release, `make model-only-release-all` builds the
+final source ZIP and sanitized model-judge-only results ZIP.
+`make model-only-release-wheel` builds the wheel from that final source ZIP.
+All model-output dispositions are approved for release. Raw provider request
+IDs are removed, as are retry-error details, the private sample key,
+credentials, local paths, and private execution-environment identifiers.
 
 ## Research integrity
 
@@ -205,7 +210,10 @@ annotator files, and private execution-environment identifiers.
 - Hypotheses and exclusion rules are frozen before paid runs.
 - The manifest records author signoff and hashes every collection/scoring config.
 - Deviations from the protocol are recorded rather than silently incorporated.
-- Raw responses, labels, and analysis code will be released with the paper where provider terms permit.
+- Model outputs, frozen model-judge labels, and analysis code are approved for
+  release; raw provider request IDs are removed.
+- All empirical claims must state that v0.2.0 is model-judge-only and not
+  human-validated.
 
 ## Status
 
@@ -235,17 +243,18 @@ annotator files, and private execution-environment identifiers.
 - [x] OpenAI paid arm complete: 600/600 canonical responses
 - [x] Frozen GPT-5.4-mini judge complete: 1,800/1,800 labels
 - [x] Full-corpus clustered analysis, three figures, and ablation table complete
-- [ ] Human annotation completed
-- [x] Preliminary model-judge results inserted into the paper
-- [ ] Human-validated final results inserted into the paper
+- [x] Model-judge-only v0.2.0 publication authorized by Junru Zhu
+- [x] All model-output dispositions approved; request IDs set to removed
+- [x] Model-judge results inserted into the paper
+- [ ] Optional future human annotation and validation
 
 The completed NVIDIA collection and explicitly exploratory self-judge
 analysis are summarized in `docs/nvidia_arm_report.md`. The report does not
-substitute those labels for the frozen independent judge or human validation.
+substitute those labels for the frozen independent judge.
 The completed Claude collection and cost/recovery audit are summarized in
 `docs/claude_arm_report.md`.
 The completed OpenAI collection and retry/cost audit are summarized in
 `docs/openai_arm_report.md`.
-The frozen judge, recovery audit, cost, and preliminary full-corpus estimates
-are summarized in `docs/model_judge_report.md`. Those estimates remain
-explicitly pending human validation.
+The frozen judge, recovery audit, cost, and full-corpus estimates are
+summarized in `docs/model_judge_report.md`. They are released as
+model-judge-only findings and are not human-validated.

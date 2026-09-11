@@ -1,11 +1,11 @@
-# Frozen Model-Judge and Preliminary Analysis Report
+# Frozen Model-Judge Analysis Report
 
 **Run ID:** `confirmatory-20260910-v1`  
 **Scoring completed:** 2026-09-11  
 **Frozen judge:** `gpt-5.4-mini`  
 **Resolved model snapshot:** `gpt-5.4-mini-2026-03-17`  
 **Scientific status:** Full-corpus confirmatory model-judge analysis complete;
-human validation remains pending.
+v0.2.0 is model-judge-only and not human-validated.
 
 ## Coverage and cost
 
@@ -33,7 +33,7 @@ No repair silently changed a stable boolean decision. Raw outputs, validation
 errors, repair audits, call counts, spend, and hashes remain in the local,
 git-ignored run directory.
 
-## Preliminary full-corpus estimates
+## Full-corpus model-judge estimates
 
 These estimates use the frozen model judge over all 1,800 responses. Brackets
 are 95% hierarchical bootstrap intervals over 100 base-task clusters.
@@ -82,11 +82,15 @@ Local paths:
 - `results/confirmatory-20260910-v1/judge-recovery/`
 - `results/confirmatory-20260910-v1/analysis-model-judge/`
 
-## Remaining scientific gate
+## Human-validation limitation
 
-The preregistered 270-response packet was selected before model-judge labels
-were inspected and remains condition/model blinded. Two independent human
-annotators must label the packet, disagreements must receive blinded
-adjudication, and agreement must be reported for all six labels. Until that
-step is complete, the estimates above are full-corpus model-judge findings,
-not human-validated final claims.
+On 2026-09-11, author Junru Zhu decided to omit human validation from v0.2.0
+and authorized publication with this limitation. The estimates above are
+model-judge-only and not human-validated. No human annotations, human--human
+agreement, model--human agreement, or human-label sensitivity estimates are
+reported.
+
+This choice shortens the release timeline but leaves systematic model-judge
+bias as an unresolved threat to validity. The preregistered 270-response
+packet remains condition/model blinded and may be annotated in a future
+validation extension.

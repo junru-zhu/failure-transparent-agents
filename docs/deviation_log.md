@@ -1,7 +1,10 @@
 # Confirmatory Deviation Log
 
 All three primary model arms completed on 2026-09-10. Frozen model scoring
-completed on 2026-09-11; human validation remains pending.
+completed on 2026-09-11. Version 0.2.0 is authorized as model-judge-only and
+is not human-validated. Earlier entries describing human validation as
+pending reflect the status at the time and are superseded by the final entry
+below.
 
 After author freeze, append one entry per change:
 
@@ -16,6 +19,7 @@ After author freeze, append one entry per change:
 | 2026-09-11 | 2026-09-10.v6 | scoring | The frozen GPT-5.4-mini judge scored all 1,800 responses. Strict evidence-span validation left 169 first-pass errors; same-model targeted retries recovered 120, stable-boolean span-only repair recovered 37, final adjudication recovered 10, and two final records received audited span-only repair after repeated same-model judgments. | Exact substring evidence requirements exposed Markdown and punctuation mismatches even when boolean judgments were stable. | Full coverage was obtained without changing the frozen rubric or silently changing stable boolean decisions. Repair logs and hashes are retained for audit; human validation remains required. | Junru Zhu |
 | 2026-09-11 | post-freeze implementation | analysis | Added a separate human-consensus sensitivity command, exact authentication against the frozen 270-response sample key and manifest, a fail-closed final publication gate, and separate clean-source and sanitized-results release builders; corrected the reproduction target to use the complete 1,800-record frozen judge file rather than the incomplete strict first-pass file. | The planned human-only sensitivity analysis had no dedicated executable path, the Make target still referenced the 1,631-record first-pass label file after audited recovery completed, and the frozen source-candidate release audit did not represent final scientific or publication authorization. | No frozen source file, provider response, judge decision, or full-corpus confirmatory estimate changed. The human-subset comparison is explicitly post-freeze and descriptive, is conditional on the selected sample, uses a base-task cluster bootstrap, and reports no confirmatory p-values. Final bundles remain blocked pending real human labels and author approval. | Pending author review |
 | 2026-09-11 | post-freeze methods disclosure | presentation | Revised the paper's statistical-analysis text to state that the executable human-sensitivity estimator was implemented after the confirmatory freeze, is descriptive and conditional on the selected sample, omits confirmatory p-values, and does not reproduce the original without-replacement sampling stage. Recompiled and visually reviewed the eight-page PDF. | Independent audit identified that the prior paper wording could be read as preregistering the exact post-freeze estimator. | No data, labels, estimates, figures, hypotheses, or frozen analysis changed; the revision narrows and clarifies the eventual human-sensitivity claim. | Pending author review |
+| 2026-09-11 | v0.2.0 | presentation | Author Junru Zhu decided to omit human annotation and validation from v0.2.0 and authorized a public model-judge-only release. All model-output dispositions are approved, raw provider request IDs are removed, and the human workflow is retained only as an optional future validation path. | Accelerate public release using the already complete 1,800-response frozen model-judge result set. | No primary response, model-judge label, estimate, figure, or hypothesis changed. The release is not human-validated, reports no human agreement or human-label sensitivity, and remains vulnerable to systematic model-judge bias; absolute rates and inferential conclusions must be interpreted accordingly. | Junru Zhu |
 
 Stages are `collection`, `scoring`, `analysis`, or `presentation`. Never edit or
 delete an earlier entry; corrections receive a new row.

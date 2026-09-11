@@ -1,17 +1,20 @@
 {
   "schema_version": "1.0",
-  "status": "pending",
-  "approved_by": "",
-  "approved_at": null,
-  "version_tag": "",
+  "status": "approved",
+  "approved_by": "Junru Zhu",
+  "approved_at": "2026-09-11T00:00:00-07:00",
+  "version_tag": "v0.2.0",
+  "release_mode": "model_judge_only",
+  "human_validation_status": "not_conducted",
+  "model_judge_only_release_authorized": true,
   "human_validation_reviewed": false,
-  "github_release_authorized": false,
-  "raw_request_ids_disposition": "pending",
+  "github_release_authorized": true,
+  "raw_request_ids_disposition": "removed",
   "provider_output_dispositions": {
-    "openai_judge": "pending",
-    "openai_primary_bedrock": "pending",
-    "anthropic_bedrock": "pending",
-    "nvidia_bedrock": "pending"
+    "openai_judge": "approved_for_release",
+    "openai_primary_bedrock": "approved_for_release",
+    "anthropic_bedrock": "approved_for_release",
+    "nvidia_bedrock": "approved_for_release"
   },
-  "notes": "Approve only after real human consensus, sensitivity analysis, provider-output review, request-ID review, final version selection, and release-note review."
+  "notes": "Author explicitly authorized immediate publication using the frozen 1,800 model-judge labels without human annotation. All artifacts must state that the results are not human-validated."
 }

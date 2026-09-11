@@ -89,11 +89,15 @@ Judge outputs preserve raw JSON, schema failures, retries, token usage, latency,
 request IDs, and spend. The tested model and condition are omitted from each
 judge prompt.
 
-## 6. Select and annotate the human sample
+## 6. Optional future human validation
 
 ```bash
 make human-sample RUN_ID="$FTA_RUN_ID"
 ```
+
+Version 0.2.0 does not include human annotations and is not human-validated.
+The following workflow is retained for an optional future validation release;
+it is not required to reproduce the v0.2.0 model-judge-only findings.
 
 Give annotators only `human_sample_blinded.jsonl`. Keep
 `human_sample_key.jsonl` hidden until labels are final.
@@ -142,11 +146,10 @@ human--human agreement and hash-addressed adjudication manifests.
 
 ```bash
 make analyze RUN_ID="$FTA_RUN_ID"
-make human-sensitivity RUN_ID="$FTA_RUN_ID"
 ```
 
 The full-corpus target uses the complete frozen model-judge label set and
-reports model--human agreement on the 270 consensus labels. Outputs include:
+produces the v0.2.0 results. Outputs include:
 
 - joined labeled JSONL;
 - rates and paired comparisons as CSV;
@@ -158,7 +161,8 @@ reports model--human agreement on the 270 consensus labels. Outputs include:
 The default analysis uses 10,000 hierarchical bootstrap draws and 100,000
 sign-flip draws with seed `20260910`.
 
-The separate human-sensitivity target uses only the 270 human-consensus
+If optional real human labels are collected later, the separate
+human-sensitivity target uses only the 270 human-consensus
 responses. It first requires an exact ID and hash match against the frozen
 `human_sample_key.jsonl` and `human_sample_manifest.json`. Because the
 stratified sample does not necessarily retain complete response-level pairs
@@ -168,12 +172,16 @@ are conditional on the selected sample and do not reproduce the original
 without-replacement sampling stage. It also requires complete 270/270
 agreement coverage for all six labels against the frozen model judge.
 
-## 8. Audit and build the release candidate
+```bash
+make human-sensitivity RUN_ID="$FTA_RUN_ID"
+```
+
+## 8. Audit and build the release artifacts
 
 ```bash
 make release-audit
-make release-bundle
-make release-wheel
+make model-only-release-all RUN_ID="$FTA_RUN_ID"
+make model-only-release-wheel
 ```
 
 The audit validates metadata consistency, the benchmark hash, the public file
@@ -186,36 +194,33 @@ Before freeze, `local_release_ready` can be true while
 `publication_ready` remains false. The remaining publication blockers and
 post-publication DOI updates are listed explicitly in the JSON report.
 
-`make release-audit` and `make release-bundle` produce a source release
-candidate. They do not authorize publication. After real human validation and
-the provider/request-ID review, complete `data/publication_approval.json` and
-run `make final-publication-gate` before a final tag or GitHub release. The
-legacy `release.py --require-publication-ready` flag reflects only the frozen
-source-candidate audit and must not be used as final scientific authorization.
-Use:
+For v0.2.0, author Junru Zhu provided explicit GitHub publication
+authorization on 2026-09-11. All model-output dispositions are approved and
+the request-ID disposition is `removed`. Build the final source and
+scientific-results artifacts with:
 
 ```bash
-make final-release-all RUN_ID="$FTA_RUN_ID" \
-  HUMAN_FIRST_LABELS="results/$FTA_RUN_ID/human/human_labels-human-a.jsonl" \
-  HUMAN_SECOND_LABELS="results/$FTA_RUN_ID/human/human_labels-human-b.jsonl"
+make model-only-release-all RUN_ID="$FTA_RUN_ID"
+make model-only-release-wheel
 ```
 
-This command reruns the fail-closed scientific gate, requires a clean fully
-tracked Git snapshot for the source ZIP, performs an expanded private-data
-scan, and builds a separate sanitized results ZIP. The results bundle includes
-authorized model responses, parsed labels, human consensus labels, aggregate
-agreement, analysis tables, and figures. It never includes the private sample
-key, independent annotator files, raw provider request IDs, or retry errors.
+The model-only results bundle includes authorized model responses, frozen
+model-judge labels, analysis tables, and figures. It never includes human
+labels, the private sample key, raw provider request IDs, retry errors,
+credentials, local paths, or private execution-environment identifiers.
+
+The separate `make final-release-all` path remains available for a future
+release after real human labels, agreement, and sensitivity outputs exist.
 
 ## 9. Build the release wheel
 
-`make release-wheel` is the supported release build. It builds from the exact
-audited candidate ZIP in a temporary clean tree, sets a stable
+`make model-only-release-wheel` is the v0.2.0 release build. It builds from
+the exact audited final source ZIP in a temporary clean tree, sets a stable
 `SOURCE_DATE_EPOCH`, verifies the console scripts, and rejects local debris
 before writing the wheel and checksum to `dist/`. The selected interpreter
 must have `setuptools==75.8.0`; use
-`make release-wheel WHEEL_PYTHON=python3.11` if that is the prepared build
-environment.
+`make model-only-release-wheel WHEEL_PYTHON=python3.11` if that is the
+prepared build environment.
 
 For a non-release development wheel only, run:
 
@@ -235,6 +240,5 @@ tectonic paper/main.tex --outdir paper --keep-logs
 qpdf --check paper/main.pdf
 ```
 
-The freeze-candidate source compiles to six pages. Before submission, inspect
-every rendered page again after replacing result placeholders with final
-figures and tables.
+The v0.2.0 source compiles to eight pages. Before submission, inspect every
+rendered page after any paper change.

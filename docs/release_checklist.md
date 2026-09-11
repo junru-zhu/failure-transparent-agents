@@ -7,18 +7,21 @@
 - [x] No confirmatory output was inspected before hypotheses and rubric froze.
 - [x] Provider failures and exclusions are published.
 - [x] Human sample was selected before model-judge labels were inspected.
-- [ ] Two independent human files, human--human agreement, blinded
-      adjudication, and the consensus manifest are published.
-- [ ] Agreement is reported for all six labels.
-- [x] Preliminary claims match model-judge effect sizes and confidence intervals.
+- [x] Junru Zhu authorized omission of human validation from v0.2.0 on
+      2026-09-11.
+- [x] Claims are explicitly model-judge-only and not human-validated.
+- [ ] Optional future human files, agreement, adjudication, and consensus
+      artifacts are published in a later validation release.
+- [x] Claims match model-judge effect sizes and confidence intervals.
 - [x] The paper says 100 distinct synthetic tasks and does not overstate the
       descriptive pressure comparison.
 
 ## Privacy, policy, and secrets
 
 - [x] `rg` finds no API keys, bearer tokens, private URLs, or employer data.
-- [ ] Provider terms permit release of model outputs.
-- [ ] Raw request IDs are reviewed for disclosure risk.
+- [x] All model-output dispositions are approved for release.
+- [x] Raw request IDs have disposition `removed` and are excluded from public
+      artifacts.
 - [x] All entities and values remain fictional.
 
 ## Software and data
@@ -46,7 +49,8 @@
 - [x] Author list and order are confirmed; affiliation and contribution text
       remain to be added if required by the submission venue.
 - [x] Repository owner/name and public visibility are approved.
-- [ ] Git tag and release notes are approved.
+- [x] v0.2.0 tag and release notes are approved.
+- [x] Explicit GitHub release authorization is recorded.
 - [ ] Zenodo archive is created from the exact GitHub release.
 - [ ] DOI is inserted into README, citation metadata, and paper.
 - [ ] arXiv category, abstract, and source bundle are reviewed.
@@ -54,27 +58,25 @@
 
 External publication is never performed by the harness.
 
-`make release-audit` validates the source release candidate only. It does not
-substitute for the scientific or authorization checks above. Before creating a
-final tag, run:
+`make release-audit` validates the source release candidate only. For the
+authorized v0.2.0 model-judge-only release, build the final source and
+sanitized results artifacts with:
 
 ```bash
-make final-publication-gate RUN_ID=<run> \
-  HUMAN_FIRST_LABELS=<first-human-file> \
-  HUMAN_SECOND_LABELS=<second-human-file>
+make model-only-release-all RUN_ID=confirmatory-20260910-v1
+make model-only-release-wheel
 ```
 
-The final gate fails closed until real human labels, six-label agreement,
-adjudication/consensus manifests, human sensitivity outputs, request-ID
-disposition, provider-output dispositions, version approval, and explicit
-GitHub release authorization are present.
+The v0.2.0 approval requires all model-output dispositions to be approved and
+raw request IDs to be removed. It does not assert that human validation was
+performed. The human-label final publication gate remains available for a
+future human-validated release.
 
-- [ ] Run `make final-release-all`, not the legacy source-only
-  `--require-publication-ready` option.
+- [ ] Run `make model-only-release-all` and `make model-only-release-wheel`.
 - [ ] Confirm the source worktree is clean and every packaged source file is
   tracked in the release commit.
-- [ ] Inspect the results-bundle manifest and verify the expected 1,800 public
-  labeled responses, or document every provider arm excluded by approval.
+- [ ] Inspect the results-bundle manifest and verify 1,800 public responses
+  with 1,800 frozen model-judge labels.
 - [ ] Confirm the results ZIP contains no request IDs, retry errors, private
-  sample key, independent annotator files, credentials, local user paths, or
-  private execution-environment identifiers.
+  sample key, human annotation files, credentials, local user paths, or private
+  execution-environment identifiers.

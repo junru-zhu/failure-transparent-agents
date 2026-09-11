@@ -6,6 +6,7 @@ RESULT_ROOT := results/$(RUN_ID)
 VALIDATION_OUTPUT_DIR ?= results/full-scale-validation
 RELEASE_OUTPUT_DIR ?= dist
 RELEASE_ARCHIVE ?= $(RELEASE_OUTPUT_DIR)/failure-transparent-agents-0.2.0-release-candidate.zip
+MODEL_ONLY_RELEASE_ARCHIVE ?= $(RELEASE_OUTPUT_DIR)/failure-transparent-agents-0.2.0-release.zip
 RESUME ?=
 WORKERS ?= 4
 HUMAN_FIRST_LABELS ?= $(RESULT_ROOT)/human/human_labels-human-a.jsonl
@@ -22,7 +23,9 @@ RAW_ARGS := --raw $(RESULT_ROOT)/primary/openai/raw_results.jsonl \
 	judge human-sample annotate-human prepare-adjudication \
 	annotate-adjudication finalize-adjudication analyze human-sensitivity \
 	release-audit final-publication-gate release-bundle final-release-bundle \
-	final-results-bundle final-release-all release-wheel clean
+	final-results-bundle model-only-source-bundle model-only-results-bundle \
+	model-only-release-all final-release-all release-wheel \
+	model-only-release-wheel clean
 
 test:
 	PYTHONPATH=$(PYTHONPATH) $(PYTHON) -m unittest discover -s tests -v
@@ -174,6 +177,11 @@ release-bundle:
 	PYTHONPATH=$(PYTHONPATH) $(PYTHON) -m failure_transparent_agents.release \
 		--output-dir $(RELEASE_OUTPUT_DIR)
 
+model-only-source-bundle:
+	PYTHONPATH=$(PYTHONPATH) $(PYTHON) -m failure_transparent_agents.release \
+		--output-dir $(RELEASE_OUTPUT_DIR) \
+		--require-publication-ready
+
 final-release-bundle:
 	PYTHONPATH=$(PYTHONPATH) $(PYTHON) -m failure_transparent_agents.final_release \
 		--root $(CURDIR) \
@@ -192,11 +200,26 @@ final-results-bundle:
 		--approval $(PUBLICATION_APPROVAL) \
 		--output-dir $(RELEASE_OUTPUT_DIR)
 
+model-only-results-bundle:
+	PYTHONPATH=$(PYTHONPATH) $(PYTHON) -m failure_transparent_agents.model_only_release \
+		--root $(CURDIR) \
+		--results-root $(RESULT_ROOT) \
+		--approval $(PUBLICATION_APPROVAL) \
+		--output-dir $(RELEASE_OUTPUT_DIR)
+
+model-only-release-all: model-only-source-bundle model-only-results-bundle
+
 final-release-all: final-release-bundle final-results-bundle
 
 release-wheel: release-bundle
 	PYTHONPATH=$(PYTHONPATH) $(PYTHON) -m failure_transparent_agents.release \
 		--wheel-from-archive $(RELEASE_ARCHIVE) \
+		--wheel-python $(WHEEL_PYTHON) \
+		--output-dir $(RELEASE_OUTPUT_DIR)
+
+model-only-release-wheel: model-only-source-bundle
+	PYTHONPATH=$(PYTHONPATH) $(PYTHON) -m failure_transparent_agents.release \
+		--wheel-from-archive $(MODEL_ONLY_RELEASE_ARCHIVE) \
 		--wheel-python $(WHEEL_PYTHON) \
 		--output-dir $(RELEASE_OUTPUT_DIR)
 

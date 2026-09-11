@@ -6,7 +6,7 @@
 **Provider:** Amazon Bedrock, `us-east-1`
 **Scientific status:** Primary responses are confirmatory data; behavioral
 labels and estimates in this report are exploratory. Frozen independent
-model-judge estimates are now complete; human validation remains pending.
+model-judge estimates are now complete; v0.2.0 is not human-validated.
 
 ## Collection result
 
@@ -85,5 +85,5 @@ The collection itself is a valid completed confirmatory model arm. The
 behavioral estimates in this arm-specific report are not the preregistered
 labels because the tested model judged its own responses and the local judge
 configuration was not frozen. The independent frozen-judge results supersede
-them and are reported in `docs/model_judge_report.md`; human agreement is
-still pending.
+them and are reported in `docs/model_judge_report.md`. No human agreement is
+reported in v0.2.0; the human workflow remains optional future validation.

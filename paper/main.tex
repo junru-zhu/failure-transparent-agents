@@ -29,20 +29,22 @@ databases, and authorization boundaries. When a required dependency fails, an
 agent should distinguish what it observed from what it could not verify. We
 introduce \datasetname, a provider-neutral benchmark for measuring whether
 agents disclose failed prerequisites or instead claim unsupported completion
-and fabricate observations. The freeze-candidate benchmark contains 100
+and fabricate observations. The released benchmark contains 100
 semantically distinct tasks, balanced across five user-pressure types and
 unavailable web access, missing attachments, failed
 execution, permission denial, and stale data. We compare an ordinary baseline,
 an explicit failure-transparency instruction, and a structured evidence
 contract on one OpenAI, one Anthropic, and one NVIDIA/open-weight model, with
 two repetitions per cell (1,800 primary responses). A blinded model judge is
-validated against a preregistered 270-response human sample. Analysis uses
-base-task clustered bootstrap intervals, paired effects, and sign-flip tests.
-All 1,800 primary responses and model-judge labels are complete. Model-judge
-estimates reduce false success from 32.0\% at baseline to 11.8\% with the
-transparency instruction and 1.3\% with the evidence contract. These numerical
-results remain preliminary until the frozen human sample establishes
-judge--human agreement and supports a human-label sensitivity analysis.
+used to label all responses. A preregistered 270-response human-validation
+sample was frozen before model-judge labels were inspected, but it was not
+human annotated. Analysis uses base-task clustered bootstrap intervals, paired
+effects, and sign-flip tests. All 1,800 primary responses and model-judge
+labels are complete. Model-judge estimates reduce false success from 32.0\% at
+baseline to 11.8\% with the transparency instruction and 1.3\% with the
+evidence contract. The v0.2.0 findings are model-judge-only and not
+human-validated; this release reports no human--human or model--human agreement
+and no human-label sensitivity analysis.
 \end{abstract}
 
 \section{Introduction}
@@ -86,7 +88,7 @@ Our contributions are:
   Anthropic, and OpenAI-compatible adapters, hard dollar/call caps, retries,
   and resumable audit artifacts;
   \item a condition-blinded annotation contract, model-judge runner, and
-  stratified human-validation design; and
+  frozen stratified sample for future human validation; and
   \item a preregistered clustered analysis that reports false success,
   fabrication, transparency, usefulness, latency, and cost.
 \end{enumerate}
@@ -156,7 +158,7 @@ Model families & 3 \\
 Repetitions & 2 \\
 \midrule
 Primary responses & 1,800 \\
-Human validation sample & 270 \\
+Frozen human-validation sample (unlabeled) & 270 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -271,7 +273,7 @@ value, selecting either unsupported forced-choice option, presenting stale
 data as current, or making a hedged numerical guess counts as fabrication.
 Quoting a stale value with its date does not.
 
-\subsection{Blinded model and human annotation}
+\subsection{Blinded model annotation and frozen human sample}
 
 The model judge sees the request, tool failure, required evidence, safe partial
 help, and assistant response. It does not receive tested model, provider,
@@ -285,12 +287,12 @@ Before judge labels are inspected, 270 responses are selected deterministically
 for human annotation. Allocation balances model--condition--category strata
 and pressure within each stratum. With all planned responses present, each of
 the 45 primary strata contributes six responses and every pressure type
-contributes 54. Two human annotators independently label all 270 responses
-using the same rubric. We report human--human raw agreement and Cohen's
-$\kappa$ for each label; $\kappa$ is undefined when constant marginals make it
-unidentifiable. A third blinded reviewer labels every response with any binary
-disagreement. Exact agreements and adjudicated decisions form one consensus
-label per response for the model--human agreement analysis.
+contributes 54. The sample was frozen for a planned two-annotator validation
+with blinded adjudication, but no human annotations were collected for
+v0.2.0. Consequently, this release reports neither human--human nor
+model--human agreement, and it does not report a human-label sensitivity
+analysis. The absence of these measurements is a limitation of the released
+evidence, not validation of the model judge.
 
 \section{Statistical Analysis}
 
@@ -310,17 +312,15 @@ and evidence-contract versus baseline for false success and fabrication.
 Secondary tests and interactions are descriptive. Provider errors are
 excluded from behavioral denominators but reported separately.
 
-The main analysis uses model-judge labels for full coverage. Agreement between
-the judge and humans is reported as a measurement-quality result; it does not
-establish that the judge is correct. The protocol also planned a
-human-label-only sensitivity analysis on the 270-response sample. Its
-executable estimator was implemented after the confirmatory freeze and is
-therefore reported explicitly as post-freeze and descriptive. It authenticates
-the exact frozen sample, uses a base-task cluster bootstrap conditional on the
-selected responses, and reports no confirmatory $p$-values; the intervals do
-not reproduce the original without-replacement sampling stage. We publish
-numerator, denominator, and missingness for every rate so that readers can
-separate behavioral outcomes from provider availability.
+The released analysis uses model-judge labels for full coverage. The frozen
+270-response sample was not annotated, so no human--human or model--human
+agreement is available and the planned human-label-only sensitivity analysis
+was not run. Accordingly, model-judge labels should be treated as an
+unvalidated measurement instrument rather than a human-verified reference.
+This limitation does not alter the reported denominators or estimates, but it
+does limit confidence in their measurement validity. We publish numerator,
+denominator, and missingness for every rate so that readers can separate
+behavioral outcomes from provider availability.
 
 One hundred task clusters offer limited precision for rare events and
 high-order interactions. We therefore avoid post-hoc subgroup significance
@@ -332,10 +332,10 @@ seed, while raw records permit independent reruns with other seeds.
 
 \section{Results}
 
-\textbf{The results in this section use the frozen model judge and remain
-pending human validation.} All three model arms completed 600 responses with
-no canonical provider errors, yielding 1,800 responses. The judge produced
-1,800 schema-valid labels. Its main and recovery calls cost \$3.6895, plus a
+\textbf{The v0.2.0 results in this section are model-judge-only and not
+human-validated.} All three model arms completed 600 responses with no
+canonical provider errors, yielding 1,800 responses. The judge produced 1,800
+schema-valid labels. Its main and recovery calls cost \$3.6895, plus a
 \$0.00004 smoke test.
 
 At baseline, false success occurred in 32.0\% of responses (clustered 95\% CI
@@ -357,8 +357,8 @@ $p$-value was $4.0\times10^{-5}$.
 \includegraphics[width=0.92\linewidth]{figures/figure1_false_success_by_model.pdf}
 \caption{Model-judge false-success rates and base-task clustered 95\%
 intervals. The evidence contract was consistently strongest; the plain
-transparency instruction was less effective for Nemotron. Human validation is
-pending.}
+transparency instruction was less effective for Nemotron. These estimates are
+not human-validated.}
 \label{fig:false-success}
 \end{figure}
 
@@ -372,7 +372,8 @@ responses rose from 69.8\% to 90.2\% and 98.3\%, while over-refusal was 0.0\%,
 \includegraphics[width=0.92\linewidth]{figures/figure2_transparency_and_utility.pdf}
 \caption{Model-judge disclosure, recovery, usefulness, and over-refusal rates
 with clustered 95\% intervals. Essential values are printed directly on the
-bars; no interactive decoding is required. Human validation is pending.}
+bars; no interactive decoding is required. These estimates are not
+human-validated.}
 \label{fig:utility}
 \end{figure}
 
@@ -387,13 +388,14 @@ The evidence contract reduced these rates to 6.7\% and 0.0\%
 \includegraphics[width=0.92\linewidth]{figures/figure3_pressure_ablation.pdf}
 \caption{Descriptive false-success rates by user-pressure type. Pressure is
 balanced across task categories but may remain confounded with task content.
-Human validation is pending.}
+These estimates are not human-validated.}
 \label{fig:pressure}
 \end{figure}
 
-The final revision will report human--human and judge--consensus agreement and
-a human-label-only sensitivity analysis. Claims are restricted to the tested
-models and synthetic benchmark rather than ``LLM agents'' in general.
+This release reports no human--human or model--human agreement and no
+human-label sensitivity analysis because the frozen sample was not annotated.
+Claims are restricted to the tested models and synthetic benchmark rather than
+``LLM agents'' in general.
 
 \section{Limitations and Ethics}
 
@@ -406,10 +408,13 @@ and organizational consequences. Hidden provider instructions and changing
 dateless model aliases may confound cross-provider comparisons.
 
 The main judge shares a model family with one tested arm, so correlated
-judgment errors are plausible. Blinding, verbatim evidence, and human
-validation reduce but do not eliminate this risk. Structured output may also
-make the evidence-contract condition easier to annotate independent of any
-underlying epistemic improvement.
+judgment errors are plausible. Blinding and verbatim evidence improve
+auditability but do not validate the judge. Because the frozen 270-response
+sample was not human annotated, v0.2.0 cannot quantify human--human or
+model--human agreement or test whether conclusions are robust to human labels.
+This is a limitation, not evidence of judge validity. Structured output may
+also make the evidence-contract condition easier to annotate independent of
+any underlying epistemic improvement.
 
 The tasks contain no real personal, employer, financial, medical, or security
 data. The benchmark does not encourage bypassing permissions; recovery for
@@ -426,7 +431,9 @@ versioned prompts, direct provider adapters, offline cost preflight, resumable
 runner, strict judge, blinded sampler, resumable human annotation, blinded
 adjudication, label schema, analysis code, standalone SVG figures, and LaTeX
 table. Runtime code uses only the Python standard library. Unit tests and
-dataset checks run on Python 3.12.
+dataset checks run on Python 3.12. The v0.2.0 results contain all 1,800 frozen
+model-judge labels but no human annotations; the human workflow and frozen
+270-response sample are included for future validation.
 
 Author freeze records SHA-256 hashes for the dataset, protocol, annotation
 guide, judge prompt, condition prompts, provider configs, and judge configs.
@@ -446,7 +453,9 @@ not turn an unavailable prerequisite into a claimed observation.
 \datasetname{} provides a reproducible way to measure that contract across
 common failure types, user pressure, model families, and inexpensive prompt
 mitigations. Confirmatory collection and frozen model judging are complete;
-final empirical conclusions await preregistered blinded human validation.
+the v0.2.0 findings are model-judge-only and not human-validated. The frozen
+270-response sample was not annotated, so human agreement and human-label
+sensitivity remain unmeasured limitations rather than supporting validation.
 
 \begin{thebibliography}{9}
 

@@ -3,10 +3,14 @@ from pathlib import Path
 import shutil
 import tempfile
 import unittest
+from unittest.mock import patch
 import zipfile
 
 from failure_transparent_agents.full_scale_validation import (
     run_full_scale_validation,
+)
+from failure_transparent_agents.model_only_release import (
+    build_model_only_results_bundle,
 )
 from failure_transparent_agents.publication_gate import (
     audit_final_publication,
@@ -47,6 +51,114 @@ class PublicationGateTest(unittest.TestCase):
                     output / f"raw_{fixture_name}.jsonl",
                     arm_dir / "raw_results.jsonl",
                 )
+            shutil.copytree(
+                output / "analysis",
+                output / "analysis-model-judge",
+            )
+
+            model_only_source = Path(directory) / "model-only-source"
+            (model_only_source / "paper").mkdir(parents=True)
+            (model_only_source / "paper" / "main.tex").write_text(
+                "These results are not human-validated.\n",
+                encoding="utf-8",
+            )
+            model_only_approval_path = (
+                Path(directory) / "model_only_publication_approval.json"
+            )
+            model_only_approval = {
+                "schema_version": "1.0",
+                "status": "approved",
+                "approved_by": "Test Author",
+                "approved_at": "2026-09-11T12:00:00-07:00",
+                "version_tag": "v0.2.0",
+                "release_mode": "model_judge_only",
+                "human_validation_status": "not_conducted",
+                "model_judge_only_release_authorized": True,
+                "github_release_authorized": True,
+                "raw_request_ids_disposition": "removed",
+                "provider_output_dispositions": {
+                    "openai_judge": "approved_for_release",
+                    "openai_primary_bedrock": "approved_for_release",
+                    "anthropic_bedrock": "approved_for_release",
+                    "nvidia_bedrock": "approved_for_release",
+                },
+                "notes": "Synthetic model-judge-only test approval.",
+            }
+            model_only_approval_path.write_text(
+                json.dumps(model_only_approval),
+                encoding="utf-8",
+            )
+            with patch(
+                "failure_transparent_agents.model_only_release.audit_release",
+                return_value={"errors": [], "version": "0.2.0"},
+            ):
+                model_only_release = build_model_only_results_bundle(
+                    source_root=model_only_source,
+                    results_root=output,
+                    approval_path=model_only_approval_path,
+                    output_dir=Path(directory) / "dist-model-only",
+                )
+            self.assertEqual(
+                1800,
+                model_only_release["public_labeled_responses"],
+            )
+            with zipfile.ZipFile(model_only_release["archive"]) as archive:
+                archive_names = archive.namelist()
+                manifest_name = next(
+                    name
+                    for name in archive_names
+                    if name.endswith("/publication-manifest.json")
+                )
+                manifest = json.loads(archive.read(manifest_name))
+                self.assertEqual(
+                    "model_judge_only_not_human_validated",
+                    manifest["scientific_status"],
+                )
+                self.assertFalse(manifest["human_annotations_included"])
+                self.assertEqual(
+                    1800,
+                    manifest["public_labeled_responses"],
+                )
+                labeled_name = next(
+                    name
+                    for name in archive_names
+                    if name.endswith("/analysis/labeled_results.jsonl")
+                )
+                public_rows = [
+                    json.loads(line)
+                    for line in archive.read(labeled_name).splitlines()
+                    if line
+                ]
+                self.assertEqual(1800, len(public_rows))
+                self.assertTrue(
+                    all(
+                        row["model_judge_label"] is not None
+                        and row["human_consensus_label"] is None
+                        for row in public_rows
+                    )
+                )
+                self.assertEqual(
+                    [labeled_name],
+                    [
+                        name
+                        for name in archive_names
+                        if name.endswith(".jsonl")
+                    ],
+                )
+                for name in archive_names:
+                    self.assertNotIn(
+                        b"provider_request_id",
+                        archive.read(name),
+                    )
+                self.assertFalse(
+                    any(
+                        "human_sample_key" in name
+                        or "/human/" in name
+                        or "/human_validation/" in name
+                        for name in archive_names
+                    )
+                )
+
             run_human_sensitivity(
                 raw_paths=[
                     output / "raw_fixture-openai.jsonl",
