@@ -1,7 +1,7 @@
 # Confirmatory Deviation Log
 
-All three primary model arms completed on 2026-09-10. Frozen scoring and human
-validation remain pending.
+All three primary model arms completed on 2026-09-10. Frozen model scoring
+completed on 2026-09-11; human validation remains pending.
 
 After author freeze, append one entry per change:
 
@@ -13,6 +13,7 @@ After author freeze, append one entry per change:
 | 2026-09-10 | 2026-09-10.v3 | collection | Replaced the Claude arm's direct Anthropic API transport with native Bedrock InvokeModel through the active `us.anthropic.claude-sonnet-5` US inference profile in an authorized AWS environment; retained the exact Claude Sonnet 5 model, Messages request semantics, output limit, retries, and $30 arm cap; updated the approved region to `us-east-1` and repeated verification and author freeze before collection. | The author requested AWS execution without creating or storing an Anthropic API key. | No expected model-family change. Cross-region inference may route among supported US Regions and is disclosed as a transport/environment deviation. | Junru Zhu |
 | 2026-09-10 | 2026-09-10.v4 | collection | Replaced the OpenAI arm's direct API transport with an authorized Bedrock OpenAI-compatible Responses endpoint and active `us.openai.gpt-5.6-terra` US geographic inference profile; retained GPT-5.6 Terra, Responses semantics, reasoning effort `none`, output limit, retries, and the $20 arm cap; updated the approved region and Bedrock prices and repeated tests, verification, and author freeze before collection. | The author requested AWS execution without storing an OpenAI API key for the primary model. | No expected base-model-family change. Geographic inference routing and the 10% Bedrock regional price premium are disclosed. | Junru Zhu |
 | 2026-09-10 | 2026-09-10.v5 | presentation | Generalized private execution-environment labels in all public research artifacts and test fixtures; no credential values were ever added. | The author required environment-neutral public documentation. | None on scenarios, prompts, models, collection, scoring, or analysis. | Junru Zhu |
+| 2026-09-11 | 2026-09-10.v6 | scoring | The frozen GPT-5.4-mini judge scored all 1,800 responses. Strict evidence-span validation left 169 first-pass errors; same-model targeted retries recovered 120, stable-boolean span-only repair recovered 37, final adjudication recovered 10, and two final records received audited span-only repair after repeated same-model judgments. | Exact substring evidence requirements exposed Markdown and punctuation mismatches even when boolean judgments were stable. | Full coverage was obtained without changing the frozen rubric or silently changing stable boolean decisions. Repair logs and hashes are retained for audit; human validation remains required. | Junru Zhu |
 
 Stages are `collection`, `scoring`, `analysis`, or `presentation`. Never edit or
 delete an earlier entry; corrections receive a new row.

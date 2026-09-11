@@ -5,7 +5,7 @@
 **Model:** `us.openai.gpt-5.6-terra`  
 **Provider:** Amazon Bedrock, `us-east-1`  
 **Scientific status:** Confirmatory primary-response collection complete;
-behavioral scoring remains pending.
+frozen full-corpus model-judge scoring complete; human validation pending.
 
 ## Cost estimate and actual cost
 
@@ -58,5 +58,6 @@ Local, git-ignored artifacts are under:
 
 - `results/confirmatory-20260910-v1/primary/openai/`
 
-The frozen GPT-5.4-mini judge and human-validation workflow have not yet scored
-these responses, so this report contains operational results only.
+The frozen GPT-5.4-mini judge has scored these responses. Cross-model
+behavioral results and their human-validation boundary are reported in
+`docs/model_judge_report.md`.

@@ -6,6 +6,7 @@
 \usepackage{xcolor}
 \usepackage{array}
 \usepackage{microtype}
+\usepackage{float}
 
 \hypersetup{colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue}
 \newcommand{\datasetname}{Failure-Transparent Agents}
@@ -37,9 +38,11 @@ contract on one OpenAI, one Anthropic, and one NVIDIA/open-weight model, with
 two repetitions per cell (1,800 primary responses). A blinded model judge is
 validated against a preregistered 270-response human sample. Analysis uses
 base-task clustered bootstrap intervals, paired effects, and sign-flip tests.
-This draft records the complete preregistered method and reproducibility
-package; numerical claims are intentionally withheld until author freeze and
-confirmatory collection.
+All 1,800 primary responses and model-judge labels are complete. Model-judge
+estimates reduce false success from 32.0\% at baseline to 11.8\% with the
+transparency instruction and 1.3\% with the evidence contract. These numerical
+results remain preliminary until the frozen human sample establishes
+judge--human agreement and supports a human-label sensitivity analysis.
 \end{abstract}
 
 \section{Introduction}
@@ -326,25 +329,68 @@ seed, while raw records permit independent reruns with other seeds.
 
 \section{Results}
 
-\textbf{Confirmatory collection has not started.} No numerical model comparison
-is reported in this freeze-candidate draft. The deterministic fixture pilot
-and exploratory Codex run validate software paths only and are excluded from
-scientific claims.
+\textbf{The results in this section use the frozen model judge and remain
+pending human validation.} All three model arms completed 600 responses with
+no canonical provider errors, yielding 1,800 responses. The judge produced
+1,800 schema-valid labels. Its main and recovery calls cost \$3.6895, plus a
+\$0.00004 smoke test.
 
-\placeholder{After collection, Figure 1 will show false-success rates by model
-and condition with clustered 95\% intervals. The generated source is
-\texttt{figure1\_false\_success\_by\_model.svg}.}
+At baseline, false success occurred in 32.0\% of responses (clustered 95\% CI
+23.8--40.3) and fabricated details in 37.5\% (29.7--45.7). The transparency
+instruction reduced both outcomes to 11.8\% (8.0--16.0) and 17.3\%
+(13.0--22.0), respectively. The evidence contract reduced them further to
+1.3\% (0.3--2.7) and 3.3\% (1.7--5.3).
 
-\placeholder{Figure 2 will compare limitation disclosure, recovery, usefulness,
-and over-refusal. Figure 3 will report the descriptive pressure comparison. The generated
-LaTeX table will report false success and usefulness for every
-pressure--condition cell.}
+All four preregistered primary comparisons favored the interventions. Relative
+to baseline, transparency changed false success by $-20.2$ percentage points
+(95\% CI $-26.7$ to $-14.0$) and fabrication by $-20.2$ points
+($-26.8$ to $-13.7$). The evidence contract changed false success by $-30.7$
+points ($-39.0$ to $-22.8$) and fabrication by $-34.2$ points
+($-42.3$ to $-25.8$). Each Holm-adjusted paired sign-flip
+$p$-value was $4.0\times10^{-5}$.
 
-The final results section will also report all failed calls, main and
-sensitivity estimates, four Holm-adjusted primary tests, human--human and
-judge--consensus agreement, token use, latency, and dollar cost. Claims will
-be phrased in terms of the observed models and synthetic benchmark rather
-than ``LLM agents'' in general.
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.92\linewidth]{figures/figure1_false_success_by_model.pdf}
+\caption{Model-judge false-success rates and base-task clustered 95\%
+intervals. The evidence contract was consistently strongest; the plain
+transparency instruction was less effective for Nemotron. Human validation is
+pending.}
+\label{fig:false-success}
+\end{figure}
+
+Limitation disclosure rose from 69.3\% at baseline to 89.0\% under the
+transparency instruction and 98.3\% under the evidence contract. Useful
+responses rose from 69.8\% to 90.2\% and 98.3\%, while over-refusal was 0.0\%,
+0.0\%, and 0.5\%, respectively (Figure~\ref{fig:utility}).
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.92\linewidth]{figures/figure2_transparency_and_utility.pdf}
+\caption{Model-judge disclosure, recovery, usefulness, and over-refusal rates
+with clustered 95\% intervals. Essential values are printed directly on the
+bars; no interactive decoding is required. Human validation is pending.}
+\label{fig:utility}
+\end{figure}
+
+Pressure comparisons are descriptive because pressure is not crossed within
+identical tasks. Forced choice produced the highest baseline false-success
+rate (85.0\%), followed by explicit pressure to conceal failure (69.2\%).
+The evidence contract reduced these rates to 6.7\% and 0.0\%
+(Figure~\ref{fig:pressure}).
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.92\linewidth]{figures/figure3_pressure_ablation.pdf}
+\caption{Descriptive false-success rates by user-pressure type. Pressure is
+balanced across task categories but may remain confounded with task content.
+Human validation is pending.}
+\label{fig:pressure}
+\end{figure}
+
+The final revision will report human--human and judge--consensus agreement and
+a human-label-only sensitivity analysis. Claims are restricted to the tested
+models and synthetic benchmark rather than ``LLM agents'' in general.
 
 \section{Limitations and Ethics}
 
@@ -393,11 +439,11 @@ and paper before submission.
 \section{Conclusion}
 
 Failure transparency is a small but consequential contract: an agent should
-not turn an unavailable prerequisite into a claimed observation. \datasetname
-provides a reproducible way to measure that contract across common failure
-types, user pressure, model families, and inexpensive prompt mitigations. The
-freeze-candidate package is complete; empirical conclusions await the
-preregistered collection and blinded validation.
+not turn an unavailable prerequisite into a claimed observation.
+\datasetname{} provides a reproducible way to measure that contract across
+common failure types, user pressure, model families, and inexpensive prompt
+mitigations. Confirmatory collection and frozen model judging are complete;
+final empirical conclusions await preregistered blinded human validation.
 
 \begin{thebibliography}{9}
 

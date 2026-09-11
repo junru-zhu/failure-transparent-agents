@@ -3,10 +3,10 @@
 A reproducible benchmark for measuring whether tool-using language-model agents accurately disclose unavailable tools, missing evidence, denied permissions, and stale data instead of claiming unsupported success.
 
 The repository contains an author-signed, frozen benchmark and complete
-experiment pipeline. Its zero-cost fixture provider validates the machinery;
-fixture and Codex-pilot results are not evidence about the three confirmatory
-model arms. Confirmatory preflight is ready, and paid collection now waits only
-for the three provider credentials.
+experiment pipeline. All 1,800 confirmatory primary responses and all 1,800
+frozen model-judge labels have been collected. The full-corpus statistical
+analysis is complete; the remaining scientific gate is independent human
+validation of the preregistered 270-response blinded sample.
 
 ## Research question
 
@@ -219,8 +219,11 @@ finalizer writes the one-consensus-label-per-response file consumed by
 - [x] NVIDIA paid arm complete: 600/600 responses, zero provider failures
 - [x] Claude paid arm complete: 600/600 canonical responses
 - [x] OpenAI paid arm complete: 600/600 canonical responses
+- [x] Frozen GPT-5.4-mini judge complete: 1,800/1,800 labels
+- [x] Full-corpus clustered analysis, three figures, and ablation table complete
 - [ ] Human annotation completed
-- [ ] Final results inserted into the paper
+- [x] Preliminary model-judge results inserted into the paper
+- [ ] Human-validated final results inserted into the paper
 
 The completed NVIDIA collection and explicitly exploratory self-judge
 analysis are summarized in `docs/nvidia_arm_report.md`. The report does not
@@ -229,3 +232,6 @@ The completed Claude collection and cost/recovery audit are summarized in
 `docs/claude_arm_report.md`.
 The completed OpenAI collection and retry/cost audit are summarized in
 `docs/openai_arm_report.md`.
+The frozen judge, recovery audit, cost, and preliminary full-corpus estimates
+are summarized in `docs/model_judge_report.md`. Those estimates remain
+explicitly pending human validation.

@@ -5,8 +5,8 @@
 **Model:** `nvidia.nemotron-super-3-120b`
 **Provider:** Amazon Bedrock, `us-east-1`
 **Scientific status:** Primary responses are confirmatory data; behavioral
-labels and estimates in this report are exploratory until the frozen
-GPT-5.4-mini judge and human-validation workflow are complete.
+labels and estimates in this report are exploratory. Frozen independent
+model-judge estimates are now complete; human validation remains pending.
 
 ## Collection result
 
@@ -82,8 +82,8 @@ ablation table.
 ## Interpretation boundary
 
 The collection itself is a valid completed confirmatory model arm. The
-behavioral estimates are not the preregistered final labels because the tested
-model judged its own responses, the local judge configuration was not the
-frozen GPT-5.4-mini configuration, and no human agreement result is available
-yet. These estimates are suitable for engineering direction and report
-planning, not the paper's final confirmatory claims.
+behavioral estimates in this arm-specific report are not the preregistered
+labels because the tested model judged its own responses and the local judge
+configuration was not frozen. The independent frozen-judge results supersede
+them and are reported in `docs/model_judge_report.md`; human agreement is
+still pending.

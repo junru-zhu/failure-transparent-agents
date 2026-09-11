@@ -1,8 +1,9 @@
 # Completion Audit
 
-**Audit date:** 2026-09-10  
-**Overall status:** all three confirmatory primary collections complete;
-frozen judging, human validation, and external publication incomplete
+**Audit date:** 2026-09-11
+**Overall status:** confirmatory collection, frozen model judging, and
+full-corpus analysis complete; human validation and external publication
+incomplete
 
 This document maps every requested deliverable to current authoritative
 evidence. Synthetic fixture and exploratory Codex outputs are never treated as
@@ -19,11 +20,11 @@ confirmatory model results.
 | Exact model and pricing selection | Verified and approved | `data/model_verification.json`; official-source/config hash checks pass for four primary/judge configs; approval embedded in the frozen manifest | None before collection |
 | One-command reproduction | Complete and public | `Makefile`, `docs/reproduction.md`, twelve installed console commands; repository URL set to `junru-zhu/failure-transparent-agents` | None |
 | Complete 1,800-response execution path | Complete | `docs/nvidia_arm_report.md`, `docs/claude_arm_report.md`, and `docs/openai_arm_report.md`; every arm has 600/600 canonical responses | None |
-| Labeled confirmatory result set | Exploratory NVIDIA labels complete; frozen labels pending | `docs/nvidia_arm_report.md`; 600 complete self-judge labels and analysis artifacts are local and git-ignored | Run the frozen GPT-5.4-mini judge over all three arms |
+| Labeled confirmatory result set | Frozen model-judge labels complete | `docs/model_judge_report.md`; 1,800/1,800 schema-valid labels; final label SHA-256 `d864203bda8e3fde4cfce5f9688c1870c30c724d5e1a5837f249031789398809` | Validate against human consensus labels |
 | Human validation and agreement | Workflow complete; real labels missing | Dual annotation, disagreement-only adjudication, consensus, and agreement code; fixture run produced 540 initial and 270 consensus labels | Two real independent annotators and a third reviewer for disagreements |
-| Bootstrap intervals and primary tests | Exploratory NVIDIA estimates complete | `docs/nvidia_arm_report.md`; full 10,000-draw bootstrap and 100,000-draw paired tests | Rerun on frozen three-model labels |
-| Three figures and ablation table | Exploratory NVIDIA artifacts complete | `results/confirmatory-20260910-v1/analysis-nvidia-exploratory/` | Regenerate from frozen three-model labels |
-| Six-to-eight-page paper | Draft complete | `paper/main.pdf`: six pages, structurally valid; SHA-256 `15a539a45c48b3085bc3fd6f6b8e2ff937f173691e70bfd601b810af019ee4b7` | Replace explicit result placeholders and revise claims after analysis |
+| Bootstrap intervals and primary tests | Frozen full-corpus analysis complete | `docs/model_judge_report.md`; 10,000-draw bootstrap and 100,000-draw paired tests over 100 task clusters | Add human-label sensitivity analysis |
+| Three figures and ablation table | Frozen model-judge artifacts complete | `results/confirmatory-20260910-v1/analysis-model-judge/` | Recheck after human validation and package for release |
+| Six-to-eight-page paper | Preliminary result-bearing draft complete | `paper/main.tex` and eight-page `paper/main.pdf`; SHA-256 `afc06c8e3a761e2b421e1f5f519a32d686016f56d3b22fff8641cc991e16ae63`; model-judge results and figures explicitly marked pending human validation | Insert agreement and human sensitivity results, then final visual review |
 | GitHub-ready software/data artifact | Public repository active | Deterministic source ZIP, checksum, release report, changelog, release notes, CI, MIT license, citation metadata, and GitHub repository | Publish the final result-bearing release after scoring |
 | Zenodo-ready metadata | Complete locally | `.zenodo.json`, `CITATION.cff`, release audit | Publish exact GitHub release, create DOI, then insert DOI into README, citation metadata, and paper |
 | arXiv/workshop submission | Not achieved | Submission checklist only | Authorship confirmation, final results, DOI, and explicit submission authorization |
@@ -40,15 +41,17 @@ confirmatory model results.
 
 Preflight now reports no blocking checks and `ready_for_live_run: true`.
 
-All three primary arms completed through an authorized local `AWS_PROFILE`.
-The environment still lacks `OPENAI_API_KEY` for the frozen judge.
+All three primary arms and the frozen GPT-5.4-mini judge completed. Judging
+used 2,624 calls and `$3.68948475` of the `$60` hard cap, plus a
+`$0.00003825` smoke test.
 
 ## Decisions and inputs still required
 
-Before remaining paid scoring:
+Before final scientific reporting:
 
-1. Set `OPENAI_API_KEY` outside the repository.
-2. Run the frozen GPT-5.4-mini judge over all 1,800 responses.
+1. Obtain two independent annotations of the frozen 270-response packet.
+2. Adjudicate disagreements and run agreement plus human-only sensitivity
+   analysis.
 
 Before public release:
 

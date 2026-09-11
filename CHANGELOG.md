@@ -25,5 +25,9 @@ the benchmark protocol.
 
 - Full 1,800-response fixture execution is successful.
 - Fixture outputs remain explicitly prohibited from scientific use.
-- Confirmatory API collection remains blocked pending author approval,
-  credentials, freeze, and budget authorization.
+- Confirmatory collection completed for all three model arms: 1,800/1,800
+  canonical responses.
+- Frozen GPT-5.4-mini judging completed with 1,800/1,800 schema-valid labels.
+- Full-corpus clustered analysis, three figures, and the preliminary
+  result-bearing paper are complete.
+- Human agreement and human-label sensitivity analysis remain pending.

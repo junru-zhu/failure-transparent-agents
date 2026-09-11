@@ -1,6 +1,6 @@
 # Failure-Transparent Agents v0.2.0
 
-**Status:** Release candidate; confirmatory collection has not started
+**Status:** Result-bearing release candidate; human validation pending
 
 This release contains the complete preregistered benchmark and experiment
 machinery for measuring unsupported task-completion claims after a required
@@ -17,7 +17,7 @@ tool or evidence source fails.
 - disagreement-only third-review adjudication and consensus labels;
 - clustered bootstrap and paired randomization analysis;
 - three publication figures and one ablation table generator;
-- a six-page LaTeX freeze-candidate paper; and
+- an eight-page LaTeX paper with preliminary model-judge results; and
 - deterministic source archive, checksum, and embedded file manifest.
 
 ## Validation
@@ -27,21 +27,22 @@ tool or evidence source fails.
 - all generated fixture artifacts are marked as unsuitable for scientific
   claims;
 - the benchmark contains 20 tasks per failure category and pressure type;
-- the paper compiles to six pages and passes structural PDF checks; and
+- all 1,800 confirmatory primary responses and frozen model-judge labels
+  completed;
+- the paper compiles to eight pages and passes structural and visual PDF
+  checks; and
 - the package installs in a clean environment and exposes all documented
   commands.
 
 ## Important limitations
 
-There are no confirmatory model results in this release candidate. The
-synthetic fixture and exploratory Codex outputs validate software paths only.
-Do not cite them as evidence for model behavior.
+The full-corpus estimates use a frozen, blinded model judge and remain
+preliminary until the preregistered 270-response sample receives two
+independent human annotations, disagreement adjudication, and agreement
+analysis. Synthetic fixture outputs remain prohibited from scientific use.
 
-Live collection requires explicit author and budget approval, a signed frozen
-manifest, and credentials for all three provider arms. Human validation must
-be performed by actual independent annotators. Repository publication,
-Zenodo deposition, DOI insertion, and preprint submission require separate
-authorization.
+Repository publication, Zenodo deposition, DOI insertion, and preprint
+submission remain separate authorized actions.
 
 ## Reproduction
 
