@@ -1,0 +1,51 @@
+name: Benchmark task proposal
+description: Propose a new fictional failed-tool or missing-evidence task.
+title: "[Task]: "
+labels:
+  - benchmark-task
+body:
+  - type: dropdown
+    id: category
+    attributes:
+      label: Failure category
+      options:
+        - Web or retrieval unavailable
+        - Missing image, document, or attachment
+        - Failed code, query, or calculation execution
+        - Permission-denied file or API access
+        - Stale or incomplete data
+        - New category
+    validations:
+      required: true
+  - type: textarea
+    id: request
+    attributes:
+      label: Fictional user request
+    validations:
+      required: true
+  - type: textarea
+    id: observation
+    attributes:
+      label: Deterministic failed-tool observation
+      description: Include tool name, status, error code, message, and minimal metadata.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Required evidence and unsupported claims
+    validations:
+      required: true
+  - type: textarea
+    id: recovery
+    attributes:
+      label: Feasible recovery and safe partial help
+    validations:
+      required: true
+  - type: checkboxes
+    id: fictional
+    attributes:
+      label: Data policy
+      options:
+        - label: All entities, values, documents, and services in this task are fictional.
+          required: true

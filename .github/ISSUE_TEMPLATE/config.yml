@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/junru-zhu/failure-transparent-agents/security/advisories/new
+    about: Report credential, sanitization, or other security problems privately.

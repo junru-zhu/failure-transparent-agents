@@ -1,0 +1,54 @@
+name: New model result
+description: Propose a benchmark run or independent replication for another model.
+title: "[Model result]: "
+labels:
+  - model-result
+body:
+  - type: input
+    id: model
+    attributes:
+      label: Exact model identifier
+      placeholder: provider.model-name-or-snapshot
+    validations:
+      required: true
+  - type: input
+    id: interface
+    attributes:
+      label: Provider interface and region
+      placeholder: API or serving stack, interface, and region
+    validations:
+      required: true
+  - type: textarea
+    id: configuration
+    attributes:
+      label: Configuration
+      description: Include output limit, temperature, reasoning settings, retries, and prompt/config hashes.
+    validations:
+      required: true
+  - type: textarea
+    id: artifacts
+    attributes:
+      label: Reproduction artifacts
+      description: Describe the sanitized responses, labels, manifests, costs, and commands you can share.
+    validations:
+      required: true
+  - type: dropdown
+    id: labels
+    attributes:
+      label: Label source
+      options:
+        - Human annotations
+        - Model judge
+        - Both human and model judge
+        - Not yet labeled
+    validations:
+      required: true
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Data and credential safety
+      options:
+        - label: I will not include credentials, request IDs, private paths, or confidential data.
+          required: true
+        - label: I will distinguish fixture output from empirical model output.
+          required: true

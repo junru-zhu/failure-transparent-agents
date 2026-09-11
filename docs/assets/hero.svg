@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640" role="img" aria-labelledby="title desc">
+  <title id="title">Failure-Transparent Agents benchmark</title>
+  <desc id="desc">A benchmark for whether language models admit tool failure, with false-success rate reduced from 32.0 percent to 1.3 percent by an evidence contract.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#081426"/>
+      <stop offset="0.55" stop-color="#102948"/>
+      <stop offset="1" stop-color="#113d3b"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" x2="1">
+      <stop offset="0" stop-color="#6ee7f9"/>
+      <stop offset="1" stop-color="#70f0b5"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="14" stdDeviation="18" flood-color="#000" flood-opacity=".28"/>
+    </filter>
+  </defs>
+
+  <rect width="1280" height="640" rx="34" fill="url(#bg)"/>
+  <circle cx="1170" cy="84" r="210" fill="#45d7aa" opacity=".08"/>
+  <circle cx="1035" cy="610" r="260" fill="#4da3ff" opacity=".08"/>
+
+  <g transform="translate(72 74)">
+    <rect width="174" height="38" rx="19" fill="#70f0b5" opacity=".16"/>
+    <text x="87" y="25" fill="#8ff7c9" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="16" font-weight="700" letter-spacing="1.5">OPEN BENCHMARK</text>
+
+    <text x="0" y="118" fill="#fff" font-family="Inter,Arial,sans-serif" font-size="54" font-weight="800">Do language models</text>
+    <text x="0" y="179" fill="#fff" font-family="Inter,Arial,sans-serif" font-size="54" font-weight="800">admit tool failure?</text>
+    <text x="0" y="226" fill="#b9cce2" font-family="Inter,Arial,sans-serif" font-size="23">100 tasks · 1,800 responses · deterministic failure traces</text>
+
+    <g transform="translate(0 284)">
+      <rect width="530" height="176" rx="22" fill="#07111f" opacity=".72" stroke="#31516f" filter="url(#shadow)"/>
+      <text x="28" y="37" fill="#9eb6ce" font-family="Inter,Arial,sans-serif" font-size="16" font-weight="700" letter-spacing="1">FALSE-SUCCESS RATE</text>
+      <text x="28" y="112" fill="#ff9a6b" font-family="Inter,Arial,sans-serif" font-size="64" font-weight="800">32.0%</text>
+      <text x="227" y="107" fill="#7d98b3" font-family="Inter,Arial,sans-serif" font-size="42">→</text>
+      <text x="292" y="112" fill="#70f0b5" font-family="Inter,Arial,sans-serif" font-size="64" font-weight="800">1.3%</text>
+      <text x="29" y="150" fill="#8fa8c1" font-family="Inter,Arial,sans-serif" font-size="17">baseline</text>
+      <text x="294" y="150" fill="#8fa8c1" font-family="Inter,Arial,sans-serif" font-size="17">evidence contract</text>
+    </g>
+  </g>
+
+  <g transform="translate(690 92)">
+    <rect width="500" height="454" rx="28" fill="#07111f" opacity=".72" stroke="#31516f" filter="url(#shadow)"/>
+    <text x="34" y="48" fill="#dce9f7" font-family="Inter,Arial,sans-serif" font-size="20" font-weight="700">Required prerequisite</text>
+
+    <g font-family="Inter,Arial,sans-serif" font-size="17">
+      <g transform="translate(34 78)">
+        <rect width="132" height="42" rx="12" fill="#173652"/><text x="66" y="27" text-anchor="middle" fill="#b9d9f6">WEB / SEARCH</text>
+      </g>
+      <g transform="translate(182 78)">
+        <rect width="132" height="42" rx="12" fill="#173652"/><text x="66" y="27" text-anchor="middle" fill="#b9d9f6">FILE / IMAGE</text>
+      </g>
+      <g transform="translate(330 78)">
+        <rect width="132" height="42" rx="12" fill="#173652"/><text x="66" y="27" text-anchor="middle" fill="#b9d9f6">CODE / DATA</text>
+      </g>
+    </g>
+
+    <path d="M250 142v48" stroke="#5d7893" stroke-width="3"/>
+    <path d="M241 181l9 12 9-12" fill="none" stroke="#5d7893" stroke-width="3"/>
+
+    <rect x="34" y="196" width="428" height="76" rx="16" fill="#3b1c25" stroke="#b4535f"/>
+    <circle cx="68" cy="234" r="14" fill="#ff7b86"/>
+    <path d="M62 228l12 12m0-12l-12 12" stroke="#3b1c25" stroke-width="4" stroke-linecap="round"/>
+    <text x="97" y="229" fill="#ffd5d9" font-family="Inter,Arial,sans-serif" font-size="17" font-weight="700">TOOL FAILURE</text>
+    <text x="97" y="251" fill="#d9aeb4" font-family="Inter,Arial,sans-serif" font-size="15">missing · denied · failed · stale</text>
+
+    <path d="M250 282v44" stroke="#5d7893" stroke-width="3"/>
+    <path d="M241 317l9 12 9-12" fill="none" stroke="#5d7893" stroke-width="3"/>
+
+    <rect x="34" y="334" width="428" height="84" rx="16" fill="#103c35" stroke="#46b991"/>
+    <text x="62" y="366" fill="#8ff7c9" font-family="Inter,Arial,sans-serif" font-size="17" font-weight="800">STATUS: BLOCKED</text>
+    <text x="62" y="391" fill="#c4eadf" font-family="Inter,Arial,sans-serif" font-size="15">evidence · limitation · next action</text>
+  </g>
+
+  <text x="72" y="600" fill="#8fa8c1" font-family="Inter,Arial,sans-serif" font-size="15">Model-judge estimates on a synthetic benchmark; v0.2.0 is not human-validated.</text>
+  <text x="1206" y="600" fill="url(#accent)" text-anchor="end" font-family="Inter,Arial,sans-serif" font-size="17" font-weight="700">MIT · Python · Reproducible</text>
+</svg>

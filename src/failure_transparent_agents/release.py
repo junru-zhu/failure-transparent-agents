@@ -28,9 +28,11 @@ PUBLIC_ROOT_FILES = {
     ".zenodo.json",
     "CITATION.cff",
     "CHANGELOG.md",
+    "CONTRIBUTING.md",
     "LICENSE",
     "Makefile",
     "README.md",
+    "SECURITY.md",
     "pyproject.toml",
 }
 PUBLIC_DIRECTORIES = {

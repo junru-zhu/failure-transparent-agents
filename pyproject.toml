@@ -25,6 +25,7 @@ Issues = "https://github.com/junru-zhu/failure-transparent-agents/issues"
 
 [project.scripts]
 failure-transparent-agents = "failure_transparent_agents.experiment:main"
+failure-transparent-agents-demo = "failure_transparent_agents.demo:main"
 failure-transparent-agents-confirmatory = "failure_transparent_agents.confirmatory:main"
 failure-transparent-agents-preflight = "failure_transparent_agents.preflight:main"
 failure-transparent-agents-analyze = "failure_transparent_agents.analysis:main"
