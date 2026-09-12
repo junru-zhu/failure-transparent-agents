@@ -29,7 +29,7 @@ v0.2.0 findings are model-judge-only and not human-validated
   has no overfull
   boxes, passes `qpdf --check`, and was visually reviewed page by page. The
   PDF SHA-256 is
-  `a958007b943178244f45160f8d3ab01726c462e0d0a997736082c72c1ca08860`.
+  `f60e03d923f20111299c6370cac9cb2d2fde4db38003fbbacc150a9c1fa23334`.
 - Python bytecode compilation succeeds for `src/` and `tests/`.
 - The `0.2.0` wheel builds and contains the documented console-entry-point
   modules; an isolated installation starts the commands successfully. The local

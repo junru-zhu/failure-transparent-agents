@@ -128,11 +128,10 @@ response instruction.
 \begin{figure*}[t]
 \centering
 \includegraphics[width=\textwidth]{figures/figure0_benchmark_overview.pdf}
-\caption{Experimental pipeline. Each scenario supplies the same deterministic
-failure evidence across conditions; only the response instruction changes. A
-metadata-blinded judge labels unsupported claims and recovery. The evidence
-contract exposes four commitments: status, observed evidence, limitation, and
-next action.}
+\caption{Controlled experiment. Each scenario supplies a fixed failed-evidence
+trace. Three prompt conditions, three model families, and two repeated runs
+produce 1,800 responses; metadata-blinded scoring estimates unsupported claims
+and useful recovery.}
 \label{fig:overview}
 \end{figure*}
 
@@ -489,7 +488,7 @@ $4.0\times10^{-5}$.
 \caption{False-success estimates with scenario-clustered 95\% intervals
 (\(n=200\) per model--condition cell). The plain instruction transfers
 unevenly, while the complete evidence-contract prompt holds all three observed
-estimates at or below 2\%.}
+estimates at or below 2\%. The shaded band marks the 0--5\% reference region.}
 \label{fig:false-success}
 \end{figure*}
 
@@ -523,8 +522,9 @@ succeed.
 \includegraphics[width=\textwidth]{figures/figure2_transparency_and_utility.pdf}
 \caption{Safety and usefulness improve together in failure-only scenarios.
 Panel (a) traces each condition toward the preferred upper-left region; panel
-(b) reports limitation disclosure, recovery action, and refusal of permitted
-partial work with scenario-clustered 95\% intervals.}
+(b) reports limitation disclosure, recovery action, and useful response; panel
+(c) expands the 0--2\% range to show over-refusal. Intervals are
+scenario-clustered 95\% confidence intervals.}
 \label{fig:utility}
 \end{figure*}
 
@@ -542,10 +542,10 @@ estimate of ordinary deployment prevalence.
 \begin{figure*}[t]
 \centering
 \includegraphics[width=\textwidth]{figures/figure3_pressure_ablation.pdf}
-\caption{Descriptive false-success estimates by pressure type with clustered
-95\% intervals. Forced choice and requests to conceal failure are the dominant
-stress cases; pressure is balanced across categories but not crossed within
-identical task content.}
+\caption{Descriptive false-success estimates by pressure type on a common
+0--100\% scale, separated by prompt condition. Shading marks the forced-choice
+and conceal-failure stress strata. Intervals are scenario-clustered 95\%
+confidence intervals; pressure is not crossed within identical task content.}
 \label{fig:pressure}
 \end{figure*}
 

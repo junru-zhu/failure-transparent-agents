@@ -9,14 +9,21 @@ import os
 import shutil
 import subprocess
 from pathlib import Path
-from typing import Iterable
+from typing import Any, Iterable, Mapping, Sequence
 
 os.environ.setdefault("SOURCE_DATE_EPOCH", "1789081818")
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
-from matplotlib.patches import FancyArrowPatch, FancyBboxPatch
-from matplotlib.ticker import PercentFormatter
+from matplotlib.lines import Line2D
+from matplotlib.patches import FancyArrowPatch, FancyBboxPatch, Rectangle
+from matplotlib.ticker import MultipleLocator, PercentFormatter
+from matplotlib.transforms import ScaledTranslation
+
+try:
+    from audit_panel_alignment import require_matplotlib_panel_alignment
+except ImportError:
+    require_matplotlib_panel_alignment = None
 
 
 CONDITIONS = ("baseline", "transparency", "evidence_contract")
@@ -26,9 +33,14 @@ CONDITION_LABELS = {
     "evidence_contract": "Evidence contract",
 }
 COLORS = {
-    "baseline": "#6B7280",
-    "transparency": "#0072B2",
-    "evidence_contract": "#009E73",
+    "baseline": "#596273",
+    "transparency": "#2A6F97",
+    "evidence_contract": "#00876C",
+}
+LIGHT_COLORS = {
+    "baseline": "#EEF0F3",
+    "transparency": "#EAF2F7",
+    "evidence_contract": "#E7F4F0",
 }
 MARKERS = {
     "baseline": "o",
@@ -50,8 +62,16 @@ PRESSURE_LABELS = {
 METRIC_LABELS = {
     "limitation_disclosed": "Limitation disclosed",
     "recovery_action": "Recovery action",
+    "useful_response": "Useful response",
     "over_refusal": "Over-refusal",
 }
+INK = "#202630"
+MUTED = "#657080"
+GRID = "#E3E7EC"
+HAIRLINE = "#CBD1D8"
+WARM = "#B55D3A"
+WARM_LIGHT = "#FBF1EC"
+PAPER_WIDTH_IN = 7.15
 
 
 def parse_args() -> argparse.Namespace:
@@ -94,28 +114,39 @@ def as_percent(value: str) -> float:
     return float(value) * 100.0
 
 
+def format_percent(value: float) -> str:
+    return f"{value:.1f}%"
+
+
 def configure_style() -> None:
     mpl.rcParams.update(
         {
             "font.family": "sans-serif",
-            "font.sans-serif": ["Arial", "Helvetica", "DejaVu Sans"],
-            "font.size": 9,
-            "axes.titlesize": 10,
-            "axes.labelsize": 9,
-            "xtick.labelsize": 8,
-            "ytick.labelsize": 8,
-            "legend.fontsize": 8,
-            "axes.linewidth": 0.8,
-            "axes.edgecolor": "#374151",
-            "axes.labelcolor": "#111827",
-            "xtick.color": "#374151",
-            "ytick.color": "#374151",
-            "text.color": "#111827",
-            "grid.color": "#E5E7EB",
-            "grid.linewidth": 0.7,
+            "font.sans-serif": [
+                "Helvetica",
+                "Arial",
+                "Liberation Sans",
+                "DejaVu Sans",
+            ],
+            "font.size": 7.6,
+            "axes.titlesize": 8.4,
+            "axes.labelsize": 7.8,
+            "xtick.labelsize": 7.2,
+            "ytick.labelsize": 7.6,
+            "legend.fontsize": 7.2,
+            "axes.linewidth": 0.75,
+            "axes.edgecolor": INK,
+            "axes.labelcolor": INK,
+            "xtick.color": INK,
+            "ytick.color": INK,
+            "text.color": INK,
+            "grid.color": GRID,
+            "grid.linewidth": 0.65,
             "grid.alpha": 1.0,
+            "lines.solid_capstyle": "round",
+            "lines.dash_capstyle": "round",
             "pdf.fonttype": 42,
-            "pdf.use14corefonts": True,
+            "pdf.use14corefonts": False,
             "ps.fonttype": 42,
             "svg.hashsalt": "failure-transparent-agents-v0.2.0",
             "svg.fonttype": "none",
@@ -127,15 +158,123 @@ def configure_style() -> None:
     )
 
 
-def style_axis(ax: mpl.axes.Axes, *, grid_axis: str = "x") -> None:
+def style_axis(
+    ax: mpl.axes.Axes,
+    *,
+    grid_axis: str = "x",
+    hide_left: bool = False,
+) -> None:
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
+    if hide_left:
+        ax.spines["left"].set_visible(False)
     ax.grid(axis=grid_axis)
     ax.set_axisbelow(True)
+    ax.tick_params(length=3, width=0.7, pad=2.5)
 
 
-def save_figure(fig: mpl.figure.Figure, output_dir: Path, stem: str) -> None:
+def panel_header(ax: mpl.axes.Axes, label: str, title: str) -> None:
+    label_transform = ax.transAxes + ScaledTranslation(
+        -9 / 72,
+        4 / 72,
+        ax.figure.dpi_scale_trans,
+    )
+    ax.text(
+        0,
+        1,
+        label,
+        transform=label_transform,
+        ha="left",
+        va="bottom",
+        fontsize=8.4,
+        fontweight="bold",
+        color=INK,
+        visible=False,
+    )
+    ax.text(
+        0,
+        1,
+        f"{label}   {title}",
+        transform=label_transform,
+        ha="left",
+        va="bottom",
+        fontsize=8.4,
+        fontweight="bold",
+        color=INK,
+    )
+
+
+def condition_legend_handles() -> list[Line2D]:
+    return [
+        Line2D(
+            [0],
+            [0],
+            marker=MARKERS[condition],
+            markersize=5.8,
+            markerfacecolor=COLORS[condition],
+            markeredgecolor="white",
+            markeredgewidth=0.7,
+            color=COLORS[condition],
+            linewidth=1.2,
+            label=CONDITION_LABELS[condition],
+        )
+        for condition in CONDITIONS
+    ]
+
+
+def add_condition_legend(
+    target: mpl.axes.Axes | mpl.figure.Figure,
+    *,
+    loc: str,
+    bbox_to_anchor: tuple[float, float],
+    ncol: int = 3,
+) -> None:
+    target.legend(
+        handles=condition_legend_handles(),
+        frameon=False,
+        loc=loc,
+        bbox_to_anchor=bbox_to_anchor,
+        ncol=ncol,
+        borderaxespad=0,
+        handlelength=1.5,
+        handletextpad=0.45,
+        columnspacing=1.2,
+    )
+
+
+def save_figure(
+    fig: mpl.figure.Figure,
+    output_dir: Path,
+    stem: str,
+    *,
+    panel_axes: Sequence[mpl.axes.Axes] | None = None,
+    panel_ids: Sequence[str] | None = None,
+    alignment_exemptions: Sequence[Mapping[str, Any]] = (),
+) -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
+    fig.canvas.draw()
+
+    qa_root = os.environ.get("FTA_FIGURE_QA_DIR")
+    if qa_root and panel_axes:
+        if require_matplotlib_panel_alignment is None:
+            raise RuntimeError(
+                "FTA_FIGURE_QA_DIR requires audit_panel_alignment on PYTHONPATH"
+            )
+        qa_dir = Path(qa_root)
+        qa_dir.mkdir(parents=True, exist_ok=True)
+        require_matplotlib_panel_alignment(
+            fig,
+            axes=panel_axes,
+            panel_ids=panel_ids,
+            exemptions=alignment_exemptions,
+            json_out=qa_dir / f"{stem}.alignment.json",
+            overlay_svg=qa_dir / f"{stem}.alignment.svg",
+            tolerance_pt=1.5,
+            gutter_tolerance_pt=1.5,
+            require_panel_labels=True,
+            strict=True,
+        )
+
     pdf_path = output_dir / f"{stem}.pdf"
     raw_pdf_path = output_dir / f".{stem}.raw.pdf"
     fig.savefig(raw_pdf_path, facecolor="white", transparent=False)
@@ -173,33 +312,44 @@ def save_figure(fig: mpl.figure.Figure, output_dir: Path, stem: str) -> None:
         line.rstrip() for line in svg_path.read_text(encoding="utf-8").splitlines()
     )
     svg_path.write_text(f"{clean_svg}\n", encoding="utf-8")
+
+    png_root = os.environ.get("FTA_FIGURE_PNG_DIR")
+    if png_root:
+        png_dir = Path(png_root)
+        png_dir.mkdir(parents=True, exist_ok=True)
+        fig.savefig(
+            png_dir / f"{stem}.png",
+            dpi=600,
+            facecolor="white",
+            transparent=False,
+        )
     plt.close(fig)
 
 
 def figure_benchmark_overview(output_dir: Path) -> None:
-    """Render the benchmark dataflow and evidence-contract intervention."""
+    """Render the controlled experiment and its factorial structure."""
 
-    fig, ax = plt.subplots(figsize=(7.15, 2.35))
+    fig, ax = plt.subplots(figsize=(PAPER_WIDTH_IN, 2.42))
     ax.set_xlim(0, 1)
     ax.set_ylim(0, 1)
     ax.axis("off")
 
-    def box(
+    def card(
         x: float,
         y: float,
         width: float,
         height: float,
         *,
         facecolor: str,
-        edgecolor: str = "#9CA3AF",
-        linewidth: float = 0.9,
-        radius: float = 0.018,
+        edgecolor: str = HAIRLINE,
+        linewidth: float = 0.85,
+        radius: float = 0.012,
     ) -> FancyBboxPatch:
         patch = FancyBboxPatch(
             (x, y),
             width,
             height,
-            boxstyle=f"round,pad=0.008,rounding_size={radius}",
+            boxstyle=f"round,pad=0.006,rounding_size={radius}",
             facecolor=facecolor,
             edgecolor=edgecolor,
             linewidth=linewidth,
@@ -207,155 +357,273 @@ def figure_benchmark_overview(output_dir: Path) -> None:
         ax.add_patch(patch)
         return patch
 
-    def arrow(start: tuple[float, float], end: tuple[float, float]) -> None:
+    def arrow(
+        start: tuple[float, float],
+        end: tuple[float, float],
+        *,
+        label: str | None = None,
+    ) -> None:
         ax.add_patch(
             FancyArrowPatch(
                 start,
                 end,
                 arrowstyle="-|>",
-                mutation_scale=10,
-                linewidth=1.0,
-                color="#6B7280",
+                mutation_scale=9,
+                linewidth=0.95,
+                color=MUTED,
                 shrinkA=2,
                 shrinkB=2,
             )
         )
+        if label:
+            ax.text(
+                (start[0] + end[0]) / 2,
+                start[1] + 0.055,
+                label,
+                ha="center",
+                va="bottom",
+                fontsize=6.2,
+                color=MUTED,
+            )
 
-    box(0.01, 0.25, 0.14, 0.50, facecolor="#F3F4F6")
-    ax.text(0.08, 0.62, "Scenario", ha="center", va="center", weight="bold")
+    def stage_header(
+        x: float,
+        y: float,
+        number: str,
+        title: str,
+        *,
+        accent: str = MUTED,
+    ) -> None:
+        ax.text(
+            x,
+            y,
+            number,
+            ha="center",
+            va="center",
+            fontsize=7.2,
+            fontweight="bold",
+            color=accent,
+        )
+        ax.text(
+            x + 0.021,
+            y,
+            title,
+            ha="left",
+            va="center",
+            fontsize=8.1,
+            fontweight="bold",
+            color=INK,
+        )
+
+    card(
+        0.018,
+        0.20,
+        0.185,
+        0.66,
+        facecolor="#F7F8FA",
+        edgecolor="none",
+    )
+    stage_header(0.043, 0.790, "1", "Scenario bank")
     ax.text(
-        0.08,
-        0.43,
-        "User request\nRequired evidence\nSafe partial help",
+        0.110,
+        0.630,
+        "100 scenarios",
         ha="center",
+        va="center",
+        fontsize=10.0,
+        fontweight="bold",
+        color=INK,
+    )
+    ax.text(
+        0.110,
+        0.415,
+        "5 failure types · 5 pressure strata",
+        ha="center",
+        va="center",
+        fontsize=5.8,
+        color=MUTED,
+    )
+
+    card(
+        0.244,
+        0.20,
+        0.182,
+        0.66,
+        facecolor="#F9FAFB",
+        edgecolor="none",
+    )
+    stage_header(0.269, 0.790, "2", "Fixed failure trace")
+    ax.add_patch(plt.Circle((0.280, 0.590), 0.009, facecolor=WARM, edgecolor="none"))
+    ax.text(
+        0.300,
+        0.590,
+        "failed evidence",
+        ha="left",
         va="center",
         fontsize=7.2,
-        linespacing=1.35,
+        fontweight="bold",
+        color=WARM,
     )
-
-    box(0.19, 0.32, 0.12, 0.36, facecolor="#FFF7E6", edgecolor="#E69F00")
+    ax.add_patch(
+        plt.Circle(
+            (0.270, 0.440),
+            0.009,
+            facecolor=COLORS["evidence_contract"],
+            edgecolor="none",
+        )
+    )
     ax.text(
-        0.25,
-        0.56,
-        "Deterministic\nsimulator",
+        0.345,
+        0.440,
+        "partial help is valid",
         ha="center",
         va="center",
-        weight="bold",
-        fontsize=8,
+        fontsize=7.0,
+        fontweight="bold",
+        color=COLORS["evidence_contract"],
     )
     ax.text(
-        0.25,
-        0.41,
-        "Replay failure",
-        ha="center",
-        va="center",
-        fontsize=7.1,
-        color="#7C4A03",
-    )
-
-    box(0.35, 0.25, 0.15, 0.50, facecolor="#FFF7E6", edgecolor="#E69F00")
-    ax.text(
-        0.425,
-        0.62,
-        "Failed prerequisite",
-        ha="center",
-        va="center",
-        weight="bold",
-        fontsize=8,
-    )
-    ax.text(
-        0.425,
-        0.43,
-        "status\nerror code\nmessage + metadata",
-        ha="center",
-        va="center",
-        fontsize=7.2,
-        linespacing=1.35,
-    )
-
-    box(0.54, 0.13, 0.22, 0.74, facecolor="#FFFFFF")
-    ax.text(
-        0.65,
-        0.79,
-        "Prompt condition",
-        ha="center",
-        va="center",
-        weight="bold",
-        fontsize=8.2,
-    )
-    box(0.565, 0.60, 0.17, 0.11, facecolor="#F3F4F6", edgecolor="#9CA3AF")
-    ax.text(0.65, 0.655, "Baseline", ha="center", va="center", fontsize=7.5)
-    box(0.565, 0.44, 0.17, 0.11, facecolor="#EAF4FB", edgecolor="#0072B2")
-    ax.text(
-        0.65,
-        0.495,
-        "Transparency instruction",
-        ha="center",
-        va="center",
-        fontsize=7.2,
-        color="#005A8D",
-    )
-    box(0.565, 0.20, 0.17, 0.18, facecolor="#EAF7F2", edgecolor="#009E73")
-    ax.text(
-        0.65,
-        0.325,
-        "Evidence contract",
-        ha="center",
-        va="center",
-        fontsize=7.4,
-        weight="bold",
-        color="#007A58",
-    )
-    ax.text(
-        0.65,
-        0.245,
-        "status | evidence\nlimitation | next action",
-        ha="center",
-        va="center",
-        fontsize=6.2,
-        color="#16624D",
-        linespacing=1.25,
-    )
-
-    box(0.80, 0.32, 0.08, 0.36, facecolor="#EEF2FF", edgecolor="#8491B4")
-    ax.text(
-        0.84,
-        0.50,
-        "Model\nresponse",
-        ha="center",
-        va="center",
-        weight="bold",
-        fontsize=7.5,
-        linespacing=1.3,
-    )
-
-    box(0.91, 0.20, 0.08, 0.60, facecolor="#F3F4F6")
-    ax.text(
-        0.95,
-        0.70,
-        "Metadata-blinded\nlabels",
-        ha="center",
-        va="center",
-        weight="bold",
-        fontsize=7.4,
-    )
-    ax.text(
-        0.95,
-        0.45,
-        "False success\nFabrication\nDisclosure\nRecovery\nUsefulness",
+        0.335,
+        0.285,
+        "same trace in every arm",
         ha="center",
         va="center",
         fontsize=6.5,
-        linespacing=1.22,
+        color=MUTED,
     )
 
-    arrow((0.15, 0.50), (0.19, 0.50))
-    arrow((0.31, 0.50), (0.35, 0.50))
-    arrow((0.50, 0.50), (0.54, 0.50))
-    arrow((0.76, 0.50), (0.80, 0.50))
-    arrow((0.88, 0.50), (0.91, 0.50))
+    card(
+        0.466,
+        0.14,
+        0.287,
+        0.76,
+        facecolor="#FBFCFD",
+        edgecolor="none",
+    )
+    stage_header(
+        0.491,
+        0.830,
+        "3",
+        "Factorial response collection",
+        accent=COLORS["transparency"],
+    )
+    ax.text(
+        0.610,
+        0.700,
+        "3 prompts × 3 models × 2 runs",
+        ha="center",
+        va="center",
+        fontsize=9.0,
+        fontweight="bold",
+        color=INK,
+    )
+    prompt_specs = (
+        ("Baseline", "baseline"),
+        ("Transparency instruction", "transparency"),
+        ("Evidence contract", "evidence_contract"),
+    )
+    for index, (label, condition) in enumerate(prompt_specs):
+        y = 0.555 - index * 0.116
+        card(
+            0.492,
+            y - 0.037,
+            0.236,
+            0.074,
+            facecolor=LIGHT_COLORS[condition],
+            edgecolor=COLORS[condition],
+            linewidth=0.9 if condition == "evidence_contract" else 0.75,
+            radius=0.009,
+        )
+        ax.text(
+            0.610,
+            y,
+            label,
+            ha="center",
+            va="center",
+            fontsize=6.8,
+            fontweight="bold" if condition == "evidence_contract" else "normal",
+            color=COLORS[condition],
+        )
+    ax.text(
+        0.610,
+        0.245,
+        "OpenAI · Anthropic · NVIDIA/open-weight",
+        ha="center",
+        va="center",
+        fontsize=6.3,
+        color=MUTED,
+    )
 
-    fig.subplots_adjust(left=0.005, right=0.995, top=0.98, bottom=0.02)
+    card(
+        0.794,
+        0.20,
+        0.188,
+        0.66,
+        facecolor="#F7F8FA",
+        edgecolor="none",
+    )
+    stage_header(
+        0.819,
+        0.790,
+        "4",
+        "Blinded scoring",
+        accent=COLORS["evidence_contract"],
+    )
+    ax.text(
+        0.888,
+        0.590,
+        "5 response metrics",
+        ha="center",
+        va="center",
+        fontsize=8.5,
+        fontweight="bold",
+        color=INK,
+    )
+    ax.text(
+        0.872,
+        0.430,
+        "false success is primary",
+        ha="center",
+        va="center",
+        fontsize=6.6,
+        color=WARM,
+    )
+    ax.text(
+        0.904,
+        0.290,
+        "95% clustered intervals",
+        ha="center",
+        va="center",
+        fontsize=6.2,
+        color=MUTED,
+    )
+
+    arrow((0.203, 0.525), (0.244, 0.525))
+    arrow((0.426, 0.525), (0.466, 0.525))
+    arrow((0.753, 0.525), (0.794, 0.525))
+
+    card(
+        0.350,
+        0.015,
+        0.300,
+        0.085,
+        facecolor=INK,
+        edgecolor=INK,
+        linewidth=0,
+        radius=0.015,
+    )
+    ax.text(
+        0.500,
+        0.057,
+        "100 × 3 × 3 × 2 = 1,800 responses",
+        ha="center",
+        va="center",
+        fontsize=7.3,
+        fontweight="bold",
+        color="white",
+    )
+
+    fig.subplots_adjust(left=0.004, right=0.996, top=0.985, bottom=0.01)
     save_figure(fig, output_dir, "figure0_benchmark_overview")
 
 
@@ -375,8 +643,13 @@ def figure_false_success_by_model(
     )
     offsets = {"baseline": 0.20, "transparency": 0.0, "evidence_contract": -0.20}
 
-    fig, ax = plt.subplots(figsize=(7.15, 3.15))
+    fig, ax = plt.subplots(figsize=(PAPER_WIDTH_IN, 2.88))
     y_positions = list(range(len(models)))
+    ax.axvspan(0, 5, facecolor=LIGHT_COLORS["evidence_contract"], zorder=0)
+    ax.axvline(5, color=COLORS["evidence_contract"], linewidth=0.8, linestyle=(0, (2, 2)))
+    for y in (0.5, 1.5):
+        ax.axhline(y, color="#F0F2F5", linewidth=0.8, zorder=0)
+
     for condition in CONDITIONS:
         xs: list[float] = []
         lows: list[float] = []
@@ -396,9 +669,9 @@ def figure_false_success_by_model(
             ys,
             xerr=[lows, highs],
             fmt=MARKERS[condition],
-            markersize=6,
-            capsize=3,
-            elinewidth=1.2,
+            markersize=6.4,
+            capsize=2.8,
+            elinewidth=1.25,
             linewidth=0,
             color=COLORS[condition],
             markeredgecolor="white",
@@ -409,19 +682,28 @@ def figure_false_success_by_model(
 
     ax.set_yticks(y_positions, [MODEL_LABELS[model] for model in models])
     ax.invert_yaxis()
-    ax.set_xlim(-1, 50)
+    ax.set_ylim(2.5, -0.55)
+    ax.set_xlim(-1.0, 50)
+    ax.xaxis.set_major_locator(MultipleLocator(10))
     ax.xaxis.set_major_formatter(PercentFormatter(xmax=100, decimals=0))
     ax.set_xlabel("False-success rate (lower is better)")
     style_axis(ax, grid_axis="x")
-    ax.legend(
-        frameon=False,
-        ncol=3,
+    add_condition_legend(
+        ax,
         loc="lower left",
-        bbox_to_anchor=(0.0, 1.01),
-        borderaxespad=0,
-        handletextpad=0.5,
-        columnspacing=1.4,
+        bbox_to_anchor=(0.0, 1.035),
     )
+    ax.text(
+        0.995,
+        1.068,
+        "n = 200 per cell · scenario-clustered 95% CI",
+        transform=ax.transAxes,
+        ha="right",
+        va="bottom",
+        fontsize=6.6,
+        color=MUTED,
+    )
+    fig.subplots_adjust(left=0.155, right=0.985, top=0.82, bottom=0.19)
     save_figure(fig, output_dir, "figure1_false_success_by_model")
 
 
@@ -435,14 +717,45 @@ def figure_transparency_and_utility(
         if row["scope"] == "overall"
     }
 
-    fig, (frontier, support) = plt.subplots(
-        1,
+    fig = plt.figure(figsize=(PAPER_WIDTH_IN, 3.48))
+    grid = fig.add_gridspec(
         2,
-        figsize=(7.15, 3.35),
-        gridspec_kw={"width_ratios": [1.05, 1.25], "wspace": 0.35},
+        2,
+        width_ratios=[1.18, 1.0],
+        height_ratios=[2.55, 1.0],
+        wspace=0.42,
+        hspace=0.66,
     )
+    frontier = fig.add_subplot(grid[:, 0])
+    support = fig.add_subplot(grid[0, 1])
+    refusal = fig.add_subplot(grid[1, 1])
 
     trajectory: list[tuple[float, float]] = []
+    frontier.add_patch(
+        Rectangle(
+            (0, 95),
+            5,
+            7,
+            facecolor=LIGHT_COLORS["evidence_contract"],
+            edgecolor="none",
+            zorder=0,
+        )
+    )
+    frontier.axvline(
+        5,
+        color=COLORS["evidence_contract"],
+        linewidth=0.7,
+        linestyle=(0, (2, 2)),
+        zorder=1,
+    )
+    frontier.axhline(
+        95,
+        color=COLORS["evidence_contract"],
+        linewidth=0.7,
+        linestyle=(0, (2, 2)),
+        zorder=1,
+    )
+
     for condition in CONDITIONS:
         false_row = overall[("false_success", condition)]
         useful_row = overall[("useful_response", condition)]
@@ -461,21 +774,13 @@ def figure_transparency_and_utility(
                 [as_percent(useful_row["ci_high"]) - y],
             ],
             fmt=MARKERS[condition],
-            markersize=7,
-            capsize=3,
-            elinewidth=1.1,
+            markersize=7.2,
+            capsize=2.8,
+            elinewidth=1.15,
             color=COLORS[condition],
             markeredgecolor="white",
             markeredgewidth=0.8,
             zorder=3,
-        )
-        frontier.annotate(
-            CONDITION_LABELS[condition],
-            (x, y),
-            xytext=(5, 6 if condition != "baseline" else -14),
-            textcoords="offset points",
-            fontsize=7.5,
-            color=COLORS[condition],
         )
     for start, end in zip(trajectory, trajectory[1:]):
         frontier.annotate(
@@ -484,32 +789,25 @@ def figure_transparency_and_utility(
             xytext=start,
             arrowprops={
                 "arrowstyle": "->",
-                "color": "#9CA3AF",
-                "linewidth": 1.1,
-                "shrinkA": 8,
-                "shrinkB": 8,
+                "color": "#A6AEB8",
+                "linewidth": 1.0,
+                "shrinkA": 9,
+                "shrinkB": 9,
             },
         )
 
-    frontier.set_xlim(-2, 38)
+    frontier.set_xlim(-2, 38.5)
     frontier.set_ylim(58, 102)
+    frontier.xaxis.set_major_locator(MultipleLocator(10))
+    frontier.yaxis.set_major_locator(MultipleLocator(10))
     frontier.xaxis.set_major_formatter(PercentFormatter(xmax=100, decimals=0))
     frontier.yaxis.set_major_formatter(PercentFormatter(xmax=100, decimals=0))
     frontier.set_xlabel("False-success rate (lower is better)")
-    frontier.set_ylabel("Useful response rate")
-    frontier.set_title("(a) Safety–utility frontier", loc="left", fontweight="bold")
-    frontier.text(
-        0.5,
-        100.5,
-        "preferred region",
-        color="#6B7280",
-        fontsize=7,
-        ha="left",
-        va="top",
-    )
+    frontier.set_ylabel("Useful-response rate")
+    panel_header(frontier, "a", "Safety–utility trajectory")
     style_axis(frontier, grid_axis="both")
 
-    metrics = ("limitation_disclosed", "recovery_action", "over_refusal")
+    metrics = ("limitation_disclosed", "recovery_action", "useful_response")
     offsets = {"baseline": 0.20, "transparency": 0.0, "evidence_contract": -0.20}
     for condition in CONDITIONS:
         xs: list[float] = []
@@ -528,8 +826,8 @@ def figure_transparency_and_utility(
             ys,
             xerr=[lows, highs],
             fmt=MARKERS[condition],
-            markersize=5.5,
-            capsize=2.5,
+            markersize=5.8,
+            capsize=2.4,
             elinewidth=1.0,
             linewidth=0,
             color=COLORS[condition],
@@ -540,26 +838,76 @@ def figure_transparency_and_utility(
         )
     support.set_yticks(range(len(metrics)), [METRIC_LABELS[item] for item in metrics])
     support.invert_yaxis()
-    support.set_xlim(-3, 103)
+    support.set_xlim(48, 102)
+    support.xaxis.set_major_locator(MultipleLocator(10))
     support.xaxis.set_major_formatter(PercentFormatter(xmax=100, decimals=0))
     support.set_xlabel("Response rate")
-    support.set_title("(b) Supporting behaviors", loc="left", fontweight="bold")
+    panel_header(support, "b", "Failure-response quality")
     style_axis(support, grid_axis="x")
-    handles, labels = support.get_legend_handles_labels()
-    fig.legend(
-        handles,
-        labels,
-        frameon=False,
-        loc="lower center",
-        bbox_to_anchor=(0.5, -0.01),
-        ncol=3,
-        borderaxespad=0,
-        handletextpad=0.5,
-        columnspacing=1.4,
-    )
-    fig.subplots_adjust(bottom=0.20)
 
-    save_figure(fig, output_dir, "figure2_transparency_and_utility")
+    refusal_offsets = {
+        "baseline": 0.68,
+        "transparency": 0.50,
+        "evidence_contract": 0.32,
+    }
+    for condition in CONDITIONS:
+        row = overall[("over_refusal", condition)]
+        value = as_percent(row["rate"])
+        low = as_percent(row["ci_low"])
+        high = as_percent(row["ci_high"])
+        y = refusal_offsets[condition]
+        refusal.errorbar(
+            [value],
+            [y],
+            xerr=[[value - low], [high - value]],
+            fmt=MARKERS[condition],
+            markersize=5.8,
+            capsize=2.4,
+            elinewidth=1.0,
+            color=COLORS[condition],
+            markeredgecolor="white",
+            markeredgewidth=0.6,
+            zorder=3,
+        )
+    refusal.set_ylim(0.18, 0.82)
+    refusal.set_yticks([])
+    refusal.set_xlim(-0.05, 2.15)
+    refusal.xaxis.set_major_locator(MultipleLocator(0.5))
+    refusal.xaxis.set_major_formatter(PercentFormatter(xmax=100, decimals=1))
+    refusal.set_xlabel("Over-refusal rate")
+    panel_header(refusal, "c", "Cost of the intervention")
+    style_axis(refusal, grid_axis="x", hide_left=True)
+
+    add_condition_legend(
+        fig,
+        loc="upper left",
+        bbox_to_anchor=(0.085, 0.995),
+    )
+    fig.text(
+        0.985,
+        0.985,
+        "n = 600 per condition · scenario-clustered 95% CI",
+        ha="right",
+        va="top",
+        fontsize=6.3,
+        color=MUTED,
+    )
+    fig.subplots_adjust(left=0.095, right=0.985, top=0.82, bottom=0.16)
+
+    save_figure(
+        fig,
+        output_dir,
+        "figure2_transparency_and_utility",
+        panel_axes=[frontier, support, refusal],
+        panel_ids=["a", "b", "c"],
+        alignment_exemptions=[
+            {
+                "panels": ["c"],
+                "checks": ["panel-label"],
+                "reason": "lower supporting panel uses its own row anchor",
+            }
+        ],
+    )
 
 
 def figure_pressure_ablation(
@@ -578,53 +926,83 @@ def figure_pressure_ablation(
         "expected_answer",
         "urgency",
     )
-    offsets = {"baseline": 0.20, "transparency": 0.0, "evidence_contract": -0.20}
+    fig, axes = plt.subplots(
+        1,
+        3,
+        figsize=(PAPER_WIDTH_IN, 3.02),
+        sharex=True,
+        sharey=True,
+        gridspec_kw={"wspace": 0.12},
+    )
+    panel_ids = ("a", "b", "c")
 
-    fig, ax = plt.subplots(figsize=(7.15, 3.35))
-    for condition in CONDITIONS:
-        xs: list[float] = []
-        lows: list[float] = []
-        highs: list[float] = []
-        ys: list[float] = []
+    for panel_id, condition, ax in zip(panel_ids, CONDITIONS, axes):
+        ax.axhspan(-0.48, 1.48, facecolor=WARM_LIGHT, edgecolor="none", zorder=0)
+        ax.axvspan(0, 5, facecolor=LIGHT_COLORS["evidence_contract"], zorder=0)
+        ax.axvline(
+            5,
+            color=COLORS["evidence_contract"],
+            linewidth=0.7,
+            linestyle=(0, (2, 2)),
+            zorder=1,
+        )
         for index, pressure in enumerate(pressures):
             row = lookup[(pressure, condition)]
             value = as_percent(row["rate"])
-            xs.append(value)
-            lows.append(value - as_percent(row["ci_low"]))
-            highs.append(as_percent(row["ci_high"]) - value)
-            ys.append(index + offsets[condition])
-        ax.errorbar(
-            xs,
-            ys,
-            xerr=[lows, highs],
-            fmt=MARKERS[condition],
-            markersize=6,
-            capsize=3,
-            elinewidth=1.1,
-            linewidth=0,
-            color=COLORS[condition],
-            markeredgecolor="white",
-            markeredgewidth=0.7,
-            label=CONDITION_LABELS[condition],
-            zorder=3,
-        )
+            low = as_percent(row["ci_low"])
+            high = as_percent(row["ci_high"])
+            ax.errorbar(
+                [value],
+                [index],
+                xerr=[[value - low], [high - value]],
+                fmt=MARKERS[condition],
+                markersize=6.2,
+                capsize=2.8,
+                elinewidth=1.15,
+                color=COLORS[condition],
+                markeredgecolor="white",
+                markeredgewidth=0.7,
+                zorder=3,
+            )
 
-    ax.set_yticks(range(len(pressures)), [PRESSURE_LABELS[item] for item in pressures])
-    ax.invert_yaxis()
-    ax.set_xlim(-2, 102)
-    ax.xaxis.set_major_formatter(PercentFormatter(xmax=100, decimals=0))
-    ax.set_xlabel("False-success rate (lower is better)")
-    style_axis(ax, grid_axis="x")
-    ax.legend(
-        frameon=False,
-        ncol=3,
-        loc="lower left",
-        bbox_to_anchor=(0.0, 1.01),
-        borderaxespad=0,
-        handletextpad=0.5,
-        columnspacing=1.4,
+        ax.set_ylim(4.5, -0.55)
+        ax.set_xlim(-3, 105)
+        ax.xaxis.set_major_locator(MultipleLocator(25))
+        ax.xaxis.set_major_formatter(PercentFormatter(xmax=100, decimals=0))
+        panel_header(ax, panel_id, CONDITION_LABELS[condition])
+        style_axis(ax, grid_axis="x")
+
+    axes[0].set_yticks(
+        range(len(pressures)),
+        [PRESSURE_LABELS[item] for item in pressures],
     )
-    save_figure(fig, output_dir, "figure3_pressure_ablation")
+    axes[1].tick_params(labelleft=False)
+    axes[2].tick_params(labelleft=False)
+    fig.supxlabel(
+        "False-success rate (lower is better)",
+        x=0.58,
+        y=0.045,
+        fontsize=7.8,
+        color=INK,
+    )
+    fig.text(
+        0.985,
+        0.975,
+        "n = 120 per pressure × condition · scenario-clustered 95% CI",
+        ha="right",
+        va="top",
+        fontsize=6.3,
+        color=MUTED,
+    )
+    fig.subplots_adjust(left=0.165, right=0.985, top=0.79, bottom=0.19)
+
+    save_figure(
+        fig,
+        output_dir,
+        "figure3_pressure_ablation",
+        panel_axes=list(axes),
+        panel_ids=list(panel_ids),
+    )
 
 
 def main() -> int:

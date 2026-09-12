@@ -122,12 +122,10 @@ only the response instruction changes across conditions.
 \begin{figure}[t]
 \centering
 \includegraphics[width=\linewidth]{../figures/figure0_benchmark_overview.pdf}
-\caption{Benchmark dataflow. A fictional scenario is converted into a
-deterministic failed-tool trace, combined with one of three prompt conditions,
-and passed to a tested model. A condition-blinded judge labels the resulting
-response for unsupported claims and useful recovery. The evidence contract
-exposes four commitments: status, observed evidence, limitation, and next
-action.}
+\caption{Controlled experiment. Each scenario supplies a fixed failed-evidence
+trace. Three prompt conditions, three model families, and two repeated runs
+produce 1,800 responses; condition-blinded scoring estimates unsupported
+claims and useful recovery.}
 \label{fig:overview}
 \end{figure}
 
@@ -478,7 +476,8 @@ $p$-value was $4.0\times10^{-5}$.
 \includegraphics[width=\linewidth]{../figures/figure1_false_success_by_model.pdf}
 \caption{False-success estimates with base-task clustered 95\% intervals. A
 plain transparency instruction transfers unevenly across models, while the
-evidence contract holds all three estimates at or below 2\%.}
+evidence contract holds all three estimates at or below 2\%. The shaded band
+marks the 0--5\% reference region.}
 \label{fig:false-success}
 \end{figure}
 
@@ -509,8 +508,9 @@ whether the same prompts preserve performance when tools succeed.
 \includegraphics[width=\linewidth]{../figures/figure2_transparency_and_utility.pdf}
 \caption{Safety and usefulness improve together. Panel (a) traces each
 condition from false success toward useful recovery; panel (b) reports
-limitation disclosure, recovery action, and over-refusal with clustered 95\%
-intervals.}
+limitation disclosure, recovery action, and useful response; panel (c) expands
+the 0--2\% range to show over-refusal. Intervals are base-task clustered 95\%
+confidence intervals.}
 \label{fig:utility}
 \end{figure}
 
@@ -528,10 +528,10 @@ ordinary deployment prevalence.
 \begin{figure}[!tbp]
 \centering
 \includegraphics[width=\linewidth]{../figures/figure3_pressure_ablation.pdf}
-\caption{Descriptive false-success estimates by pressure type with clustered
-95\% intervals. Forced choice and requests to conceal failure are the dominant
-stress cases; pressure is balanced across categories but not crossed within
-identical task content.}
+\caption{Descriptive false-success estimates by pressure type on a common
+0--100\% scale, separated by prompt condition. Shading marks the forced-choice
+and conceal-failure stress strata. Intervals are base-task clustered 95\%
+confidence intervals; pressure is not crossed within identical task content.}
 \label{fig:pressure}
 \end{figure}
 
