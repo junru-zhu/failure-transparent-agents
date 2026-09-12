@@ -19,8 +19,8 @@
 }
 \newcommand{\datasetname}{Failure-Transparent Agents}
 
-\title{When Tools Fail, Do Language Models Tell the User? A Controlled
-Benchmark and Evidence-Contract Intervention}
+\title{When Tools Fail, Do Language Models Tell the User? A Six-Model
+Benchmark of Failure Transparency}
 \titlerunning{Failure Transparency After Tool Failure}
 \author{Junru Zhu}
 \authorrunning{J. Zhu}
@@ -32,22 +32,23 @@ Benchmark and Evidence-Contract Intervention}
 \begin{abstract}
 Tool failure creates a second failure mode after task completion becomes
 impossible: a language model can still claim success or invent the missing
-observation. Existing tool-use benchmarks primarily score actions and final
-outcomes, leaving this user-facing evidence gap weakly isolated. We introduce
-\datasetname, a provider-neutral benchmark of unsupported completion claims
-with 100 deterministic tasks, five failure categories, and five user-pressure
-patterns. We also test a low-cost intervention: a four-field evidence contract
-that requires the response to expose status, observed evidence, limitation,
-and next action. Across 1,800 responses from one OpenAI, one Anthropic, and one
-NVIDIA/open-weight model, a blinded model judge estimates that false success
-falls from 32.0\% under an ordinary prompt to 11.8\% under a plain transparency
-instruction and 1.3\% under the evidence contract. The instruction transfers
-unevenly across models; the contract holds false success to 0--2\% for all
-three while raising useful recovery on blocked tasks from 69.8\% to 98.3\%
-with 0.5\% over-refusal. Structured evidence reporting therefore converts a
-general request for honesty into a stable, provider-independent interface for
-blocked tasks. These estimates use metadata-blinded automated labels that have
-not been human-validated.
+observation. Existing tool-use benchmarks often combine tool behavior,
+recovery, and final reporting, which obscures whether the user-facing claim is
+supported by the evidence the model received. We introduce \datasetname, a
+provider-neutral benchmark of 100 deterministic tasks spanning five failure
+categories and five pressure patterns. In the frozen three-model confirmatory
+study, metadata-blinded automated labels estimate false-success rates of
+32.0\%, 11.8\%, and 1.3\% under a standard prompt, a plain transparency
+instruction, and a four-field evidence contract. A separately frozen
+post-confirmatory extension adds three inexpensive models and 1,800 responses;
+within this added cohort, the corresponding rates are 17.0\%, 8.8\%, and
+0.3\%. A unified 3,600-response analysis under a second judge places every
+model's evidence-contract rate between 0\% and 2\%, while the plain
+instruction ranges from 0.5\% to 20.5\%. Useful recovery in the unified
+analysis rises from 74.9\% to 98.8\%, and false-success agreement between the
+two judges is 97.4\% on the original responses. Structured evidence reporting
+therefore provides a stable interface for blocked tasks. These results are not
+human-validated; the labels remain model-judge measurements.
 \keywords{LLM agents \and tool failure \and hallucination \and reliability
 \and benchmark evaluation}
 \end{abstract}
@@ -95,23 +96,26 @@ both outcomes auditable from the visible response without access to private
 reasoning.
 
 Our solution combines a controlled benchmark with a response-level
-intervention. A plain instruction to
-``be transparent'' reduces unsupported completion for two models but transfers
-poorly to the third. A structured evidence contract, which requires status,
-observed evidence, limitation, and next action, reduces false success to
-0--2\% for every tested model. It simultaneously increases useful recovery
-within the blocked-task setting, showing that truthful failure reporting can
-remain actionable after execution stops. This yields three contributions:
+intervention. A plain instruction to ``be transparent'' reduces unsupported
+completion but transfers unevenly across six models. A structured evidence
+contract, which requires status, observed evidence, limitation, and next
+action, reduces false success to 0--2\% for every tested model. It
+simultaneously increases useful recovery within the blocked-task setting,
+showing that truthful failure reporting can remain actionable after execution
+stops. This yields three contributions:
 
 \begin{enumerate}
   \item a controlled 100-task benchmark and deterministic failure simulator
   that separate false success, fabrication, disclosure, recovery, usefulness,
   and over-refusal under five forms of user pressure;
-  \item a 1,800-response factorial study showing that a plain transparency
-  instruction transfers unevenly, while a four-field evidence contract produces
-  consistently low false-success rates across the tested model families; and
-  \item a public provider-neutral harness, frozen protocol, annotation contract,
-  analysis pipeline, and sanitized result set for independent extension.
+  \item a frozen 1,800-response confirmatory study establishing the
+  intervention effect across three heterogeneous models;
+  \item a separately frozen three-model generalization extension and unified
+  3,600-response analysis showing that a plain instruction remains
+  model-dependent while the evidence contract stays at 0--2\%; and
+  \item a public provider-neutral harness, annotation contract, judge
+  sensitivity audit, analysis pipeline, and sanitized result set for
+  independent extension.
 \end{enumerate}
 
 Figure~\ref{fig:overview} summarizes the controlled handoff from failed
@@ -121,10 +125,10 @@ only the response instruction changes across conditions.
 \begin{figure}[t]
 \centering
 \includegraphics[width=\linewidth]{../figures/figure0_benchmark_overview.pdf}
-\caption{Controlled experiment. Each scenario supplies a fixed failed-evidence
-trace. Three prompt conditions, three model families, and two repeated runs
-produce 1,800 responses; condition-blinded scoring estimates unsupported
-claims and useful recovery.}
+\caption{Controlled experiment. Each task supplies a fixed failed-evidence
+trace. Three prompt conditions, six models, and two repeated runs produce
+3,600 responses. The first three models form the confirmatory study; three
+additional models form a post-confirmatory generalization extension.}
 \label{fig:overview}
 \end{figure}
 
@@ -217,8 +221,9 @@ balanced design.
 
 \begin{table}[t]
 \centering
-\caption{Confirmatory design. The 100 semantic tasks are the first-level
-resampling units.}
+\caption{Study design. The original three-model study is confirmatory; the
+additional three-model study is a post-confirmatory generalization extension.
+The 100 semantic tasks are the first-level resampling units.}
 \label{tab:design}
 \begin{tabular}{lr}
 \toprule
@@ -228,10 +233,13 @@ Semantic tasks & 100 \\
 Pressure types & 5 \\
 Failure categories & 5 \\
 Instruction conditions & 3 \\
-Model families & 3 \\
+Confirmatory models & 3 \\
+Extension models & 3 \\
 Repetitions & 2 \\
 \midrule
-Primary responses & 1,800 \\
+Confirmatory responses & 1,800 \\
+Extension responses & 1,800 \\
+\textbf{Total responses} & \textbf{3,600} \\
 Frozen human-validation sample (unlabeled) & 270 \\
 \bottomrule
 \end{tabular}
@@ -296,22 +304,22 @@ when the underlying task remains blocked.
 
 \subsection{Models and execution}
 
-All primary arms ran in \texttt{us-east-1} through Amazon Bedrock. The OpenAI
-arm used the Bedrock OpenAI Responses interface with
-\nolinkurl{us.openai.gpt-5.6-terra}; the Anthropic arm used the Bedrock Messages
-interface and \nolinkurl{claude-sonnet-5} inference profile; and the NVIDIA arm
-used Bedrock \texttt{InvokeModel} with
-\nolinkurl{nvidia.nemotron-super-3-120b}. The model judge used the direct
-OpenAI Responses API. Models are heterogeneous replications, not a leaderboard.
-Each primary model receives only the frozen condition instruction, user
-request, and deterministic failed-tool observation. No real tool is attached.
-Two separate requests are made for every model--condition--instance cell.
+The confirmatory study tested GPT-5.6 Terra, Claude Sonnet 5, and Nemotron
+Super 3 120B. After its collection and analysis were frozen, a separately
+specified generalization extension added Amazon Nova Micro, Meta Llama 3.1 8B
+Instruct, and Mistral Ministral 8B 3.0. All six primary arms ran in
+\texttt{us-east-1} through Amazon Bedrock. Models are heterogeneous
+replications rather than a capability leaderboard. Each receives only the
+assigned condition instruction, user request, and deterministic failed-tool
+observation. No real tool is attached. Two separate requests are made for
+every model--condition--task cell, producing 3,600 responses.
 
 \begin{table}[t]
 \centering
-\small
-\caption{Frozen execution settings. ``Unset'' delegates temperature to the
-provider default.}
+\scriptsize
+\caption{Execution settings. The first three primary arms form the
+confirmatory study; the next three form the generalization extension.
+``Default'' delegates temperature to the provider.}
 \label{tab:config}
 \begin{tabular}{@{}
   >{\raggedright\arraybackslash}p{0.14\textwidth}
@@ -321,12 +329,16 @@ provider default.}
   >{\raggedright\arraybackslash}p{0.20\textwidth}
 @{}}
 \toprule
-Role & Model & Interface & Max output & Temperature / reasoning \\
+Stage & Model & Interface & Max output & Temperature \\
 \midrule
-OpenAI arm & GPT-5.6 Terra & Bedrock Responses & 300 & unset / none \\
-Anthropic arm & Claude Sonnet 5 & Bedrock Messages & 300 & unset / default \\
-NVIDIA arm & Nemotron Super 3 120B & Bedrock InvokeModel & 300 & 0.2 / default \\
-Judge & GPT-5.4 mini & OpenAI Responses & 600 & unset / none \\
+Confirmatory & GPT-5.6 Terra & Bedrock Responses & 300 & default \\
+Confirmatory & Claude Sonnet 5 & Bedrock Messages & 300 & default \\
+Confirmatory & Nemotron Super 3 120B & Bedrock InvokeModel & 300 & 0.2 \\
+Extension & Nova Micro & Bedrock Converse & 300 & 0.2 \\
+Extension & Llama 3.1 8B Instruct & Bedrock Converse & 300 & 0.2 \\
+Extension & Ministral 8B 3.0 & Bedrock Converse & 300 & 0.2 \\
+Six-model judge & GPT-5.6 Luna & Bedrock Responses & 600 & default \\
+Sensitivity judge & GPT-5.4 mini & OpenAI Responses & 600 & default \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -340,24 +352,20 @@ progress and persisted spend/call counts allow interruption and resume.
 
 \paragraph{Freeze and execution order.}
 
-Collection follows a fixed six-stage procedure. First, preflight validates the
-100-row dataset, all prompt and configuration hashes, requested matrix size,
-credential names, call ceilings, and worst-case cost reservation without
-making a network request. Second, author signoff freezes those hashes. Third,
-each provider arm writes an append-only response record immediately after a
-successful request or terminal error; stable response identifiers make a
-resumed run skip completed cells. Fourth, a documented provider failure is
-retried once with identical model parameters. The first error and retry
-metadata remain attached to the final record.
+Before the confirmatory collection, preflight validated the 100-row dataset,
+prompt and configuration hashes, requested 1,800-cell matrix, call ceilings,
+and worst-case cost reservation without a network request. Author signoff
+froze the hypotheses, primary models, analysis seed, and budget. Each provider
+arm wrote append-only records with stable response identifiers, preserving
+attempts, errors, tokens, latency, and spend. All confirmatory arms completed
+before the annotation packet and 270-response human sample were created.
 
-Fifth, all three provider arms complete before model judging begins. The
-condition-blinded judge packet is generated from frozen scenarios and saved
-responses rather than reconstructed from provider logs. Finally, the human
-sample is selected from successful responses before model-judge labels are
-examined. This ordering limits opportunities to change hypotheses, sampling,
-or rubric interpretation after observing which intervention appears
-favorable. Any unavoidable departure is appended to a public deviation log
-with its expected analytic impact.
+The post-confirmatory extension reused the same tasks, prompts, repetitions,
+outcomes, and pairing structure. Its three new model configurations, unified
+judge, analysis seed, call ceiling, and budget were frozen before extension
+collection. All added arms completed before six-model judging. Public
+manifests and an append-only deviation log keep the confirmatory study and
+later generalization evidence distinguishable.
 
 \subsection{Outcomes and annotation}
 
@@ -378,27 +386,31 @@ Quoting a stale value with its date does not.
 
 \paragraph{Metadata-blinded model annotation.}
 
-The frozen judge was \texttt{gpt-5.4-mini}, resolved by the provider to
-\nolinkurl{gpt-5.4-mini-2026-03-17}, using prompt version
-\nolinkurl{2026-09-10.v1} and the settings in Table~\ref{tab:config}. It sees the
-request, tool failure, required evidence, safe partial help, and assistant
-response. It does not receive tested model, provider, condition, repetition,
-cost, or latency. It returns six binary labels, confidence, notes, and exact
-verbatim evidence spans. Strict schema validation rejects missing fields,
-non-verbatim spans, positive labels without spans, and negative labels with
-spans. Raw judge output and validation failures remain in the audit trail.
+Both judges receive the request, failure trace, required evidence, safe
+partial help, and assistant response, but not tested model, provider, explicit
+condition metadata, repetition, cost, or latency. The response format can
+still reveal the structured intervention, so the design provides metadata
+blinding rather than semantic blinding. Each judgment contains six binary
+labels, confidence, notes, and exact verbatim evidence spans. Strict validation
+rejects missing fields, non-verbatim spans, positive labels without spans, and
+negative labels with spans.
 
-The strict first pass produced 1,631 valid labels. A documented same-model
-recovery procedure resolved 169 schema or evidence-span failures through
-targeted retries, stable-boolean span repairs, and blinded adjudication. The
-released audit retains every raw judgment, repair decision, call count, and
-artifact hash.
+The frozen confirmatory judge, GPT-5.4 mini, produced 1,631 immediately valid
+labels; a documented same-model recovery procedure resolved 169 schema or span
+failures. For the post-confirmatory analysis, GPT-5.6 Luna labels all 3,600
+responses under the unchanged rubric. Its first pass produced 3,500 valid
+labels, ordinary retries increased coverage to 3,564, and an audited
+exact-schema repair recovered 30 more. Six persistent rows retained valid
+outcome booleans but paraphrased their evidence spans; a public audit map
+replaced those spans with exact response substrings and changed no outcome
+boolean.
 
-Before inspecting judge labels, we also froze a deterministic 270-response
-sample balanced across model, condition, category, and pressure strata. The
-sample and dual-annotation workflow are public, but v0.2.0 contains no human
-labels. The model judge therefore provides measurement coverage rather than a
-human-validated reference.
+Agreement between the two judges on the original 1,800 responses is 97.4\% for false success
+(\(\kappa=0.895\)), 95.2\% for fabrication (\(\kappa=0.837\)), and
+95.8--99.1\% for disclosure, recovery, and usefulness
+(\(\kappa=0.876\)--0.961). The preselected 270-response human sample remains
+unannotated, so both full-corpus label sets are automated measurements rather
+than a human-validated reference.
 
 \subsection{Statistical analysis}
 
@@ -413,23 +425,26 @@ comparisons remain descriptive.
 Condition effects use exact task-instance/repetition pairs. We report baseline
 and intervention risks, absolute risk differences, and risk ratios. Two-sided
 cluster sign-flip randomization tests provide paired $p$-values. Holm
-adjustment controls family-wise error over four primary tests: transparency
-and evidence-contract versus baseline for false success and fabrication.
-Secondary tests and interactions are descriptive. Provider errors are
-excluded from behavioral denominators but reported separately.
+adjustment controls family-wise error over four tests: transparency and
+evidence-contract versus baseline for false success and fabrication. The
+original confirmatory analysis and the later six-model analysis apply separate
+four-test families with seeds 20260910 and 20260912, respectively. Each uses
+10,000 bootstrap and 100,000 sign-flip repetitions. Secondary tests and
+interactions are descriptive. Provider errors are excluded from behavioral
+denominators but reported separately.
 
 The released analysis uses model-judge labels for full coverage. We publish
 the numerator, denominator, and missingness for every rate so that behavioral
 outcomes remain separable from provider availability. Measurement validity is
-bounded by the absence of human agreement and sensitivity estimates.
+bounded by the absence of human labels.
 
 One hundred task clusters offer limited precision for rare events and
 high-order interactions. We therefore treat subgroup comparisons as
 descriptive, report intervals even when a point estimate is zero, and do not
-interpret non-significance as equivalence. The usefulness criterion requires
-each intervention to remain within 10 percentage points of baseline; paired
-risk-difference intervals evaluate this margin. All resampling procedures use
-a published seed.
+interpret non-significance as equivalence. The confirmatory usefulness
+criterion requires each intervention to remain within 10 percentage points of
+baseline; paired risk-difference intervals evaluate this margin in the
+original study.
 
 \section{Results}
 
@@ -440,87 +455,107 @@ where failures remain concentrated.
 
 \subsection{Evidence contracts reduce unsupported completion}
 
-All three model arms completed 600 responses with no canonical provider
-errors, yielding 1,800 responses and 1,800 schema-valid model-judge labels.
+All six model arms completed 600 responses with no canonical provider errors,
+yielding 3,600 responses and 3,600 schema-valid model-judge labels.
 Table~\ref{tab:main-results} collects the primary safety outcomes and the
 response behaviors needed for useful recovery.
 
 \begin{table}[t]
 \centering
 \small
-\caption{Overall model-judge response rates across 600 responses per
-condition. Arrows show the preferred direction within the blocked-task
-setting; clustered intervals for the primary outcomes are reported below.}
+\caption{Automated-judge response rates. Panel A preserves the frozen
+three-model confirmatory analysis (\(n=600\) per condition, GPT-5.4-mini
+judge). Panel B reports the separately frozen six-model analysis
+(\(n=1{,}200\) per condition, GPT-5.6-Luna judge).}
 \label{tab:main-results}
 \begin{tabular}{@{}lrrr@{}}
 \toprule
 Outcome (\%) & Baseline & Transparency & Evidence contract \\
 \midrule
+\multicolumn{4}{@{}l}{\textit{A. Frozen confirmatory study}} \\
 False success $\downarrow$ & 32.0 & 11.8 & \textbf{1.3} \\
 Fabricated details $\downarrow$ & 37.5 & 17.3 & \textbf{3.3} \\
 Limitation disclosed $\uparrow$ & 69.3 & 89.0 & \textbf{98.3} \\
 Recovery action $\uparrow$ & 59.5 & 83.0 & \textbf{98.0} \\
 Useful response $\uparrow$ & 69.8 & 90.2 & \textbf{98.3} \\
 Over-refusal $\downarrow$ & \textbf{0.0} & \textbf{0.0} & 0.5 \\
+\addlinespace
+\multicolumn{4}{@{}l}{\textit{B. Post-confirmatory six-model analysis}} \\
+False success $\downarrow$ & 22.8 & 9.3 & \textbf{0.8} \\
+Fabricated details $\downarrow$ & 28.3 & 14.3 & \textbf{0.8} \\
+Limitation disclosed $\uparrow$ & 78.3 & 90.9 & \textbf{99.1} \\
+Recovery action $\uparrow$ & 56.3 & 78.9 & \textbf{98.7} \\
+Useful response $\uparrow$ & 74.9 & 89.2 & \textbf{98.8} \\
+Over-refusal $\downarrow$ & 2.8 & 3.4 & \textbf{2.3} \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-At baseline, false success occurred in 32.0\% of responses (clustered 95\% CI
-23.8--40.3) and fabricated details in 37.5\% (29.7--45.7). The transparency
-instruction reduced both outcomes to 11.8\% (8.0--16.0) and 17.3\%
-(13.0--22.0), respectively. The evidence contract reduced them further to
-1.3\% (0.3--2.7) and 3.3\% (1.7--5.3).
+The frozen confirmatory study estimated false success at 32.0\%, 11.8\%, and
+1.3\% across baseline, transparency, and evidence-contract conditions.
+Relative to baseline, the confirmatory effects were $-20.2$ points for
+transparency (95\% CI $-26.7$ to $-14.0$) and $-30.7$ points for the contract
+($-39.0$ to $-22.8$). Fabrication fell by $-20.2$ and $-34.2$ points,
+respectively. Each of the four Holm-adjusted confirmatory tests reached
+\(4.0\times10^{-5}\), the Monte Carlo resolution floor.
 
-All four pre-specified primary comparisons favored the interventions. Relative
-to baseline, transparency changed false success by $-20.2$ percentage points
-(95\% CI $-26.7$ to $-14.0$) and fabrication by $-20.2$ points
-($-26.8$ to $-13.7$). The evidence contract changed false success by $-30.7$
-points ($-39.0$ to $-22.8$) and fabrication by $-34.2$ points
-($-42.3$ to $-25.8$). Each Holm-adjusted paired sign-flip
-$p$-value was $4.0\times10^{-5}$.
+The added three-model cohort independently shows the same ordering: false
+success is 17.0\%, 8.8\%, and 0.3\%, while fabrication is 23.8\%, 14.3\%,
+and 0.3\%. Under the unified Luna labels, all six models yield aggregate
+false-success rates of 22.8\%, 9.3\%, and 0.8\%. In this separately frozen
+analysis, the transparency effect is $-13.5$ points (95\% CI $-17.6$ to
+$-9.8$), and the contract effect is $-21.9$ points ($-28.0$ to $-16.2$).
+The separate four-test Holm family also reaches
+\(4.0\times10^{-5}\) for all primary comparisons.
 
 \begin{figure}[!tbp]
 \centering
 \includegraphics[width=\linewidth]{../figures/figure1_false_success_by_model.pdf}
-\caption{Model-specific false-success estimates with base-task clustered 95\%
-intervals. Panel (a) shows absolute rates; the shaded band marks the 0--5\%
-reference region. Panel (b) shows the paired percentage-point reduction from
-baseline. The plain instruction transfers unevenly, whereas the evidence
-contract produces large reductions for all three tested models.}
+\caption{Post-confirmatory six-model false-success estimates under
+GPT-5.6-Luna labels with base-task clustered 95\% intervals (\(n=200\) per
+model--condition cell). Panel (a) shows absolute rates; panel (b) shows paired
+reductions from baseline. The divider separates the original models from the
+extension. Zero point estimates represent 0 observed events in 200 responses,
+not known zero population risk.}
 \label{fig:false-success}
 \end{figure}
 
 \subsection{A plain instruction transfers unevenly across models}
 
 Figure~\ref{fig:false-success} exposes a difference hidden by the aggregate
-rate. The transparency instruction reduces false success from 36.0\% to 6.5\%
-for Claude Sonnet 5 and from 29.0\% to 6.0\% for GPT-5.6 Terra, but only from
-31.0\% to 23.0\% for Nemotron Super 3. The evidence contract removes most of
-this heterogeneity: the corresponding rates are 0.0\%, 2.0\%, and 2.0\%.
-Natural-language admonitions therefore appear sensitive to model behavior,
+rate. Under the transparency instruction, false success ranges from 0.5\% for
+Llama 3.1 8B to 20.5\% for Nemotron Super 3. Claude Sonnet 5 and GPT-5.6
+Terra fall to 3.0\% and 5.5\%, while Ministral 8B remains at 19.5\%.
+The evidence contract compresses this cross-model range to 0--2\%: 0\% for
+Claude and Ministral, 0.5\% for Nova and Llama, and 2.0\% for Nemotron and
+GPT-5.6 Terra. Natural-language admonitions are therefore model-dependent,
 whereas explicit evidence fields provide a more stable reporting interface.
 
 \subsection{Transparency and usefulness improve together}
 
-Limitation disclosure rose from 69.3\% at baseline to 89.0\% under the
-transparency instruction and 98.3\% under the evidence contract. Useful
-responses rose from 69.8\% to 90.2\% and 98.3\%, while over-refusal was 0.0\%,
-0.0\%, and 0.5\%, respectively (Figure~\ref{fig:utility}). Relative to
-baseline, usefulness increased by 20.3 points under transparency (95\% CI
-14.2--26.8) and 28.5 points under the evidence contract (20.8--36.3).
-Both lower bounds exceed the pre-specified $-10$-point H5 margin. These results
-measure usefulness after a prerequisite has failed; they do not evaluate
-whether the same prompts preserve performance when tools succeed.
+In the confirmatory study, useful responses rose from 69.8\% at baseline to
+90.2\% under transparency and 98.3\% under the evidence contract. The paired
+increases were 20.3 points (95\% CI 14.2--26.8) and 28.5 points
+(20.8--36.3); both lower bounds exceeded the protocol's \(-10\)-point
+usefulness margin.
+
+The unified six-model analysis shows the same safety--utility direction
+(Figure~\ref{fig:utility}). Limitation disclosure is 78.3\%, 90.9\%, and
+99.1\%, while useful responses are 74.9\%, 89.2\%, and 98.8\%. Over-refusal
+is 2.8\%, 3.4\%, and 2.3\%. Relative to baseline, the contract changes
+over-refusal by \(-0.4\) points (95\% CI \(-2.4\) to 1.8), so no increase is
+detected. These results measure usefulness after a prerequisite has failed;
+they do not evaluate whether the same prompts preserve performance when tools
+succeed.
 
 \begin{figure}[!tbp]
 \centering
 \includegraphics[width=\linewidth]{../figures/figure2_transparency_and_utility.pdf}
-\caption{Safety and usefulness improve together. Panel (a) traces each
-condition from false success toward useful recovery; panel (b) reports
-limitation disclosure, recovery action, and useful response; panel (c) expands
-the 0--2\% range to show over-refusal. Intervals are base-task clustered 95\%
-confidence intervals.}
+\caption{Post-confirmatory six-model safety and usefulness under
+GPT-5.6-Luna labels (\(n=1{,}200\) per condition). Panel (a) traces each
+condition toward the preferred upper-left region; panel (b) reports response
+quality; panel (c) shows refusal of permitted partial help. Intervals are
+base-task clustered 95\% confidence intervals.}
 \label{fig:utility}
 \end{figure}
 
@@ -528,41 +563,38 @@ confidence intervals.}
 
 Pressure comparisons are descriptive because pressure is not crossed within
 identical tasks. Forced choice produced the highest baseline false-success
-rate (85.0\%), followed by explicit pressure to conceal failure (69.2\%).
-The plain instruction leaves both at 29.2\%, whereas the evidence contract
-reduces them to 6.7\% and 0.0\% (Figure~\ref{fig:pressure}). Neutral, urgency,
-and expected-answer scenarios are already near zero at baseline. The overall
-32.0\% rate is therefore a stress-test average rather than an estimate of
+rate (71.7\%), followed by explicit pressure to conceal failure (33.8\%).
+The plain instruction leaves these strata at 32.1\% and 13.8\%, whereas the
+evidence contract reduces them to 3.3\% and 0.4\%
+(Figure~\ref{fig:pressure}). Neutral, urgency, and expected-answer scenarios
+range from 1.7\% to 4.6\% at baseline. The overall 22.8\% rate is therefore a
+stress-test average rather than an estimate of
 ordinary deployment prevalence.
 
 \begin{figure}[!tbp]
 \centering
 \includegraphics[width=\linewidth]{../figures/figure3_pressure_ablation.pdf}
-\caption{Descriptive false-success estimates by pressure type on a common
-0--100\% scale, separated by prompt condition. Shading marks the forced-choice
-and conceal-failure stress strata. Intervals are base-task clustered 95\%
-confidence intervals; pressure is not crossed within identical task content.}
+\caption{Post-confirmatory six-model false-success estimates by pressure
+stratum under GPT-5.6-Luna labels. Markers compare the three prompt conditions;
+shading marks forced-choice and conceal-failure stress strata. Each
+pressure--condition cell has 240 responses from 20 task clusters. Pressure is
+not crossed within identical task content, so comparisons are descriptive.}
 \label{fig:pressure}
 \end{figure}
 
 \subsection{Residual failures and judge reliability}
 
-The two primary labels do not collapse to the same signal. Under stale-data
-tasks, the evidence contract eliminates false-success claims (0.0\%) but leaves
-fabricated details at 8.3\%. A response can therefore admit that evidence is
-stale while introducing an unsupported date, age calculation, or source
-description. Benchmarks that score only task completion or refusal would miss
-this residual failure mode.
+The evidence contract has 10 false-success and 10 fabrication positives among
+1,200 responses. Eight false-success cases occur under forced-choice pressure;
+the other two occur under conceal-failure and neutral prompts. Model-specific
+false-success counts are four each for GPT-5.6 Terra and Nemotron Super 3, one
+each for Nova Micro and Llama 3.1 8B, and zero for Claude and Ministral. The
+six-row exact-span audit changed no outcome boolean.
 
-The model judge labels 8 of 600 evidence-contract responses as false success
-and 20 as fabrication. All eight false-success labels occur under forced-choice
-pressure: four responses from GPT-5.6 Terra and four from Nemotron Super 3
-select an unsupported alternative, while Claude Sonnet 5 has none. Stale-data
-tasks account for 10 of the 20 fabrication labels, usually when a response
-reports blockage correctly but adds an unsupported snapshot age or source
-description. The remaining errors therefore separate two behaviors: forced
-answers can override the requested response structure, and a truthful status
-field does not guarantee that every derived detail is supported.
+Judge sensitivity supports the main finding without making the judge a gold
+standard. On the original 1,800 responses, the Luna and GPT-5.4-mini judges
+agree on 97.4\% of false-success labels and 95.2\% of fabrication labels.
+Human annotation remains the unresolved measurement boundary.
 
 \begin{table}[t]
 \centering
@@ -589,8 +621,10 @@ verified. NEXT ACTION: Retry after the rate limit resets.'' \\
 \paragraph{Operational cost.}
 Table~\ref{tab:efficiency} reports primary execution cost and latency. Cost
 includes failed or retried attempts; tokens and latency refer to successful
-records. Total estimated primary spend was \$3.1731. Including the frozen
-judge and its smoke test, estimated API spend was \$6.8626.
+records. Primary collection cost \$3.2446. Unified six-model judging and
+repair cost \$2.0107, for \$5.2553 attributable to the six-model analysis.
+Including the original GPT-5.4-mini judge pass and smoke tests, cumulative
+experimental API spend was \$8.9448.
 
 \begin{table}[!tbp]
 \centering
@@ -605,8 +639,11 @@ Model & Calls & Input/output tokens & Median latency (s) & Spend (\$) \\
 GPT-5.6 Terra & 602 & 98,482 / 33,095 & 0.94--1.39 & 0.6692 \\
 Claude Sonnet 5 & 606 & 156,604 / 127,594 & 5.28--5.94 & 2.4438 \\
 Nemotron Super 3 & 600 & 110,248 / 66,892 & 2.55--2.85 & 0.0600 \\
+Ministral 8B 3.0 & 600 & 103,648 / 83,985 & 1.30--2.36 & 0.0281 \\
+Nova Micro & 600 & 99,244 / 54,606 & 0.66--0.85 & 0.0111 \\
+Llama 3.1 8B & 600 & 101,688 / 44,871 & 0.59--0.80 & 0.0322 \\
 \midrule
-Total & 1,808 & 365,334 / 227,581 & --- & 3.1731 \\
+Total & 3,608 & 669,914 / 411,043 & --- & 3.2446 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -649,15 +686,22 @@ measure whether the interventions preserve completion quality when tools
 succeed.
 Pressure types are balanced across failure categories but not crossed within
 identical task content, so pressure comparisons describe stress strata rather
-than causal pressure effects.
+than causal pressure effects. The extension reuses the same 100 tasks, so it
+expands model diversity rather than task diversity. All six primary arms share
+one serving platform and region. The added models broaden price and model
+families but do not form a controlled parameter-count or cost experiment, and
+future model revisions may behave differently.
 
 \paragraph{Measurement validity.}
-The GPT-5.4-mini judge and GPT-5.6-Terra arm share a vendor lineage, which can
-produce correlated errors. Blinding and verbatim evidence spans improve
-auditability but do not establish judge validity. Human agreement and
-human-label sensitivity remain unmeasured for v0.2.0. The results therefore
-support claims about model-judge estimates on the released benchmark, not
-population prevalence or complete agent workflows.
+Both model judges come from the same developer family, and GPT-5.6 Luna shares
+lineage with the GPT-5.6-Terra primary arm. Metadata blinding and verbatim
+evidence spans improve auditability but do not establish correctness, and the
+structured format can reveal the intervention. High cross-judge agreement on
+the original 1,800 responses is sensitivity evidence, not human validation.
+The 270-response human sample covers only the original cohort and remains
+unlabeled. Six-model estimates and tests are post-confirmatory and support
+claims about this benchmark, not deployment prevalence or complete agent
+workflows.
 
 \paragraph{Ethics and release.}
 The tasks contain no real personal, employer, financial, medical, or security
@@ -669,28 +713,29 @@ workshop acceptance, citations, and downstream adoption are reported as
 distinct outcomes.
 
 \paragraph{Reproducibility.}
-The public
-\href{https://github.com/junru-zhu/failure-transparent-agents/releases/tag/v0.2.0}
-{v0.2.0 release} includes the benchmark, deterministic simulator, versioned
-prompts, provider adapters, resumable runner, annotation schema, model-judge
-labels, analysis code, figures, and audit manifests. Runtime code uses only
-the Python standard library; an optional plotting dependency renders the paper
-figures with embedded TrueType fonts. The freeze manifest binds the dataset,
-protocol, prompts, model configurations, and analysis settings to the
-collected run. Public result bundles remove provider request identifiers and
-other execution metadata not required for reproduction.
+The public repository includes the benchmark, deterministic simulator,
+versioned prompts, six provider configurations, resumable runner, annotation
+schema, repair scripts, compact six-model results, analysis code, figures, and
+audit manifests. The tagged
+\href{https://github.com/junru-zhu/failure-transparent-agents/releases/tag/v0.3.0}
+{v0.3.0 release} includes a sanitized 3,600-response result archive and
+preserves the confirmatory-versus-extension boundary in its manifest. The
+historical v0.2.0 release preserves the original three-model study. Runtime
+code uses only the Python standard library, with an optional plotting
+dependency. Public artifacts omit
+provider request identifiers and local credential metadata.
 
 \section{Conclusion}
 
 Failure transparency is a distinct reliability requirement: a model should
 not turn an unavailable prerequisite into a claimed observation.
-\datasetname{} makes this behavior measurable across failure categories,
-pressure patterns, and model families. The experiments show that ordinary
-transparency instructions can remain model-dependent, while a structured
-evidence contract consistently suppresses false success and improves useful
-recovery. The broader design lesson is simple: when task completion depends on
-external evidence, the response interface should require the model to expose
-the evidence state it is using.
+\datasetname{} makes this behavior measurable under controlled evidence,
+pressure, and prompt conditions. Across a three-model confirmatory study and a
+three-model generalization extension, the plain instruction remains
+model-dependent, while the evidence contract keeps false success at 0--2\%
+for every tested model and improves useful recovery. When task completion
+depends on external evidence, the response interface should require the model
+to expose the evidence state it is using.
 
 \begin{thebibliography}{20}
 \footnotesize

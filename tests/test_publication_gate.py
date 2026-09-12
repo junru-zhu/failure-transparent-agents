@@ -184,7 +184,7 @@ class PublicationGateTest(unittest.TestCase):
                 "status": "approved",
                 "approved_by": "Test Author",
                 "approved_at": "2026-09-11T12:00:00-07:00",
-                "version_tag": "v0.2.0",
+                "version_tag": "v0.3.0",
                 "human_validation_reviewed": True,
                 "github_release_authorized": True,
                 "raw_request_ids_disposition": "removed",

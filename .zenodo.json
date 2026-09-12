@@ -1,7 +1,7 @@
 {
   "title": "Failure-Transparent Agents: Benchmark and Evaluation Harness",
   "description": "Synthetic benchmark, deterministic failed-tool simulator, provider-neutral experiment harness, blinded annotation pipeline, and clustered statistical analysis for measuring unsupported task-completion claims after tool or evidence failure.",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "creators": [
     {
       "name": "Zhu, Junru"

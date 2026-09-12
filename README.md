@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/assets/hero.svg" alt="Failure-Transparent Agents: false-success rate falls from 32.0% to 1.3% with an evidence contract" width="100%">
+  <img src="docs/assets/hero.svg" alt="Failure-Transparent Agents: six-model false-success rate falls from 22.8% to 0.8% with an evidence contract" width="100%">
 </p>
 
 <p align="center">
@@ -25,7 +25,7 @@
   ·
   <a href="data/confirmatory_scenarios.jsonl"><strong>Explore the dataset</strong></a>
   ·
-  <a href="docs/model_judge_report.md"><strong>See all results</strong></a>
+  <a href="docs/six_model_extension_report.md"><strong>See all results</strong></a>
   ·
   <a href="docs/reproduction.md"><strong>Reproduce</strong></a>
   ·
@@ -37,9 +37,8 @@
 ## TL;DR
 
 An agent should never turn “the tool failed” into “the task is complete.”
-Across **1,800 responses** from one OpenAI, one Anthropic, and one NVIDIA
-model, a four-field evidence contract reduced false-success claims from
-**32.0% to 1.3%**.
+Across **3,600 responses from six models**, a four-field evidence contract
+reduced false-success claims from **22.8% to 0.8%**.
 
 <p align="center">
   <img src="docs/assets/results-overview.svg" alt="False-success and fabrication rates across baseline, transparency instruction, and evidence-contract conditions" width="100%">
@@ -47,27 +46,25 @@ model, a four-field evidence contract reduced false-success claims from
 
 | Condition | False success ↓ | Fabrication ↓ | Useful response ↑ |
 |---|---:|---:|---:|
-| Baseline | **32.0%** | **37.5%** | 69.8% |
-| Transparency instruction | **11.8%** | **17.3%** | 90.2% |
-| Evidence contract | **1.3%** | **3.3%** | **98.3%** |
+| Baseline | **22.8%** | **28.3%** | 74.9% |
+| Transparency instruction | **9.3%** | **14.3%** | 89.2% |
+| Evidence contract | **0.8%** | **0.8%** | **98.8%** |
 
 The evidence contract requires the model to expose four fields:
 <kbd>STATUS</kbd> <kbd>EVIDENCE</kbd> <kbd>LIMITATION</kbd>
 <kbd>NEXT_ACTION</kbd>.
 
 > [!IMPORTANT]
-> These are frozen model-judge estimates on a synthetic benchmark. Version
-> 0.2.0 is not human-validated, and the paper does not report human–human or
-> model–human agreement.
+> These are model-judge estimates on a synthetic benchmark. Version 0.3.0 is
+> not human-validated. The original three-model, 1,800-response analysis is
+> confirmatory; the added cohort and unified six-model analysis are explicitly
+> post-confirmatory.
 
 > [!NOTE]
-> **New six-model extension:** adding Amazon Nova Micro, Meta Llama 3.1 8B,
-> and Mistral Ministral 8B yields 3,600 responses. False success is **22.8%**
-> at baseline, **9.2%** with the plain transparency instruction, and **0.8%**
-> with the evidence contract. See the
-> [extension report](docs/six_model_extension_report.md). The current PDF
-> remains the frozen three-model v0.2.0 paper until its six-model revision is
-> rebuilt and re-audited.
+> **Confirmatory result preserved:** in the original three-model study, false
+> success fell from **32.0%** to **11.8%** with a plain transparency
+> instruction and to **1.3%** with the evidence contract. The six-model
+> extension tests transfer across three additional inexpensive models.
 
 ## Run it in 60 seconds
 
@@ -166,7 +163,7 @@ rate: **85.0%**.
 - [x] Byte-stable **failed-tool simulator**
 - [x] Provider-neutral, resumable **evaluation harness**
 - [x] Strict call and cost caps for live execution
-- [x] **1,800 released responses and labels**
+- [x] **3,600 sanitized responses and model-judge labels**
 - [x] Post-confirmatory **six-model, 3,600-response extension**
 - [x] Clustered bootstrap intervals and paired tests
 - [x] Three primary figures and pressure ablation
@@ -228,9 +225,10 @@ recovery, costs, and limitations are documented in:
 - [Frozen model-judge report](docs/model_judge_report.md)
 - [Completion audit](docs/completion_audit.md)
 
-The released study used GPT-5.6 Terra, Claude Sonnet 5, and NVIDIA Nemotron
-Super 3 120B through Amazon Bedrock, with GPT-5.4 mini as the direct-API,
-condition-blinded judge.
+The original study used GPT-5.6 Terra, Claude Sonnet 5, and NVIDIA Nemotron
+Super 3 120B. The extension adds Amazon Nova Micro, Meta Llama 3.1 8B
+Instruct, and Mistral Ministral 8B 3.0. GPT-5.4 mini scored the confirmatory
+study; GPT-5.6 Luna produced the unified six-model labels.
 
 <details>
 <summary><strong>Repository map</strong></summary>
@@ -270,7 +268,9 @@ or read [CONTRIBUTING.md](CONTRIBUTING.md).
 - Credentials and private environment identifiers are excluded.
 - Pressure comparisons are descriptive because pressure is not crossed within
   identical task content.
-- Version 0.2.0 is model-judge-only and not human-validated.
+- Version 0.3.0 is model-judge-only and not human-validated.
+- The original confirmatory study and post-confirmatory extension are reported
+  separately before the unified six-model analysis.
 
 ## Citation
 
@@ -280,7 +280,7 @@ Zenodo DOI is issued, cite the versioned GitHub release and paper.
 ```text
 Junru Zhu. Failure-Transparent Agents:
 Benchmarking Unsupported Claims After Tool Failure.
-Version 0.2.0, 2026.
+Version 0.3.0, 2026.
 ```
 
 ## License

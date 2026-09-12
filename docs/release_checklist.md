@@ -8,7 +8,7 @@
 - [x] Provider failures and exclusions are published.
 - [x] Human sample was selected before model-judge labels were inspected.
 - [x] Junru Zhu authorized omission of human validation from v0.2.0 on
-      2026-09-11.
+      2026-09-11 and authorized the six-model v0.3.0 release on 2026-09-12.
 - [x] Claims are explicitly model-judge-only and not human-validated.
 - [ ] Optional future human files, agreement, adjudication, and consensus
       artifacts are published in a later validation release.
@@ -49,7 +49,8 @@
 - [x] Author list and order are confirmed; affiliation and contribution text
       remain to be added if required by the submission venue.
 - [x] Repository owner/name and public visibility are approved.
-- [x] v0.2.0 tag and release notes are approved.
+- [x] v0.2.0 remains the historical confirmatory artifact; v0.3.0 release
+      notes and publication approval are present.
 - [x] Explicit GitHub release authorization is recorded.
 - [ ] Zenodo archive is created from the exact GitHub release.
 - [ ] DOI is inserted into README, citation metadata, and paper.
@@ -59,24 +60,26 @@
 External publication is never performed by the harness.
 
 `make release-audit` validates the source release candidate only. For the
-authorized v0.2.0 model-judge-only release, build the final source and
-sanitized results artifacts with:
+authorized v0.3.0 model-judge-only release, build the source, wheel, and
+sanitized six-model result artifacts with:
 
 ```bash
-make model-only-release-all RUN_ID=confirmatory-20260910-v1
-make model-only-release-wheel
+make release-bundle PYTHON=.venv/bin/python
+make six-model-release-wheel PYTHON=.venv/bin/python
+make six-model-results-bundle PYTHON=.venv/bin/python
 ```
 
-The v0.2.0 approval requires all model-output dispositions to be approved and
-raw request IDs to be removed. It does not assert that human validation was
-performed. The human-label final publication gate remains available for a
-future human-validated release.
+The v0.3.0 approval covers all six primary arms and the unified Luna judge.
+It requires raw request IDs and retry details to be removed and does not
+assert that human validation was performed. The original 1,800-response study
+remains confirmatory; the added cohort and unified analysis are
+post-confirmatory.
 
-- [ ] Run `make model-only-release-all` and `make model-only-release-wheel`.
+- [x] Run the source, wheel, and six-model results builders.
 - [ ] Confirm the source worktree is clean and every packaged source file is
   tracked in the release commit.
-- [ ] Inspect the results-bundle manifest and verify 1,800 public responses
-  with 1,800 frozen model-judge labels.
-- [ ] Confirm the results ZIP contains no request IDs, retry errors, private
+- [x] Inspect the results-bundle manifest and verify 3,600 public responses
+  with 3,600 model-judge labels.
+- [x] Confirm the results ZIP contains no request IDs, retry errors, private
   sample key, human annotation files, credentials, local user paths, or private
   execution-environment identifiers.

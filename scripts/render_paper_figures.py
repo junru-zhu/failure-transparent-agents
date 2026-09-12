@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Render publication-quality paper figures from the frozen analysis tables."""
+"""Render publication-quality paper figures from the audited analysis tables."""
 
 from __future__ import annotations
 
@@ -49,9 +49,20 @@ MARKERS = {
 }
 MODEL_LABELS = {
     "claude-sonnet-5": "Claude Sonnet 5",
+    "mistral.ministral-3-8b-instruct": "Ministral 8B 3.0",
     "nvidia.nemotron-super-3-120b": "Nemotron Super 3",
+    "us.amazon.nova-micro-v1:0": "Nova Micro",
+    "us.meta.llama3-1-8b-instruct-v1:0": "Llama 3.1 8B",
     "us.openai.gpt-5.6-terra": "GPT-5.6 Terra",
 }
+MODEL_ORDER = (
+    "claude-sonnet-5",
+    "nvidia.nemotron-super-3-120b",
+    "us.openai.gpt-5.6-terra",
+    "mistral.ministral-3-8b-instruct",
+    "us.amazon.nova-micro-v1:0",
+    "us.meta.llama3-1-8b-instruct-v1:0",
+)
 PRESSURE_LABELS = {
     "conceal_failure": "Conceal failure",
     "expected_answer": "Expected answer",
@@ -79,18 +90,18 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--rates",
         default=(
-            "results/confirmatory-20260910-v1/"
-            "analysis-model-judge/rates.csv"
+            "results/model-extension-20260912-v1/"
+            "analysis-six-model/rates.csv"
         ),
-        help="Frozen analysis rates CSV.",
+        help="Audited analysis rates CSV.",
     )
     parser.add_argument(
         "--comparisons",
         default=(
-            "results/confirmatory-20260910-v1/"
-            "analysis-model-judge/comparisons.csv"
+            "results/model-extension-20260912-v1/"
+            "analysis-six-model/comparisons.csv"
         ),
-        help="Frozen paired-comparison CSV.",
+        help="Audited paired-comparison CSV.",
     )
     parser.add_argument(
         "--output-dir",
@@ -131,6 +142,53 @@ def format_percent(value: float) -> str:
     return f"{value:.1f}%"
 
 
+def validate_six_model_analysis(
+    rows: Sequence[Mapping[str, str]],
+    comparisons: Sequence[Mapping[str, str]],
+) -> None:
+    """Fail closed when figure inputs do not match the six-model analysis."""
+
+    model_rows = [
+        row
+        for row in rows
+        if row["scope"] == "model" and row["metric"] == "false_success"
+    ]
+    observed_models = {row["model"] for row in model_rows}
+    if observed_models != set(MODEL_ORDER) or len(model_rows) != 18:
+        raise ValueError(
+            "expected 18 false-success model rows for the six configured models"
+        )
+
+    overall_rows = [row for row in rows if row["scope"] == "overall"]
+    if len(overall_rows) != 18:
+        raise ValueError("expected 18 overall rows (6 outcomes × 3 conditions)")
+    if {
+        (row["condition"], row["n"], row["base_task_clusters"])
+        for row in overall_rows
+    } != {
+        ("baseline", "1200", "100"),
+        ("transparency", "1200", "100"),
+        ("evidence_contract", "1200", "100"),
+    }:
+        raise ValueError("overall rows do not describe 1,200 responses per condition")
+
+    pressure_rows = [
+        row
+        for row in rows
+        if row["scope"] == "pressure" and row["metric"] == "false_success"
+    ]
+    if len(pressure_rows) != 15:
+        raise ValueError("expected 15 pressure rows (5 strata × 3 conditions)")
+
+    model_effects = [
+        row
+        for row in comparisons
+        if row["scope"] == "model" and row["metric"] == "false_success"
+    ]
+    if len(model_effects) != 12:
+        raise ValueError("expected 12 model effect rows (6 models × 2 interventions)")
+
+
 def configure_style() -> None:
     mpl.rcParams.update(
         {
@@ -161,7 +219,7 @@ def configure_style() -> None:
             "pdf.fonttype": 42,
             "pdf.use14corefonts": False,
             "ps.fonttype": 42,
-            "svg.hashsalt": "failure-transparent-agents-v0.2.0",
+            "svg.hashsalt": "failure-transparent-agents-six-model",
             "svg.fonttype": "none",
             "savefig.bbox": "tight",
             "savefig.facecolor": "white",
@@ -523,7 +581,7 @@ def figure_benchmark_overview(output_dir: Path) -> None:
     ax.text(
         0.610,
         0.700,
-        "3 prompts × 3 models × 2 runs",
+        "3 prompts × 6 models × 2 runs",
         ha="center",
         va="center",
         fontsize=9.0,
@@ -560,7 +618,7 @@ def figure_benchmark_overview(output_dir: Path) -> None:
     ax.text(
         0.610,
         0.245,
-        "OpenAI · Anthropic · NVIDIA/open-weight",
+        "3 confirmatory + 3 extension models",
         ha="center",
         va="center",
         fontsize=6.3,
@@ -579,13 +637,13 @@ def figure_benchmark_overview(output_dir: Path) -> None:
         0.819,
         0.790,
         "4",
-        "Blinded scoring",
+        "Metadata-blinded scoring",
         accent=COLORS["evidence_contract"],
     )
     ax.text(
         0.888,
         0.590,
-        "5 response metrics",
+        "6 response outcomes",
         ha="center",
         va="center",
         fontsize=8.5,
@@ -595,7 +653,7 @@ def figure_benchmark_overview(output_dir: Path) -> None:
     ax.text(
         0.872,
         0.430,
-        "false success is primary",
+        "2 primary safety outcomes",
         ha="center",
         va="center",
         fontsize=6.6,
@@ -616,9 +674,9 @@ def figure_benchmark_overview(output_dir: Path) -> None:
     arrow((0.753, 0.525), (0.794, 0.525))
 
     card(
-        0.350,
+        0.330,
         0.015,
-        0.300,
+        0.340,
         0.085,
         facecolor=INK,
         edgecolor=INK,
@@ -628,7 +686,7 @@ def figure_benchmark_overview(output_dir: Path) -> None:
     ax.text(
         0.500,
         0.057,
-        "100 × 3 × 3 × 2 = 1,800 responses",
+        "100 × 6 × 3 × 2 = 3,600 responses",
         ha="center",
         va="center",
         fontsize=7.3,
@@ -657,14 +715,10 @@ def figure_false_success_by_model(
         for row in comparisons
         if row["scope"] == "model" and row["metric"] == "false_success"
     }
-    models = (
-        "us.openai.gpt-5.6-terra",
-        "claude-sonnet-5",
-        "nvidia.nemotron-super-3-120b",
-    )
+    models = MODEL_ORDER
     offsets = {"baseline": 0.20, "transparency": 0.0, "evidence_contract": -0.20}
 
-    fig = plt.figure(figsize=(PAPER_WIDTH_IN, 3.10))
+    fig = plt.figure(figsize=(PAPER_WIDTH_IN, 4.20))
     grid = fig.add_gridspec(
         1,
         2,
@@ -687,9 +741,11 @@ def figure_false_success_by_model(
         linewidth=0.8,
         linestyle=(0, (2, 2)),
     )
-    for y in (0.5, 1.5):
+    for y in (0.5, 1.5, 3.5, 4.5):
         rate_ax.axhline(y, color="#F0F2F5", linewidth=0.8, zorder=0)
         effect_ax.axhline(y, color="#F0F2F5", linewidth=0.8, zorder=0)
+    for ax in (rate_ax, effect_ax):
+        ax.axhline(2.5, color=HAIRLINE, linewidth=1.1, zorder=1)
 
     for condition in CONDITIONS:
         xs: list[float] = []
@@ -751,7 +807,7 @@ def figure_false_success_by_model(
         )
 
     rate_ax.set_yticks(y_positions, [MODEL_LABELS[model] for model in models])
-    rate_ax.set_ylim(2.5, -0.55)
+    rate_ax.set_ylim(5.5, -0.55)
     rate_ax.set_xlim(-1.0, 50)
     rate_ax.xaxis.set_major_locator(MultipleLocator(10))
     rate_ax.xaxis.set_major_formatter(PercentFormatter(xmax=100, decimals=0))
@@ -761,7 +817,7 @@ def figure_false_success_by_model(
 
     effect_ax.axvline(0, color=MUTED, linewidth=0.9)
     effect_ax.set_yticks([])
-    effect_ax.set_ylim(2.5, -0.55)
+    effect_ax.set_ylim(5.5, -0.55)
     effect_ax.set_xlim(0, 50)
     effect_ax.xaxis.set_major_locator(MultipleLocator(10))
     effect_ax.xaxis.set_major_formatter(
@@ -797,7 +853,27 @@ def figure_false_success_by_model(
         fontsize=6.6,
         color=MUTED,
     )
-    fig.subplots_adjust(left=0.155, right=0.985, top=0.78, bottom=0.18)
+    fig.text(
+        0.018,
+        0.705,
+        "Confirmatory",
+        ha="left",
+        va="center",
+        fontsize=6.4,
+        color=MUTED,
+        rotation=90,
+    )
+    fig.text(
+        0.018,
+        0.315,
+        "Extension",
+        ha="left",
+        va="center",
+        fontsize=6.4,
+        color=MUTED,
+        rotation=90,
+    )
+    fig.subplots_adjust(left=0.185, right=0.985, top=0.83, bottom=0.14)
     save_figure(
         fig,
         output_dir,
@@ -971,11 +1047,11 @@ def figure_transparency_and_utility(
         )
     refusal.set_ylim(0.18, 0.82)
     refusal.set_yticks([])
-    refusal.set_xlim(-0.05, 2.15)
-    refusal.xaxis.set_major_locator(MultipleLocator(0.5))
+    refusal.set_xlim(0, 6.2)
+    refusal.xaxis.set_major_locator(MultipleLocator(2.0))
     refusal.xaxis.set_major_formatter(PercentFormatter(xmax=100, decimals=1))
     refusal.set_xlabel("Over-refusal rate")
-    panel_header(refusal, "c", "Cost of the intervention")
+    panel_header(refusal, "c", "Refusal of permitted partial help")
     style_axis(refusal, grid_axis="x", hide_left=True)
 
     add_condition_legend(
@@ -986,7 +1062,7 @@ def figure_transparency_and_utility(
     fig.text(
         0.985,
         0.985,
-        "n = 600 per condition · scenario-clustered 95% CI",
+        "n = 1,200 per condition · scenario-clustered 95% CI",
         ha="right",
         va="top",
         fontsize=6.3,
@@ -1022,30 +1098,23 @@ def figure_pressure_ablation(
     pressures = (
         "forced_choice",
         "conceal_failure",
-        "neutral",
         "expected_answer",
         "urgency",
+        "neutral",
     )
-    fig, axes = plt.subplots(
-        1,
-        3,
-        figsize=(PAPER_WIDTH_IN, 3.02),
-        sharex=True,
-        sharey=True,
-        gridspec_kw={"wspace": 0.12},
+    offsets = {"baseline": 0.22, "transparency": 0.0, "evidence_contract": -0.22}
+    fig, ax = plt.subplots(figsize=(PAPER_WIDTH_IN, 3.18))
+    ax.axhspan(-0.48, 1.48, facecolor=WARM_LIGHT, edgecolor="none", zorder=0)
+    ax.axvspan(0, 5, facecolor=LIGHT_COLORS["evidence_contract"], zorder=0)
+    ax.axvline(
+        5,
+        color=COLORS["evidence_contract"],
+        linewidth=0.7,
+        linestyle=(0, (2, 2)),
+        zorder=1,
     )
-    panel_ids = ("a", "b", "c")
 
-    for panel_id, condition, ax in zip(panel_ids, CONDITIONS, axes):
-        ax.axhspan(-0.48, 1.48, facecolor=WARM_LIGHT, edgecolor="none", zorder=0)
-        ax.axvspan(0, 5, facecolor=LIGHT_COLORS["evidence_contract"], zorder=0)
-        ax.axvline(
-            5,
-            color=COLORS["evidence_contract"],
-            linewidth=0.7,
-            linestyle=(0, (2, 2)),
-            zorder=1,
-        )
+    for condition in CONDITIONS:
         for index, pressure in enumerate(pressures):
             row = lookup[(pressure, condition)]
             value = as_percent(row["rate"])
@@ -1053,7 +1122,7 @@ def figure_pressure_ablation(
             high = as_percent(row["ci_high"])
             ax.errorbar(
                 [value],
-                [index],
+                [index + offsets[condition]],
                 xerr=[[value - low], [high - value]],
                 fmt=MARKERS[condition],
                 markersize=6.2,
@@ -1065,44 +1134,35 @@ def figure_pressure_ablation(
                 zorder=3,
             )
 
-        ax.set_ylim(4.5, -0.55)
-        ax.set_xlim(-3, 105)
-        ax.xaxis.set_major_locator(MultipleLocator(25))
-        ax.xaxis.set_major_formatter(PercentFormatter(xmax=100, decimals=0))
-        panel_header(ax, panel_id, CONDITION_LABELS[condition])
-        style_axis(ax, grid_axis="x")
-
-    axes[0].set_yticks(
+    ax.set_ylim(4.5, -0.55)
+    ax.set_xlim(0, 85)
+    ax.xaxis.set_major_locator(MultipleLocator(20))
+    ax.xaxis.set_major_formatter(PercentFormatter(xmax=100, decimals=0))
+    ax.set_yticks(
         range(len(pressures)),
         [PRESSURE_LABELS[item] for item in pressures],
     )
-    axes[1].tick_params(labelleft=False)
-    axes[2].tick_params(labelleft=False)
-    fig.supxlabel(
-        "False-success rate (lower is better)",
-        x=0.58,
-        y=0.045,
-        fontsize=7.8,
-        color=INK,
+    ax.set_xlabel("False-success rate (lower is better)")
+    panel_header(ax, "a", "False success across descriptive pressure strata")
+    style_axis(ax, grid_axis="x")
+
+    add_condition_legend(
+        fig,
+        loc="upper left",
+        bbox_to_anchor=(0.095, 0.99),
     )
     fig.text(
         0.985,
-        0.975,
-        "n = 120 per pressure × condition · scenario-clustered 95% CI",
+        0.985,
+        "n = 240 per pressure × condition · 20 task clusters · 95% CI",
         ha="right",
         va="top",
         fontsize=6.3,
         color=MUTED,
     )
-    fig.subplots_adjust(left=0.165, right=0.985, top=0.79, bottom=0.19)
+    fig.subplots_adjust(left=0.19, right=0.985, top=0.78, bottom=0.18)
 
-    save_figure(
-        fig,
-        output_dir,
-        "figure3_pressure_ablation",
-        panel_axes=list(axes),
-        panel_ids=list(panel_ids),
-    )
+    save_figure(fig, output_dir, "figure3_pressure_ablation")
 
 
 def main() -> int:
@@ -1113,6 +1173,7 @@ def main() -> int:
     configure_style()
     rows = load_rates(rates_path)
     comparisons = load_rates(comparisons_path)
+    validate_six_model_analysis(rows, comparisons)
     if args.only in (None, "overview"):
         figure_benchmark_overview(output_dir)
     if args.only in (None, "figure1"):

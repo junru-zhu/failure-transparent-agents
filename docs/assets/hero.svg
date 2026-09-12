@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640" role="img" aria-labelledby="title desc">
   <title id="title">Failure-Transparent Agents benchmark</title>
-  <desc id="desc">A benchmark for whether language models admit tool failure, with false-success rate reduced from 32.0 percent to 1.3 percent by an evidence contract.</desc>
+  <desc id="desc">A six-model benchmark for whether language models admit tool failure, with false-success rate reduced from 22.8 percent to 0.8 percent by an evidence contract.</desc>
   <defs>
     <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
       <stop offset="0" stop-color="#081426"/>
@@ -26,14 +26,14 @@
 
     <text x="0" y="118" fill="#fff" font-family="Inter,Arial,sans-serif" font-size="54" font-weight="800">Do language models</text>
     <text x="0" y="179" fill="#fff" font-family="Inter,Arial,sans-serif" font-size="54" font-weight="800">admit tool failure?</text>
-    <text x="0" y="226" fill="#b9cce2" font-family="Inter,Arial,sans-serif" font-size="23">100 tasks · 1,800 responses · deterministic failure traces</text>
+    <text x="0" y="226" fill="#b9cce2" font-family="Inter,Arial,sans-serif" font-size="23">100 tasks · 6 models · 3,600 responses</text>
 
     <g transform="translate(0 284)">
       <rect width="530" height="176" rx="22" fill="#07111f" opacity=".72" stroke="#31516f" filter="url(#shadow)"/>
       <text x="28" y="37" fill="#9eb6ce" font-family="Inter,Arial,sans-serif" font-size="16" font-weight="700" letter-spacing="1">FALSE-SUCCESS RATE</text>
-      <text x="28" y="112" fill="#ff9a6b" font-family="Inter,Arial,sans-serif" font-size="64" font-weight="800">32.0%</text>
+      <text x="28" y="112" fill="#ff9a6b" font-family="Inter,Arial,sans-serif" font-size="64" font-weight="800">22.8%</text>
       <text x="227" y="107" fill="#7d98b3" font-family="Inter,Arial,sans-serif" font-size="42">→</text>
-      <text x="292" y="112" fill="#70f0b5" font-family="Inter,Arial,sans-serif" font-size="64" font-weight="800">1.3%</text>
+      <text x="292" y="112" fill="#70f0b5" font-family="Inter,Arial,sans-serif" font-size="64" font-weight="800">0.8%</text>
       <text x="29" y="150" fill="#8fa8c1" font-family="Inter,Arial,sans-serif" font-size="17">baseline</text>
       <text x="294" y="150" fill="#8fa8c1" font-family="Inter,Arial,sans-serif" font-size="17">evidence contract</text>
     </g>
@@ -72,6 +72,6 @@
     <text x="62" y="391" fill="#c4eadf" font-family="Inter,Arial,sans-serif" font-size="15">evidence · limitation · next action</text>
   </g>
 
-  <text x="72" y="600" fill="#8fa8c1" font-family="Inter,Arial,sans-serif" font-size="15">Model-judge estimates on a synthetic benchmark; v0.2.0 is not human-validated.</text>
+  <text x="72" y="600" fill="#8fa8c1" font-family="Inter,Arial,sans-serif" font-size="15">Original study confirmatory; six-model analysis post-confirmatory and not human-validated.</text>
   <text x="1206" y="600" fill="url(#accent)" text-anchor="end" font-family="Inter,Arial,sans-serif" font-size="17" font-weight="700">MIT · Python · Reproducible</text>
 </svg>

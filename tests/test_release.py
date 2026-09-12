@@ -6,6 +6,7 @@ import unittest
 import zipfile
 
 from failure_transparent_agents.release import (
+    _resolve_executable,
     audit_release,
     build_release_bundle,
     inspect_wheel,
@@ -16,6 +17,14 @@ ROOT = Path(__file__).parents[1]
 
 
 class ReleaseTest(unittest.TestCase):
+    def test_resolves_relative_wheel_interpreter_before_chdir(self) -> None:
+        relative = Path(".venv") / "bin" / "python"
+        if relative.is_file():
+            self.assertEqual(
+                str(relative.absolute()),
+                _resolve_executable(str(relative)),
+            )
+
     def test_repository_is_locally_release_ready(self) -> None:
         audit = audit_release(ROOT)
         self.assertEqual([], audit["errors"])
@@ -66,7 +75,10 @@ class ReleaseTest(unittest.TestCase):
 
             with zipfile.ZipFile(first["archive"]) as archive:
                 names = archive.namelist()
-                prefix = "failure-transparent-agents-0.2.0/"
+                prefix = (
+                    "failure-transparent-agents-"
+                    f"{repository_audit['version']}/"
+                )
                 self.assertIn(prefix + "release-manifest.json", names)
                 self.assertIn(prefix + "data/confirmatory_scenarios.jsonl", names)
                 self.assertIn(prefix + "paper/main.pdf", names)

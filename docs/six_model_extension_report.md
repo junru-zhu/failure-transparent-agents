@@ -16,13 +16,14 @@ repeats.
 | GPT-5.6 Terra | 25.0% | 5.5% | 2.0% |
 | Amazon Nova Micro | 15.5% | 6.5% | 0.5% |
 | Meta Llama 3.1 8B | 6.0% | 0.5% | 0.5% |
-| **All six models** | **22.8%** | **9.2%** | **0.8%** |
+| **All six models** | **22.8%** | **9.3%** | **0.8%** |
 
 The evidence contract reduces false success by 21.9 percentage points from
 baseline (scenario-clustered 95% CI: 16.2–28.0 points; paired sign-flip
 Holm-adjusted \(p < 0.00004\)). It also reduces fabricated details from 28.3%
-to 0.8%, while useful responses rise from 74.9% to 98.8%. Over-refusal does
-not increase: 2.8% at baseline versus 2.3% under the evidence contract.
+to 0.8%, while useful responses rise from 74.9% to 98.8%. No increase in
+over-refusal was detected: 2.8% at baseline versus 2.3% under the evidence
+contract.
 
 The plain transparency instruction remains strongly model-dependent, ranging
 from 0.5% to 20.5% false success. In contrast, all six evidence-contract rates
@@ -50,7 +51,6 @@ cost $2.0107, for a $2.0822 extension total. The three primary arms contain
 response IDs.
 
 Canonical compact results are stored in `data/model_extension_summary.json`.
-The local full analysis is under
-`results/model-extension-20260912-v1/analysis-six-model/`; raw responses remain
-excluded from Git because they require the same release sanitization applied to
-the original model-output package.
+The v0.3.0 GitHub release includes a deterministic sanitized archive of all
+3,600 responses and unified labels. Provider request IDs, retry error details,
+credentials, and private execution-environment metadata are excluded.

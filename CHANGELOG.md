@@ -4,6 +4,29 @@ All notable public changes are recorded here. The project uses semantic
 versioning for software artifacts and a separate dated candidate version for
 the benchmark protocol.
 
+## 0.3.0 - 2026-09-12
+
+### Added
+
+- Post-confirmatory evaluation of Amazon Nova Micro, Meta Llama 3.1 8B
+  Instruct, and Mistral Ministral 8B 3.0.
+- Unified six-model analysis over 3,600 responses using GPT-5.6 Luna, with
+  judge-sensitivity results against the frozen GPT-5.4-mini labels.
+- Deterministic sanitized six-model results archive with all response rows,
+  model-judge labels, aggregate tables, figures, audit manifests, and
+  per-file hashes.
+- Six-model IEEE and INSAI/Springer paper revisions with regenerated vector
+  figures and explicit confirmatory-versus-post-confirmatory reporting.
+
+### Validation
+
+- All six model arms contain 600/600 successful responses.
+- The unified result set contains 3,600 unique responses and 3,600 valid
+  model-judge labels.
+- Provider request IDs, retry error details, credentials, local paths, and
+  private execution-environment identifiers are excluded from public bundles.
+- Version 0.3.0 remains model-judge-only and is not human-validated.
+
 ## 0.2.0 - 2026-09-11
 
 ### Added

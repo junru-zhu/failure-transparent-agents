@@ -95,9 +95,10 @@ judge prompt.
 make human-sample RUN_ID="$FTA_RUN_ID"
 ```
 
-Version 0.2.0 does not include human annotations and is not human-validated.
+Versions 0.2.0 and 0.3.0 do not include human annotations and are not
+human-validated.
 The following workflow is retained for an optional future validation release;
-it is not required to reproduce the v0.2.0 model-judge-only findings.
+it is not required to reproduce the model-judge-only findings.
 
 Give annotators only `human_sample_blinded.jsonl`. Keep
 `human_sample_key.jsonl` hidden until labels are final.
@@ -149,7 +150,7 @@ make analyze RUN_ID="$FTA_RUN_ID"
 ```
 
 The full-corpus target uses the complete frozen model-judge label set and
-produces the v0.2.0 results. Outputs include:
+reproduces the v0.2.0 confirmatory results. Outputs include:
 
 - joined labeled JSONL;
 - rates and paired comparisons as CSV;
@@ -180,8 +181,8 @@ make human-sensitivity RUN_ID="$FTA_RUN_ID"
 
 ```bash
 make release-audit
-make model-only-release-all RUN_ID="$FTA_RUN_ID"
-make model-only-release-wheel
+make six-model-results-bundle PYTHON=.venv/bin/python
+make six-model-release-wheel PYTHON=.venv/bin/python
 ```
 
 The audit validates metadata consistency, the benchmark hash, the public file
@@ -194,32 +195,34 @@ Before freeze, `local_release_ready` can be true while
 `publication_ready` remains false. The remaining publication blockers and
 post-publication DOI updates are listed explicitly in the JSON report.
 
-For v0.2.0, author Junru Zhu provided explicit GitHub publication
-authorization on 2026-09-11. All model-output dispositions are approved and
-the request-ID disposition is `removed`. Build the final source and
-scientific-results artifacts with:
+Version 0.3.0 preserves the original confirmatory analysis and publishes the
+separate model-generalization extension. Build the source and sanitized
+six-model scientific-results artifacts with:
 
 ```bash
-make model-only-release-all RUN_ID="$FTA_RUN_ID"
-make model-only-release-wheel
+make release-bundle PYTHON=.venv/bin/python
+make six-model-results-bundle PYTHON=.venv/bin/python
+make six-model-release-wheel PYTHON=.venv/bin/python
 ```
 
-The model-only results bundle includes authorized model responses, frozen
-model-judge labels, analysis tables, and figures. It never includes human
-labels, the private sample key, raw provider request IDs, retry errors,
-credentials, local paths, or private execution-environment identifiers.
+The six-model results bundle includes 3,600 authorized model responses,
+GPT-5.6-Luna labels, analysis tables, figures, and audit manifests. It never
+includes human labels, the private sample key, raw provider request IDs, retry
+errors, credentials, local paths, or private execution-environment
+identifiers. The historical `make model-only-release-all` path remains for
+rebuilding the v0.2.0 three-model artifact.
 
 The separate `make final-release-all` path remains available for a future
 release after real human labels, agreement, and sensitivity outputs exist.
 
 ## 9. Build the release wheel
 
-`make model-only-release-wheel` is the v0.2.0 release build. It builds from
-the exact audited final source ZIP in a temporary clean tree, sets a stable
+`make six-model-release-wheel` is the v0.3.0 package build. It builds from the exact
+audited source ZIP in a temporary clean tree, sets a stable
 `SOURCE_DATE_EPOCH`, verifies the console scripts, and rejects local debris
 before writing the wheel and checksum to `dist/`. The selected interpreter
 must have `setuptools==75.8.0`; use
-`make model-only-release-wheel WHEEL_PYTHON=python3.11` if that is the
+`make six-model-release-wheel WHEEL_PYTHON=python3.11` if that is the
 prepared build environment.
 
 For a non-release development wheel only, run:

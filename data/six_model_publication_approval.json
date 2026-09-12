@@ -1,0 +1,22 @@
+{
+  "schema_version": "1.0",
+  "status": "approved",
+  "approved_by": "Junru Zhu",
+  "approved_at": "2026-09-12T06:30:00Z",
+  "version_tag": "v0.3.0",
+  "release_mode": "six_model_model_judge_only",
+  "human_validation_status": "not_conducted",
+  "six_model_release_authorized": true,
+  "github_release_authorized": true,
+  "raw_request_ids_disposition": "removed",
+  "provider_output_dispositions": {
+    "openai_luna_judge": "approved_for_release",
+    "openai_primary_bedrock": "approved_for_release",
+    "anthropic_bedrock": "approved_for_release",
+    "nvidia_bedrock": "approved_for_release",
+    "amazon_nova_bedrock": "approved_for_release",
+    "meta_llama_bedrock": "approved_for_release",
+    "mistral_bedrock": "approved_for_release"
+  },
+  "notes": "Author authorized completion and GitHub publication of the six-model paper and sanitized model-judge-only result set. The original study remains confirmatory; the added cohort and unified analysis are post-confirmatory. All public artifacts must state that no human validation was conducted."
+}

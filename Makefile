@@ -8,8 +8,11 @@ EXTENSION_ROOT := results/$(EXTENSION_RUN_ID)
 EXTENSION_MANIFEST := data/model_extension_manifest.json
 VALIDATION_OUTPUT_DIR ?= results/full-scale-validation
 RELEASE_OUTPUT_DIR ?= dist
-RELEASE_ARCHIVE ?= $(RELEASE_OUTPUT_DIR)/failure-transparent-agents-0.2.0-release-candidate.zip
+RELEASE_ARCHIVE ?= $(RELEASE_OUTPUT_DIR)/failure-transparent-agents-0.3.0-release-candidate.zip
 MODEL_ONLY_RELEASE_ARCHIVE ?= $(RELEASE_OUTPUT_DIR)/failure-transparent-agents-0.2.0-release.zip
+SIX_MODEL_SOURCE_ARCHIVE ?= $(RELEASE_OUTPUT_DIR)/failure-transparent-agents-0.3.0-release.zip
+SIX_MODEL_ANALYSIS_ROOT ?= $(EXTENSION_ROOT)/analysis-six-model
+SIX_MODEL_PUBLICATION_APPROVAL ?= data/six_model_publication_approval.json
 RESUME ?=
 WORKERS ?= 4
 SOURCE_DATE_EPOCH ?= 1789081818
@@ -35,8 +38,10 @@ SIX_MODEL_RAW_ARGS := $(RAW_ARGS) \
 	annotate-adjudication finalize-adjudication analyze human-sensitivity \
 	release-audit final-publication-gate release-bundle final-release-bundle \
 	final-results-bundle model-only-source-bundle model-only-results-bundle \
+	six-model-results-bundle six-model-release-all \
 	model-only-release-all final-release-all release-wheel \
-	model-only-release-wheel paper-figures paper insai-paper clean
+	model-only-release-wheel six-model-release-wheel \
+	paper-figures paper insai-paper clean
 
 test:
 	PYTHONPATH=$(PYTHONPATH) $(PYTHON) -m unittest discover -s tests -v
@@ -285,6 +290,15 @@ model-only-results-bundle:
 		--approval $(PUBLICATION_APPROVAL) \
 		--output-dir $(RELEASE_OUTPUT_DIR)
 
+six-model-results-bundle:
+	PYTHONPATH=$(PYTHONPATH) $(PYTHON) -m failure_transparent_agents.six_model_release \
+		--root $(CURDIR) \
+		--analysis-root $(SIX_MODEL_ANALYSIS_ROOT) \
+		--approval $(SIX_MODEL_PUBLICATION_APPROVAL) \
+		--output-dir $(RELEASE_OUTPUT_DIR)
+
+six-model-release-all: model-only-source-bundle six-model-results-bundle
+
 model-only-release-all: model-only-source-bundle model-only-results-bundle
 
 final-release-all: final-release-bundle final-results-bundle
@@ -298,6 +312,12 @@ release-wheel: release-bundle
 model-only-release-wheel: model-only-source-bundle
 	PYTHONPATH=$(PYTHONPATH) $(PYTHON) -m failure_transparent_agents.release \
 		--wheel-from-archive $(MODEL_ONLY_RELEASE_ARCHIVE) \
+		--wheel-python $(WHEEL_PYTHON) \
+		--output-dir $(RELEASE_OUTPUT_DIR)
+
+six-model-release-wheel: model-only-source-bundle
+	PYTHONPATH=$(PYTHONPATH) $(PYTHON) -m failure_transparent_agents.release \
+		--wheel-from-archive $(SIX_MODEL_SOURCE_ARCHIVE) \
 		--wheel-python $(WHEEL_PYTHON) \
 		--output-dir $(RELEASE_OUTPUT_DIR)
 

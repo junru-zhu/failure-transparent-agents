@@ -5,7 +5,7 @@ type: software
 authors:
   - family-names: Zhu
     given-names: Junru
-version: 0.2.0
+version: 0.3.0
 license: MIT
 repository-code: "https://github.com/junru-zhu/failure-transparent-agents"
 abstract: "A reproducible benchmark and evaluation harness for unsupported task-completion claims after required tool or evidence failure."

@@ -457,6 +457,7 @@ def build_wheel_from_release_archive(
     source_archive = Path(archive_path).resolve()
     if not source_archive.is_file():
         raise ValueError(f"release archive does not exist: {source_archive}")
+    resolved_python = _resolve_executable(python_executable)
     _verify_sibling_checksum(source_archive)
     destination = Path(output_dir)
     destination.mkdir(parents=True, exist_ok=True)
@@ -485,7 +486,7 @@ def build_wheel_from_release_archive(
         required_setuptools = _required_setuptools_version(
             source_root / "pyproject.toml"
         )
-        installed_setuptools = _installed_setuptools_version(python_executable)
+        installed_setuptools = _installed_setuptools_version(resolved_python)
         if installed_setuptools != required_setuptools:
             raise ValueError(
                 f"wheel interpreter has setuptools {installed_setuptools!r}; "
@@ -498,7 +499,7 @@ def build_wheel_from_release_archive(
         environment["SOURCE_DATE_EPOCH"] = str(source_date_epoch)
         completed = subprocess.run(
             [
-                python_executable,
+                resolved_python,
                 "-m",
                 "pip",
                 "wheel",
@@ -555,6 +556,21 @@ def build_wheel_from_release_archive(
     report_path.write_bytes(canonical_json(report))
     report["report"] = str(report_path)
     return report
+
+
+def _resolve_executable(value: str) -> str:
+    """Resolve an interpreter before wheel construction changes directories."""
+
+    candidate = Path(value).expanduser()
+    if candidate.is_absolute() or len(candidate.parts) > 1:
+        absolute = candidate.absolute()
+        if not absolute.is_file() or not os.access(absolute, os.X_OK):
+            raise ValueError(f"wheel interpreter is not executable: {absolute}")
+        return str(absolute)
+    discovered = shutil.which(value)
+    if discovered is None:
+        raise ValueError(f"wheel interpreter was not found: {value}")
+    return str(Path(discovered).absolute())
 
 
 def inspect_wheel(

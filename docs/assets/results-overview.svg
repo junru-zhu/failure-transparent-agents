@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="410" viewBox="0 0 1200 410" role="img" aria-labelledby="title desc">
   <title id="title">Failure-Transparent Agents headline results</title>
-  <desc id="desc">False-success claims fall from 32.0 percent at baseline to 11.8 percent with a transparency instruction and 1.3 percent with an evidence contract. Fabricated details fall from 37.5 percent to 17.3 percent and 3.3 percent.</desc>
+  <desc id="desc">Across six models, false-success claims fall from 22.8 percent at baseline to 9.3 percent with a transparency instruction and 0.8 percent with an evidence contract. Fabricated details fall from 28.3 percent to 14.3 percent and 0.8 percent.</desc>
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0" stop-color="#081426"/>
@@ -29,7 +29,7 @@
   <circle cx="75" cy="410" r="190" fill="#5793ff" opacity=".06"/>
 
   <text x="48" y="55" fill="#f5f9ff" font-family="Inter,Arial,sans-serif" font-size="25" font-weight="800">What changes after a tool fails?</text>
-  <text x="48" y="84" fill="#9fb4c9" font-family="Inter,Arial,sans-serif" font-size="16">Lower is better · frozen model-judge estimates · n = 1,800 responses</text>
+  <text x="48" y="84" fill="#9fb4c9" font-family="Inter,Arial,sans-serif" font-size="16">Lower is better · six-model analysis · n = 3,600 responses</text>
 
   <g transform="translate(48 116)" filter="url(#shadow)">
     <rect width="708" height="244" rx="22" fill="#07121f" opacity=".78" stroke="#294966"/>
@@ -38,22 +38,22 @@
     <g font-family="Inter,Arial,sans-serif">
       <text x="28" y="84" fill="#b6c8da" font-size="16">Baseline</text>
       <rect x="190" y="63" width="450" height="28" rx="14" fill="#15283b"/>
-      <rect x="190" y="63" width="360" height="28" rx="14" fill="url(#bad)"/>
-      <text x="660" y="84" fill="#ffad82" text-anchor="end" font-size="20" font-weight="800">32.0%</text>
+      <rect x="190" y="63" width="257" height="28" rx="14" fill="url(#bad)"/>
+      <text x="660" y="84" fill="#ffad82" text-anchor="end" font-size="20" font-weight="800">22.8%</text>
 
       <text x="28" y="139" fill="#b6c8da" font-size="16">Transparency</text>
       <rect x="190" y="118" width="450" height="28" rx="14" fill="#15283b"/>
-      <rect x="190" y="118" width="133" height="28" rx="14" fill="url(#mid)"/>
-      <text x="660" y="139" fill="#83b9ff" text-anchor="end" font-size="20" font-weight="800">11.8%</text>
+      <rect x="190" y="118" width="105" height="28" rx="14" fill="url(#mid)"/>
+      <text x="660" y="139" fill="#83b9ff" text-anchor="end" font-size="20" font-weight="800">9.3%</text>
 
       <text x="28" y="194" fill="#b6c8da" font-size="16">Evidence contract</text>
       <rect x="190" y="173" width="450" height="28" rx="14" fill="#15283b"/>
-      <rect x="190" y="173" width="15" height="28" rx="8" fill="url(#good)"/>
-      <text x="660" y="194" fill="#82f4c5" text-anchor="end" font-size="20" font-weight="800">1.3%</text>
+      <rect x="190" y="173" width="9" height="28" rx="5" fill="url(#good)"/>
+      <text x="660" y="194" fill="#82f4c5" text-anchor="end" font-size="20" font-weight="800">0.8%</text>
     </g>
 
     <line x1="28" y1="218" x2="680" y2="218" stroke="#233a50"/>
-    <text x="28" y="238" fill="#7791aa" font-family="Inter,Arial,sans-serif" font-size="13">30.7 percentage-point reduction from baseline</text>
+    <text x="28" y="238" fill="#7791aa" font-family="Inter,Arial,sans-serif" font-size="13">21.9 percentage-point reduction from baseline</text>
   </g>
 
   <g transform="translate(784 116)" filter="url(#shadow)">
@@ -62,19 +62,19 @@
 
     <g font-family="Inter,Arial,sans-serif">
       <text x="26" y="84" fill="#9fb4c9" font-size="15">Baseline</text>
-      <text x="342" y="87" fill="#ffad82" text-anchor="end" font-size="29" font-weight="800">37.5%</text>
+      <text x="342" y="87" fill="#ffad82" text-anchor="end" font-size="29" font-weight="800">28.3%</text>
       <line x1="26" y1="101" x2="342" y2="101" stroke="#22394f"/>
 
       <text x="26" y="139" fill="#9fb4c9" font-size="15">Transparency</text>
-      <text x="342" y="142" fill="#83b9ff" text-anchor="end" font-size="29" font-weight="800">17.3%</text>
+      <text x="342" y="142" fill="#83b9ff" text-anchor="end" font-size="29" font-weight="800">14.3%</text>
       <line x1="26" y1="156" x2="342" y2="156" stroke="#22394f"/>
 
       <text x="26" y="194" fill="#9fb4c9" font-size="15">Evidence contract</text>
-      <text x="342" y="197" fill="#82f4c5" text-anchor="end" font-size="29" font-weight="800">3.3%</text>
+      <text x="342" y="197" fill="#82f4c5" text-anchor="end" font-size="29" font-weight="800">0.8%</text>
     </g>
 
     <rect x="26" y="215" width="316" height="2" rx="1" fill="#20364a"/>
-    <text x="26" y="238" fill="#7791aa" font-family="Inter,Arial,sans-serif" font-size="13">Useful-response rate reaches 98.3%</text>
+    <text x="26" y="238" fill="#7791aa" font-family="Inter,Arial,sans-serif" font-size="13">Useful-response rate reaches 98.8%</text>
   </g>
 
   <g transform="translate(856 42)">
