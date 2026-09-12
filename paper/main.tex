@@ -41,22 +41,21 @@
 \begin{abstract}
 Tool-using agents can fail twice: a required tool fails, then the model reports
 the task as completed anyway. Prior benchmarks study missing tools, faulty
-outputs, recovery, and monitorability, but provide limited controlled evidence
-on how response instructions change the final claim after an explicit failure.
-We introduce \datasetname, a provider-neutral benchmark of 100 deterministic
-failure scenarios spanning five failure categories and five user-pressure
-strata. Crossing three model families, three prompt conditions, and two
-repetitions yields 1,800 responses. We compare a standard prompt, a plain
-failure-transparency instruction, and a four-field evidence contract requiring
-status, observed evidence, limitation, and next action. A metadata-blinded LLM
-judge estimates false-success rates of 32.0\%, 11.8\%, and 1.3\%,
-respectively. The plain instruction varies substantially by model, whereas the
-complete evidence-contract prompt keeps the observed rate at 0--2\% for all
-three model configurations. Within failure-only scenarios, useful recovery
-rises from 69.8\% to 98.3\%. The benchmark isolates post-failure communication
-as a distinct reliability layer and releases the data, harness, labels, and
-analysis. The labels are not human-validated, and successful-tool behavior is
-not evaluated.
+outputs, recovery, and monitorability, but do not cleanly isolate how response
+instructions change the final claim after a known failure. We introduce
+\datasetname, a provider-neutral benchmark of 100 deterministic scenarios
+spanning five failure categories and five user-pressure strata. Crossing three
+model families, three prompt conditions, and two repetitions yields 1,800
+responses. We compare a standard prompt, a plain transparency instruction, and
+a four-field evidence contract requiring status, observed evidence, limitation,
+and next action. Metadata-blinded automated labels, which are not
+human-validated, estimate false-success rates of 32.0\%, 11.8\%, and 1.3\%,
+respectively. The plain instruction transfers unevenly across models, whereas
+the evidence contract keeps the observed rate at 0--2\% for all three tested
+configurations. Within blocked tasks, useful recovery rises from 69.8\% to
+98.3\%. These results identify explicit evidence reporting as a low-cost
+reliability interface and establish post-failure communication as a distinct
+benchmark layer. We release the data, simulator, harness, labels, and analysis.
 \end{abstract}
 \begin{IEEEkeywords}
 LLM agents, tool failure, failure transparency, evidence provenance, benchmark
@@ -86,10 +85,11 @@ misdiagnose solvability, trust corrupted outputs, or recover poorly
 \cite{zhang2024toolbehonest,sun2024toolsfail,trevino2025failtalms,
 shourya2026trace}. OpenAI's Flaky-tools evaluation goes further by testing
 whether agents claim completion or conceal impossibility when tools or inputs
-are unavailable~\cite{guan2025monitoring}. Our contribution is therefore not
-the discovery of failure concealment. We isolate a response-level intervention
-question: \emph{when the failed observation is fixed, how do instructions
-change the claims made to the user?}
+are unavailable~\cite{guan2025monitoring}. These studies establish the
+phenomenon, but tool behavior, recovery, and final reporting often vary
+together. We isolate a response-level intervention question:
+\emph{when the failed observation is fixed, how do instructions change the
+claims made to the user?}
 
 We call the desired behavior \emph{failure transparency}: the response states
 the failed prerequisite, separates observed from unavailable evidence, and
@@ -105,18 +105,16 @@ failure-transparency instruction reduces unsupported claims but transfers
 unevenly across model families. A structured evidence contract---status,
 observed evidence, limitation, and next action---keeps automated-judge false
 success at 0--2\% for all three tested families and improves recovery within
-blocked tasks. The main contributions are:
+blocked tasks. This yields three contributions:
 
 \begin{enumerate}
-  \item a controlled benchmark of 100 curated scenarios spanning
-  unavailable web access, missing inputs, failed execution, denied permission,
-  and stale evidence under five forms of user pressure;
-  \item an empirical separation between false success, fabrication, limitation
-  disclosure, recovery, usefulness, and refusal of permitted partial work
-  across 1,800 responses;
-  \item paired evidence that a general transparency instruction is
-  model-dependent, while a four-field evidence contract produces consistently
-  low false-success estimates across the tested model families; and
+  \item a controlled 100-scenario benchmark and deterministic failure simulator
+  that separate false success, fabrication, disclosure, recovery, usefulness,
+  and over-refusal under five forms of user pressure;
+  \item a 1,800-response factorial study showing that a plain transparency
+  instruction transfers unevenly, while a four-field evidence contract produces
+  consistently low false-success estimates across the tested model families;
+  and
   \item a public provider-neutral harness, frozen protocol, annotation contract,
   analysis pipeline, and sanitized result set for independent extension.
 \end{enumerate}
@@ -212,9 +210,14 @@ manual review of inconsistent cases~\cite{nvidia2026evaluation}. Because the
 frozen human sample remains unannotated, all reported labels are automated
 measurements rather than a human-validated reference.
 
-\section{Benchmark Design}
+\section{Benchmark and Evaluation Protocol}
 
-\subsection{Task structure}
+The protocol separates three sources of variation: a deterministic evidence
+state, the instruction applied to the response, and the measurement of the
+resulting claims. We first define the scenario and simulator, then specify the
+interventions, execution matrix, annotation procedure, and statistical tests.
+
+\subsection{Controlled task design}
 
 Each scenario \(s_i=(u_i,o_i,e_i,r_i)\) contains a user request \(u_i\), a
 structured failed-tool observation \(o_i\), the evidence \(e_i\) required for
@@ -346,7 +349,7 @@ usage, retries, errors, and estimated cost. It reserves a conservative
 upper-bound cost before each call and refuses launches that would exceed the
 budget cap. Append-only progress permits interruption and exact resume.
 
-\subsection{Protocol freezing and execution}
+\paragraph{Freeze and execution order}
 
 Before collection, the dataset, prompts, model configurations, hypotheses,
 analysis seed, call ceiling, and budget cap were frozen by content hash. A
@@ -363,9 +366,9 @@ inspected. Deviations are recorded in a public append-only log. This ordering
 preserves the confirmatory contrasts while keeping operational detail in the
 reproduction package.
 
-\section{Annotation and Outcomes}
+\subsection{Outcomes and annotation}
 
-\subsection{Labels}
+\paragraph{Outcome definitions}
 
 The two primary outcomes are \textbf{false success} and \textbf{fabricated
 details}. False success means that the response states or clearly implies an
@@ -380,7 +383,7 @@ value, selecting either unsupported forced-choice option, presenting stale
 data as current, or making a hedged numerical guess counts as fabrication.
 Quoting a stale value with its date does not.
 
-\subsection{Metadata-blinded model annotation}
+\paragraph{Metadata-blinded model annotation}
 
 The frozen judge was GPT-5.4 mini, resolved to the dated provider snapshot
 listed in Table~\ref{tab:config}. It sees the request, tool failure, required
@@ -404,7 +407,7 @@ sample and dual-annotation workflow are public, but v0.2.0 contains no human
 labels. The model judge therefore provides measurement coverage rather than a
 human-validated reference.
 
-\section{Statistical Analysis}
+\subsection{Statistical analysis}
 
 For each metric, we report raw counts and rates by condition, model, category,
 and pressure. Ninety-five percent intervals use a hierarchical nonparametric
@@ -436,7 +439,12 @@ resampling procedures use a published seed.
 
 \section{Results}
 
-\subsection{Structured evidence sharply reduces unsupported completion}
+We organize the evidence in three steps. Aggregate comparisons establish the
+main intervention effect, cross-model and usefulness analyses test transfer
+and practical value, and pressure-stratum plus residual-label analyses identify
+where failures remain concentrated.
+
+\subsection{Evidence contracts reduce unsupported completion}
 
 All three model arms completed 600 responses with no canonical provider
 errors, yielding 1,800 responses and 1,800 schema-valid automated-judge labels.
@@ -494,7 +502,7 @@ for all three tested models.}
 \label{fig:false-success}
 \end{figure*}
 
-\subsection{The instruction effect is model-dependent}
+\subsection{A plain instruction transfers unevenly across models}
 
 Figure~\ref{fig:false-success} exposes a difference hidden by the aggregate
 rate. The transparency instruction reduces false success from 36.0\% to 6.5\%
@@ -506,7 +514,7 @@ whereas the complete evidence-contract prompt produced lower observed rates
 in this benchmark. The design does not isolate structure from wording, length,
 or explicit decision constraints.
 
-\subsection{Transparency improves useful recovery after failure}
+\subsection{Transparency and usefulness improve together}
 
 Limitation disclosure rose from 69.3\% at baseline to 89.0\% under the
 transparency instruction and 98.3\% under the evidence contract. Useful
@@ -530,7 +538,7 @@ scenario-clustered 95\% confidence intervals.}
 \label{fig:utility}
 \end{figure*}
 
-\subsection{Forced-choice and conceal-failure strata are hardest}
+\subsection{Adversarial pressure concentrates failures}
 
 Pressure comparisons are descriptive because pressure is not crossed within
 identical scenarios. The forced-choice stratum has the highest baseline
@@ -551,7 +559,7 @@ confidence intervals; pressure is not crossed within identical task content.}
 \label{fig:pressure}
 \end{figure*}
 
-\subsection{Residual labels expose a measurement boundary}
+\subsection{Residual failures and judge reliability}
 \label{sec:measurement-boundary}
 
 The automated judge labels 8 of 600 evidence-contract responses as false
@@ -590,7 +598,7 @@ verified. NEXT ACTION: Retry after the rate limit resets.'' \\
 \end{tabular}
 \end{table*}
 
-\paragraph{Efficiency}
+\paragraph{Operational cost}
 Primary collection required 1,808 request attempts for 1,800 completed
 responses and cost an estimated \$3.1731. Including judge calls and the judge
 smoke test, total estimated API spend was \$6.8626. Per-model token, latency,
@@ -623,8 +631,9 @@ layer complements end-to-end agent benchmarks: it cannot measure full agent
 competence, but it can identify whether a system communicates a known failure
 faithfully.
 
-\section{Limitations and Ethics}
+\section{Scope, Limitations, and Responsible Release}
 
+\paragraph{Evaluation scope}
 The benchmark contains 100 English synthetic tasks and one-step supplied
 failure traces. It does not measure tool selection, autonomous retry behavior,
 partial success, long-horizon planning, or organizational consequences.
@@ -635,6 +644,7 @@ Pressure types are balanced across failure categories but not crossed within
 identical task content, so pressure comparisons describe stress strata rather
 than causal pressure effects.
 
+\paragraph{Measurement validity}
 The GPT-5.4-mini judge and GPT-5.6-Terra arm share a vendor lineage, which can
 produce correlated errors. Metadata blinding and verbatim evidence spans
 improve auditability but do not establish judge validity; the structured
@@ -644,6 +654,7 @@ Human agreement and sensitivity remain unmeasured. The results therefore
 support claims about automated-judge estimates on the released benchmark, not
 population prevalence or complete agent workflows.
 
+\paragraph{Ethics and release}
 The tasks contain no real personal, employer, financial, medical, or security
 data. The benchmark does not encourage bypassing permissions; recovery for
 denied access requires authorization or an approved alternate source.
@@ -652,8 +663,7 @@ and logs are screened for accidental secrets. Preprint posting, peer review,
 workshop acceptance, citations, and downstream adoption are reported as
 distinct outcomes.
 
-\section{Reproducibility}
-
+\paragraph{Reproducibility}
 The public
 \href{https://github.com/junru-zhu/failure-transparent-agents/releases/tag/v0.2.0}
 {v0.2.0 release} includes the benchmark, deterministic simulator, versioned
