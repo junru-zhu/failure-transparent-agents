@@ -85,9 +85,22 @@ def parse_args() -> argparse.Namespace:
         help="Frozen analysis rates CSV.",
     )
     parser.add_argument(
+        "--comparisons",
+        default=(
+            "results/confirmatory-20260910-v1/"
+            "analysis-model-judge/comparisons.csv"
+        ),
+        help="Frozen paired-comparison CSV.",
+    )
+    parser.add_argument(
         "--output-dir",
         default="paper/figures",
         help="Destination for editable SVG and publication PDF files.",
+    )
+    parser.add_argument(
+        "--only",
+        choices=("overview", "figure1", "figure2", "figure3"),
+        help="Render only one figure; the default renders the complete set.",
     )
     return parser.parse_args()
 
@@ -629,12 +642,20 @@ def figure_benchmark_overview(output_dir: Path) -> None:
 
 def figure_false_success_by_model(
     rows: list[dict[str, str]],
+    comparisons: list[dict[str, str]],
     output_dir: Path,
 ) -> None:
+    """Show absolute rates and paired mitigation effects by model."""
+
     selected = select(rows, scope="model", metric="false_success")
     lookup = {
         (row["model"], row["condition"]): row
         for row in selected
+    }
+    effect_lookup = {
+        (row["scope_value"], row["intervention_condition"]): row
+        for row in comparisons
+        if row["scope"] == "model" and row["metric"] == "false_success"
     }
     models = (
         "us.openai.gpt-5.6-terra",
@@ -643,12 +664,32 @@ def figure_false_success_by_model(
     )
     offsets = {"baseline": 0.20, "transparency": 0.0, "evidence_contract": -0.20}
 
-    fig, ax = plt.subplots(figsize=(PAPER_WIDTH_IN, 2.88))
+    fig = plt.figure(figsize=(PAPER_WIDTH_IN, 3.10))
+    grid = fig.add_gridspec(
+        1,
+        2,
+        width_ratios=[1.16, 1.0],
+        wspace=0.34,
+    )
+    rate_ax = fig.add_subplot(grid[0, 0])
+    effect_ax = fig.add_subplot(grid[0, 1])
     y_positions = list(range(len(models)))
-    ax.axvspan(0, 5, facecolor=LIGHT_COLORS["evidence_contract"], zorder=0)
-    ax.axvline(5, color=COLORS["evidence_contract"], linewidth=0.8, linestyle=(0, (2, 2)))
+
+    rate_ax.axvspan(
+        0,
+        5,
+        facecolor=LIGHT_COLORS["evidence_contract"],
+        zorder=0,
+    )
+    rate_ax.axvline(
+        5,
+        color=COLORS["evidence_contract"],
+        linewidth=0.8,
+        linestyle=(0, (2, 2)),
+    )
     for y in (0.5, 1.5):
-        ax.axhline(y, color="#F0F2F5", linewidth=0.8, zorder=0)
+        rate_ax.axhline(y, color="#F0F2F5", linewidth=0.8, zorder=0)
+        effect_ax.axhline(y, color="#F0F2F5", linewidth=0.8, zorder=0)
 
     for condition in CONDITIONS:
         xs: list[float] = []
@@ -664,7 +705,7 @@ def figure_false_success_by_model(
             lows.append(value - low)
             highs.append(high - value)
             ys.append(index + offsets[condition])
-        ax.errorbar(
+        rate_ax.errorbar(
             xs,
             ys,
             xerr=[lows, highs],
@@ -680,31 +721,90 @@ def figure_false_success_by_model(
             zorder=3,
         )
 
-    ax.set_yticks(y_positions, [MODEL_LABELS[model] for model in models])
-    ax.invert_yaxis()
-    ax.set_ylim(2.5, -0.55)
-    ax.set_xlim(-1.0, 50)
-    ax.xaxis.set_major_locator(MultipleLocator(10))
-    ax.xaxis.set_major_formatter(PercentFormatter(xmax=100, decimals=0))
-    ax.set_xlabel("False-success rate (lower is better)")
-    style_axis(ax, grid_axis="x")
-    add_condition_legend(
-        ax,
-        loc="lower left",
-        bbox_to_anchor=(0.0, 1.035),
+    for condition in ("transparency", "evidence_contract"):
+        xs = []
+        lows = []
+        highs = []
+        ys = []
+        for index, model in enumerate(models):
+            row = effect_lookup[(model, condition)]
+            reduction = -as_percent(row["absolute_difference"])
+            ci_low = -as_percent(row["absolute_difference_ci_high"])
+            ci_high = -as_percent(row["absolute_difference_ci_low"])
+            xs.append(reduction)
+            lows.append(reduction - ci_low)
+            highs.append(ci_high - reduction)
+            ys.append(index + offsets[condition])
+        effect_ax.errorbar(
+            xs,
+            ys,
+            xerr=[lows, highs],
+            fmt=MARKERS[condition],
+            markersize=6.4,
+            capsize=2.8,
+            elinewidth=1.25,
+            linewidth=0,
+            color=COLORS[condition],
+            markeredgecolor="white",
+            markeredgewidth=0.7,
+            zorder=3,
+        )
+
+    rate_ax.set_yticks(y_positions, [MODEL_LABELS[model] for model in models])
+    rate_ax.set_ylim(2.5, -0.55)
+    rate_ax.set_xlim(-1.0, 50)
+    rate_ax.xaxis.set_major_locator(MultipleLocator(10))
+    rate_ax.xaxis.set_major_formatter(PercentFormatter(xmax=100, decimals=0))
+    rate_ax.set_xlabel("Observed false-success rate")
+    panel_header(rate_ax, "a", "Absolute risk")
+    style_axis(rate_ax, grid_axis="x")
+
+    effect_ax.axvline(0, color=MUTED, linewidth=0.9)
+    effect_ax.set_yticks([])
+    effect_ax.set_ylim(2.5, -0.55)
+    effect_ax.set_xlim(0, 50)
+    effect_ax.xaxis.set_major_locator(MultipleLocator(10))
+    effect_ax.xaxis.set_major_formatter(
+        mpl.ticker.FuncFormatter(lambda value, _: f"{value:.0f} pp")
     )
-    ax.text(
-        0.995,
-        1.068,
+    effect_ax.set_xlabel("Reduction versus baseline (higher is better)")
+    panel_header(effect_ax, "b", "Paired mitigation effect")
+    style_axis(effect_ax, grid_axis="x", hide_left=True)
+    effect_ax.yaxis.set_major_locator(mpl.ticker.NullLocator())
+    effect_ax.yaxis.set_minor_locator(mpl.ticker.NullLocator())
+    effect_ax.tick_params(
+        axis="y",
+        which="both",
+        left=False,
+        right=False,
+        labelleft=False,
+        length=0,
+    )
+    for tick in (*effect_ax.yaxis.majorTicks, *effect_ax.yaxis.minorTicks):
+        tick.set_visible(False)
+
+    add_condition_legend(
+        fig,
+        loc="lower left",
+        bbox_to_anchor=(0.032, 0.902),
+    )
+    fig.text(
+        0.985,
+        0.944,
         "n = 200 per cell · scenario-clustered 95% CI",
-        transform=ax.transAxes,
         ha="right",
         va="bottom",
         fontsize=6.6,
         color=MUTED,
     )
-    fig.subplots_adjust(left=0.155, right=0.985, top=0.82, bottom=0.19)
-    save_figure(fig, output_dir, "figure1_false_success_by_model")
+    fig.subplots_adjust(left=0.155, right=0.985, top=0.78, bottom=0.18)
+    save_figure(
+        fig,
+        output_dir,
+        "figure1_false_success_by_model",
+        panel_axes=[rate_ax, effect_ax],
+        panel_ids=["a", "b"],
+    )
 
 
 def figure_transparency_and_utility(
@@ -1008,13 +1108,19 @@ def figure_pressure_ablation(
 def main() -> int:
     args = parse_args()
     rates_path = Path(args.rates)
+    comparisons_path = Path(args.comparisons)
     output_dir = Path(args.output_dir)
     configure_style()
     rows = load_rates(rates_path)
-    figure_benchmark_overview(output_dir)
-    figure_false_success_by_model(rows, output_dir)
-    figure_transparency_and_utility(rows, output_dir)
-    figure_pressure_ablation(rows, output_dir)
+    comparisons = load_rates(comparisons_path)
+    if args.only in (None, "overview"):
+        figure_benchmark_overview(output_dir)
+    if args.only in (None, "figure1"):
+        figure_false_success_by_model(rows, comparisons, output_dir)
+    if args.only in (None, "figure2"):
+        figure_transparency_and_utility(rows, output_dir)
+    if args.only in (None, "figure3"):
+        figure_pressure_ablation(rows, output_dir)
     return 0
 
 
