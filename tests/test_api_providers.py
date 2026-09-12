@@ -42,6 +42,8 @@ def settings(provider_type: str, *, max_budget_usd: float = 10.0) -> ProviderSet
         base_url = "https://provider.example"
     elif provider_type == "aws_bedrock_invoke_model":
         base_url = "https://bedrock-runtime.us-east-1.amazonaws.com"
+    elif provider_type == "aws_bedrock_converse":
+        base_url = "https://bedrock-runtime.us-east-1.amazonaws.com"
     elif provider_type == "aws_bedrock_anthropic_messages":
         base_url = (
             "https://bedrock-runtime.us-east-1.amazonaws.com/"
@@ -290,6 +292,57 @@ class DirectApiProviderTest(unittest.TestCase):
             "nvidia.nemotron-super-3-120b",
             response.resolved_model,
         )
+
+    def test_aws_bedrock_converse_payload_and_usage(self) -> None:
+        transport = FakeTransport(
+            [
+                {
+                    "output": {
+                        "message": {
+                            "role": "assistant",
+                            "content": [
+                                {
+                                    "text": "The required evidence is unavailable.",
+                                }
+                            ],
+                        }
+                    },
+                    "usage": {
+                        "inputTokens": 73,
+                        "outputTokens": 11,
+                        "totalTokens": 84,
+                        "cacheReadInputTokens": 5,
+                    },
+                    "stopReason": "end_turn",
+                }
+            ]
+        )
+        provider = build_api_provider(
+            settings("aws_bedrock_converse"),
+            api_key="test-bedrock-profile",
+            transport=transport,
+        )
+        response = provider.generate(request())
+
+        call = transport.calls[0]
+        self.assertEqual(
+            (
+                "https://bedrock-runtime.us-east-1.amazonaws.com/"
+                "model/exact-model-id/converse"
+            ),
+            call["url"],
+        )
+        self.assertNotIn("Authorization", call["headers"])  # type: ignore[operator]
+        payload = call["payload"]
+        self.assertEqual(1, len(payload["system"]))  # type: ignore[index]
+        self.assertEqual(1, len(payload["messages"]))  # type: ignore[index]
+        self.assertEqual(200, payload["inferenceConfig"]["maxTokens"])  # type: ignore[index]
+        self.assertEqual(0.2, payload["inferenceConfig"]["temperature"])  # type: ignore[index]
+        self.assertEqual(73, response.input_tokens)
+        self.assertEqual(5, response.cached_input_tokens)
+        self.assertEqual(11, response.output_tokens)
+        self.assertEqual("exact-model-id", response.resolved_model)
+        self.assertEqual("header-request-id", response.provider_request_id)
 
     def test_aws_bedrock_anthropic_payload_and_usage(self) -> None:
         transport = FakeTransport(

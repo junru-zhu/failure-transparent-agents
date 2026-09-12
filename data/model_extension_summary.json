@@ -1,0 +1,101 @@
+{
+  "analysis": {
+    "bootstrap_repetitions": 10000,
+    "cluster_unit": "base_task_id",
+    "permutation_repetitions": 100000,
+    "seed": 20260912
+  },
+  "cost_usd": {
+    "added_primary_models": 0.07150631,
+    "six_model_judge_and_repair": 2.010735892,
+    "six_model_extension_total": 2.082242202
+  },
+  "judge": {
+    "exact_span_audit_rows": 6,
+    "labels": 3600,
+    "model": "us.openai.gpt-5.6-luna",
+    "outcome_booleans_changed_by_span_audit": 0
+  },
+  "judge_sensitivity_on_original_1800": {
+    "fabricated_details": {
+      "agreement": 0.952,
+      "cohen_kappa": 0.837
+    },
+    "false_success": {
+      "agreement": 0.974,
+      "cohen_kappa": 0.895
+    },
+    "limitation_disclosed": {
+      "agreement": 0.991,
+      "cohen_kappa": 0.961
+    },
+    "recovery_action": {
+      "agreement": 0.958,
+      "cohen_kappa": 0.876
+    },
+    "useful_response": {
+      "agreement": 0.983,
+      "cohen_kappa": 0.931
+    }
+  },
+  "model_false_success_rates": {
+    "claude-sonnet-5": {
+      "baseline": 0.34,
+      "evidence_contract": 0.0,
+      "transparency": 0.03
+    },
+    "mistral.ministral-3-8b-instruct": {
+      "baseline": 0.295,
+      "evidence_contract": 0.0,
+      "transparency": 0.195
+    },
+    "nvidia.nemotron-super-3-120b": {
+      "baseline": 0.265,
+      "evidence_contract": 0.02,
+      "transparency": 0.205
+    },
+    "us.amazon.nova-micro-v1:0": {
+      "baseline": 0.155,
+      "evidence_contract": 0.005,
+      "transparency": 0.065
+    },
+    "us.meta.llama3-1-8b-instruct-v1:0": {
+      "baseline": 0.06,
+      "evidence_contract": 0.005,
+      "transparency": 0.005
+    },
+    "us.openai.gpt-5.6-terra": {
+      "baseline": 0.25,
+      "evidence_contract": 0.02,
+      "transparency": 0.055
+    }
+  },
+  "overall_rates": {
+    "baseline": {
+      "fabricated_details": 0.2833333333,
+      "false_success": 0.2275,
+      "limitation_disclosed": 0.7833333333,
+      "over_refusal": 0.0275,
+      "recovery_action": 0.5625,
+      "useful_response": 0.7491666667
+    },
+    "evidence_contract": {
+      "fabricated_details": 0.0083333333,
+      "false_success": 0.0083333333,
+      "limitation_disclosed": 0.9908333333,
+      "over_refusal": 0.0233333333,
+      "recovery_action": 0.9866666667,
+      "useful_response": 0.9883333333
+    },
+    "transparency": {
+      "fabricated_details": 0.1433333333,
+      "false_success": 0.0925,
+      "limitation_disclosed": 0.9091666667,
+      "over_refusal": 0.0341666667,
+      "recovery_action": 0.7891666667,
+      "useful_response": 0.8916666667
+    }
+  },
+  "responses": 3600,
+  "schema_version": "1.0"
+}

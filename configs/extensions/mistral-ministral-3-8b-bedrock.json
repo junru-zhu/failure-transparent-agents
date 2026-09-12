@@ -1,0 +1,20 @@
+{
+  "api_key_env": "AWS_PROFILE",
+  "base_url": "https://bedrock-runtime.us-east-1.amazonaws.com",
+  "extra_body": {},
+  "extra_headers": {},
+  "max_budget_usd": 5.0,
+  "max_calls": 1200,
+  "max_output_tokens": 300,
+  "max_retries": 1,
+  "model": "mistral.ministral-3-8b-instruct",
+  "pricing": {
+    "cached_input_per_million": 0.15,
+    "input_per_million": 0.15,
+    "output_per_million": 0.15
+  },
+  "provider_name": "mistral",
+  "provider_type": "aws_bedrock_converse",
+  "temperature": 0.2,
+  "timeout_seconds": 120
+}

@@ -1,0 +1,52 @@
+{
+  "analysis_seed": 20260912,
+  "base_confirmatory_run_id": "confirmatory-20260910-v1",
+  "benchmark": "failure-transparent-agents",
+  "collection_approval_path": "data/model_extension_approval.json",
+  "collection_approval_sha256": "298da76ca60a05747f2394dceadc1abc9152ba8a090e08c2808d3be4462d972c",
+  "conditions": 3,
+  "dataset": "data/confirmatory_scenarios.jsonl",
+  "dataset_sha256": "4bb2f63bc0bf03570021246943d4c1d871d0fe29e78edcdcfe740c0f3ee716ea",
+  "extension_run_id": "model-extension-20260912-v1",
+  "frozen": true,
+  "frozen_at": "2026-09-12T05:05:19Z",
+  "judge_config_sha256s": {
+    "configs/extensions/openai-gpt-5.6-luna-judge-bedrock.json": "81be8a57e022eb24e3d015b9b1e4ff2447dc400658d2955dd1a2d92611237767"
+  },
+  "model_verification_path": "data/model_extension_verification.json",
+  "model_verification_sha256": "858adbbbe2399af92f63948e70b315861e1963214880b1ef3d4f3d3280a3af01",
+  "planned_extension_responses": 1800,
+  "planned_six_model_responses": 3600,
+  "post_collection_amendment": {
+    "changed_outcome_booleans": 0,
+    "prior_manifest_sha256": "eb1bd330c97ff9ac6fffe4936aae6451a17b79efe58ac4287bce2655d58c8db0",
+    "reason": "Corrected the labels-only analysis command and added reproducible judge schema-repair and exact-span audit artifacts.",
+    "recorded_at": "2026-09-12T05:45:00Z"
+  },
+  "provider_config_sha256s": {
+    "configs/extensions/amazon-nova-micro-bedrock.json": "e846901948c254b60298fc9826e3dca6c2c205c6708689f61927b187842e09c2",
+    "configs/extensions/meta-llama-3.1-8b-bedrock.json": "178ab72046efd341f874275a965db0fa00a345e5b2a6bf1065fe3967c013e7d6",
+    "configs/extensions/mistral-ministral-3-8b-bedrock.json": "ae7c760d9cfe859ba83119590a6cebffa8f05a429ca53dd4581978b0c359ff06"
+  },
+  "repeats": 2,
+  "schema_version": "1.0",
+  "source_sha256s": {
+    "Makefile": "871b1478c40723f2e40d345fbf99e58f84f0a72116bd6316915b4cc83bb8af6b",
+    "data/model_extension_span_audit.json": "7a050d8a1db7fa5fc82e8673de78a6ece31ec3ddb1f0bc9f8fe56d51836d1b81",
+    "docs/model_extension_judge_repair.md": "e8a798aca80244c04b80e9299af9eb38e8d99e0fcc57b35c7afe0194307c511c",
+    "docs/model_generalization_extension.md": "50031a5b2de8f29bffe49689026cfbebcc4658639e3d415a8e870db87401877b",
+    "scripts/apply_exact_span_audit.py": "bb23994d9d410fd38f2fba210f60b4a9fbe2bb23430e21a69f0e6c4a5dd5b47c",
+    "scripts/repair_model_extension_judge.py": "f26996187b68bb41a8d65bd57cada4e25cae362f0ef734e8a0e337dae5b2799e",
+    "src/failure_transparent_agents/analysis.py": "83352ab8bc81f193bb091976213c2c2ea023bc7f41bc0346cbb3f01cb2233404",
+    "src/failure_transparent_agents/api_providers.py": "c60d2e88a520e8d97541174ce3e30046ce299c749e29676509866bb54c8e9daf",
+    "src/failure_transparent_agents/conditions.py": "0baf43cc5a7afe2b62c68923ff465fe29e9ef9e5937b89508bf7e2969ee37f4f",
+    "src/failure_transparent_agents/confirmatory.py": "523bbd82c6514cf07d84f0e4ab6b91aa5ca22100acce6e190018552a9acde6e5",
+    "src/failure_transparent_agents/execution.py": "7f3af7a8ec4740e6c7ca97a69bae0adf9e3cdbed3038b399b40221e38e09035f",
+    "src/failure_transparent_agents/judge.py": "2b8cb76e5d9d434e26b5d015d93f49a2cd5046c50066078598dda79c7e6e060a",
+    "src/failure_transparent_agents/labels.py": "3863c5210f996b70f7b110c64307bcec9cd4a0e134dae2c392775abfd9ae5f08",
+    "src/failure_transparent_agents/prompting.py": "1150fa52fcb2586024c511af380ed3f72f3aa991a74dc742716d6cfec3ef5c13",
+    "src/failure_transparent_agents/providers.py": "cce0f033d95968671c48f2e3fc4d4cde0188a9c79abe69f0c6385bc5bfa4bb90",
+    "src/failure_transparent_agents/schema.py": "7834c1bafbcc9183c38656648eac768dfd6e7dd2c8fbf99b7485f05b58cc5b27"
+  },
+  "task_count": 100
+}

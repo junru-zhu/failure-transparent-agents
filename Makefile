@@ -3,6 +3,9 @@ WHEEL_PYTHON ?= $(PYTHON)
 PYTHONPATH := $(CURDIR)/src
 RUN_ID ?= confirmatory-20260910-v1
 RESULT_ROOT := results/$(RUN_ID)
+EXTENSION_RUN_ID ?= model-extension-20260912-v1
+EXTENSION_ROOT := results/$(EXTENSION_RUN_ID)
+EXTENSION_MANIFEST := data/model_extension_manifest.json
 VALIDATION_OUTPUT_DIR ?= results/full-scale-validation
 RELEASE_OUTPUT_DIR ?= dist
 RELEASE_ARCHIVE ?= $(RELEASE_OUTPUT_DIR)/failure-transparent-agents-0.2.0-release-candidate.zip
@@ -18,10 +21,16 @@ DATASET_MANIFEST := data/confirmatory_manifest.json
 RAW_ARGS := --raw $(RESULT_ROOT)/primary/openai/raw_results.jsonl \
 	--raw $(RESULT_ROOT)/primary/anthropic/raw_results.jsonl \
 	--raw $(RESULT_ROOT)/primary/nvidia/raw_results.jsonl
+SIX_MODEL_RAW_ARGS := $(RAW_ARGS) \
+	--raw $(EXTENSION_ROOT)/primary/nova/raw_results.jsonl \
+	--raw $(EXTENSION_ROOT)/primary/llama/raw_results.jsonl \
+	--raw $(EXTENSION_ROOT)/primary/ministral/raw_results.jsonl
 
 .PHONY: test demo pilot dataset check-dataset preflight preflight-completed \
 	full-scale-validation freeze \
 	confirmatory confirmatory-openai confirmatory-anthropic confirmatory-nvidia \
+	model-extension model-extension-nova model-extension-llama \
+	model-extension-ministral model-extension-judge model-extension-analyze \
 	judge human-sample annotate-human prepare-adjudication \
 	annotate-adjudication finalize-adjudication analyze human-sensitivity \
 	release-audit final-publication-gate release-bundle final-release-bundle \
@@ -97,6 +106,54 @@ confirmatory-nvidia:
 		--output-dir $(RESULT_ROOT)/primary/nvidia \
 		--run-id $(RUN_ID) \
 		--repeats 2 --workers $(WORKERS) --allow-live $(RESUME)
+
+model-extension: model-extension-nova model-extension-llama model-extension-ministral
+
+model-extension-nova:
+	PYTHONPATH=$(PYTHONPATH) $(PYTHON) -m failure_transparent_agents.confirmatory \
+		--dataset $(DATASET) \
+		--dataset-manifest $(EXTENSION_MANIFEST) \
+		--provider-config configs/extensions/amazon-nova-micro-bedrock.json \
+		--output-dir $(EXTENSION_ROOT)/primary/nova \
+		--run-id $(EXTENSION_RUN_ID) \
+		--repeats 2 --workers $(WORKERS) --allow-live $(RESUME)
+
+model-extension-llama:
+	PYTHONPATH=$(PYTHONPATH) $(PYTHON) -m failure_transparent_agents.confirmatory \
+		--dataset $(DATASET) \
+		--dataset-manifest $(EXTENSION_MANIFEST) \
+		--provider-config configs/extensions/meta-llama-3.1-8b-bedrock.json \
+		--output-dir $(EXTENSION_ROOT)/primary/llama \
+		--run-id $(EXTENSION_RUN_ID) \
+		--repeats 2 --workers $(WORKERS) --allow-live $(RESUME)
+
+model-extension-ministral:
+	PYTHONPATH=$(PYTHONPATH) $(PYTHON) -m failure_transparent_agents.confirmatory \
+		--dataset $(DATASET) \
+		--dataset-manifest $(EXTENSION_MANIFEST) \
+		--provider-config configs/extensions/mistral-ministral-3-8b-bedrock.json \
+		--output-dir $(EXTENSION_ROOT)/primary/ministral \
+		--run-id $(EXTENSION_RUN_ID) \
+		--repeats 2 --workers $(WORKERS) --allow-live $(RESUME)
+
+model-extension-judge:
+	PYTHONPATH=$(PYTHONPATH) $(PYTHON) -m failure_transparent_agents.judge \
+		$(SIX_MODEL_RAW_ARGS) \
+		--dataset $(DATASET) \
+		--dataset-manifest $(EXTENSION_MANIFEST) \
+		--provider-config configs/extensions/openai-gpt-5.6-luna-judge-bedrock.json \
+		--output-dir $(EXTENSION_ROOT)/judge-luna \
+		--annotator-id openai-gpt-5.6-luna-judge-v1 \
+		--workers $(WORKERS) --parse-retries 1 --allow-live $(RESUME)
+
+model-extension-analyze:
+	PYTHONPATH=$(PYTHONPATH) $(PYTHON) -m failure_transparent_agents.analysis \
+		$(SIX_MODEL_RAW_ARGS) \
+		--labels $(EXTENSION_ROOT)/judge-luna/model_judge_labels.jsonl \
+		--output-dir $(EXTENSION_ROOT)/analysis-six-model \
+		--bootstrap-repetitions 10000 \
+		--permutation-repetitions 100000 \
+		--seed 20260912
 
 judge:
 	PYTHONPATH=$(PYTHONPATH) $(PYTHON) -m failure_transparent_agents.judge \

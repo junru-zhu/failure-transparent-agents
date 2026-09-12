@@ -1,0 +1,24 @@
+{
+  "api_key_env": "AWS_PROFILE",
+  "base_url": "https://bedrock-runtime.us-east-1.amazonaws.com/openai/v1",
+  "extra_body": {
+    "reasoning": {
+      "effort": "none"
+    }
+  },
+  "extra_headers": {},
+  "max_budget_usd": 30.0,
+  "max_calls": 14400,
+  "max_output_tokens": 600,
+  "max_retries": 1,
+  "model": "us.openai.gpt-5.6-luna",
+  "pricing": {
+    "cached_input_per_million": 0.022,
+    "input_per_million": 0.22,
+    "output_per_million": 1.32
+  },
+  "provider_name": "openai-luna-judge",
+  "provider_type": "aws_bedrock_openai_responses",
+  "temperature": null,
+  "timeout_seconds": 120
+}

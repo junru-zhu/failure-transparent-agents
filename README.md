@@ -60,6 +60,15 @@ The evidence contract requires the model to expose four fields:
 > 0.2.0 is not human-validated, and the paper does not report human–human or
 > model–human agreement.
 
+> [!NOTE]
+> **New six-model extension:** adding Amazon Nova Micro, Meta Llama 3.1 8B,
+> and Mistral Ministral 8B yields 3,600 responses. False success is **22.8%**
+> at baseline, **9.2%** with the plain transparency instruction, and **0.8%**
+> with the evidence contract. See the
+> [extension report](docs/six_model_extension_report.md). The current PDF
+> remains the frozen three-model v0.2.0 paper until its six-model revision is
+> rebuilt and re-audited.
+
 ## Run it in 60 seconds
 
 No API key. No cloud account. No package installation. No GPU.
@@ -158,6 +167,7 @@ rate: **85.0%**.
 - [x] Provider-neutral, resumable **evaluation harness**
 - [x] Strict call and cost caps for live execution
 - [x] **1,800 released responses and labels**
+- [x] Post-confirmatory **six-model, 3,600-response extension**
 - [x] Clustered bootstrap intervals and paired tests
 - [x] Three primary figures and pressure ablation
 - [x] Annotation guide and frozen 270-response human sample

@@ -1,0 +1,60 @@
+{
+  "arms": [
+    {
+      "config": "configs/extensions/amazon-nova-micro-bedrock.json",
+      "model": "us.amazon.nova-micro-v1:0",
+      "pricing_usd_per_million_tokens": {
+        "cached_input": 0.00875,
+        "input": 0.035,
+        "output": 0.14
+      },
+      "provider": "amazon-nova",
+      "provider_type": "aws_bedrock_converse",
+      "region": "us-east-1",
+      "role": "primary"
+    },
+    {
+      "config": "configs/extensions/meta-llama-3.1-8b-bedrock.json",
+      "model": "us.meta.llama3-1-8b-instruct-v1:0",
+      "pricing_usd_per_million_tokens": {
+        "cached_input": 0.22,
+        "input": 0.22,
+        "output": 0.22
+      },
+      "provider": "meta-llama",
+      "provider_type": "aws_bedrock_converse",
+      "region": "us-east-1",
+      "role": "primary"
+    },
+    {
+      "config": "configs/extensions/mistral-ministral-3-8b-bedrock.json",
+      "model": "mistral.ministral-3-8b-instruct",
+      "pricing_usd_per_million_tokens": {
+        "cached_input": 0.15,
+        "input": 0.15,
+        "output": 0.15
+      },
+      "provider": "mistral",
+      "provider_type": "aws_bedrock_converse",
+      "region": "us-east-1",
+      "role": "primary"
+    },
+    {
+      "config": "configs/extensions/openai-gpt-5.6-luna-judge-bedrock.json",
+      "model": "us.openai.gpt-5.6-luna",
+      "pricing_usd_per_million_tokens": {
+        "cached_input": 0.022,
+        "input": 0.22,
+        "output": 1.32
+      },
+      "provider": "openai-luna-judge",
+      "provider_type": "aws_bedrock_openai_responses",
+      "region": "us-east-1",
+      "role": "judge"
+    }
+  ],
+  "pricing_source": "AWS Price List API and official Amazon Bedrock model documentation",
+  "schema_version": "1.0",
+  "status": "verified",
+  "verified_at": "2026-09-12T05:05:19Z"
+}

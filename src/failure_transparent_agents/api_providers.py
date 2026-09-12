@@ -165,6 +165,7 @@ class ProviderSettings:
             "anthropic_messages",
             "openai_chat_compatible",
             "aws_bedrock_invoke_model",
+            "aws_bedrock_converse",
             "aws_bedrock_anthropic_messages",
             "aws_bedrock_openai_responses",
         }:
@@ -626,7 +627,8 @@ class DirectApiProvider(ModelProvider):
                     estimated_cost_usd=actual_cost,
                     latency_ms=latency_ms,
                     provider_request_id=parsed["request_id"]
-                    or _header(headers, "x-request-id"),
+                    or _header(headers, "x-request-id")
+                    or _header(headers, "x-amzn-requestid"),
                     resolved_model=parsed["resolved_model"],
                     attempts=attempt_index + 1,
                     attempt_errors=tuple(attempt_errors),
@@ -889,6 +891,66 @@ class AwsBedrockInvokeModelProvider(OpenAICompatibleChatProvider):
         return self._merge_extra_body(payload)
 
 
+class AwsBedrockConverseProvider(DirectApiProvider):
+    """Provider-neutral Bedrock Converse adapter using AWS SigV4 auth."""
+
+    def _endpoint(self) -> str:
+        model_id = quote(self.model, safe="-._~:")
+        return f"{self.settings.base_url}/model/{model_id}/converse"
+
+    def _headers(self) -> dict[str, str]:
+        return {
+            "Content-Type": "application/json",
+            **self.settings.extra_headers,
+        }
+
+    def _payload(
+        self,
+        system_instruction: str,
+        user_message: str,
+    ) -> dict[str, Any]:
+        inference_config: dict[str, Any] = {
+            "maxTokens": self.settings.max_output_tokens,
+        }
+        if self.settings.temperature is not None:
+            inference_config["temperature"] = self.settings.temperature
+        payload: dict[str, Any] = {
+            "system": [{"text": system_instruction}],
+            "messages": [
+                {
+                    "role": "user",
+                    "content": [{"text": user_message}],
+                }
+            ],
+            "inferenceConfig": inference_config,
+        }
+        return self._merge_extra_body(payload)
+
+    def _parse_response(self, data: Mapping[str, Any]) -> dict[str, Any]:
+        output = _mapping(data.get("output"), "output")
+        message = _mapping(output.get("message"), "output.message")
+        text_parts = [
+            block["text"]
+            for block in _list(message.get("content"), "output.message.content")
+            if isinstance(block, dict) and isinstance(block.get("text"), str)
+        ]
+        if not text_parts:
+            raise ProviderError("Bedrock Converse response contained no text")
+        usage = _mapping(data.get("usage"), "usage")
+        return {
+            "text": "\n".join(text_parts).strip(),
+            "input_tokens": _usage_int(usage, "inputTokens"),
+            "cached_input_tokens": _optional_usage_int(
+                usage,
+                "cacheReadInputTokens",
+            ),
+            "reasoning_tokens": 0,
+            "output_tokens": _usage_int(usage, "outputTokens"),
+            "request_id": None,
+            "resolved_model": self.model,
+        }
+
+
 class AwsBedrockAnthropicMessagesProvider(AnthropicMessagesProvider):
     """Anthropic Messages schema over native Bedrock InvokeModel."""
 
@@ -932,6 +994,7 @@ def build_api_provider(
 ) -> DirectApiProvider:
     aws_provider_types = {
         "aws_bedrock_invoke_model": AwsBedrockInvokeModelProvider,
+        "aws_bedrock_converse": AwsBedrockConverseProvider,
         "aws_bedrock_anthropic_messages": AwsBedrockAnthropicMessagesProvider,
         "aws_bedrock_openai_responses": AwsBedrockOpenAIResponsesProvider,
     }
@@ -942,7 +1005,10 @@ def build_api_provider(
                 f"missing AWS profile environment variable "
                 f"{settings.api_key_env}"
             )
-        if settings.provider_type == "aws_bedrock_openai_responses":
+        if settings.provider_type in {
+            "aws_bedrock_converse",
+            "aws_bedrock_openai_responses",
+        }:
             resolved_transport = transport or AwsSigV4JsonTransport(
                 profile=profile,
                 region=_aws_bedrock_region(settings.base_url),

@@ -1,0 +1,14 @@
+{
+  "aggregate_project_budget_cap_usd": 120.0,
+  "approved_at": "2026-09-12T05:05:19Z",
+  "approved_by": "Junru Zhu",
+  "authors": [
+    "Junru Zhu"
+  ],
+  "data_collection_authorized": true,
+  "extension_budget_cap_usd": 45.0,
+  "judge_budget_cap_usd": 30.0,
+  "primary_budget_cap_usd": 15.0,
+  "schema_version": "1.0",
+  "status": "approved"
+}
