@@ -359,7 +359,10 @@ L 64.455219 66.013559
 " style="fill: none; stroke: #a6aeb8; stroke-linecap: round"/>
    </g>
    <g id="text_12">
-    <text style="fill: #202630; font: 700 8.4px 'Helvetica', 'Arial', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: start" x="30.117313" y="40.92725" transform="rotate(-0 30.117313 40.92725)">a   Safety–utility trajectory</text>
+    <text style="fill: #202630; font: 700 9px 'Helvetica', 'Arial', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: start" x="30.117313" y="40.852062" transform="rotate(-0 30.117313 40.852062)">a</text>
+   </g>
+   <g id="text_13">
+    <text style="fill: #202630; font: 600 8.6px 'Helvetica', 'Arial', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: start" x="44.117313" y="40.884375" transform="rotate(-0 44.117313 40.884375)">Safety–utility trajectory</text>
    </g>
    <g id="line2d_33">
     <defs>
@@ -427,7 +430,7 @@ L 330.027706 46.728
        <use xlink:href="#m3d1d67baf1" x="330.027706" y="136.041244" style="fill: #202630; stroke: #202630; stroke-width: 0.7"/>
       </g>
      </g>
-     <g id="text_13">
+     <g id="text_14">
       <text style="fill: #202630; font: 7.2px 'Helvetica', 'Arial', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: middle" x="330.027706" y="146.706119" transform="rotate(-0 330.027706 146.706119)">50%</text>
      </g>
     </g>
@@ -442,7 +445,7 @@ L 362.193399 46.728
        <use xlink:href="#m3d1d67baf1" x="362.193399" y="136.041244" style="fill: #202630; stroke: #202630; stroke-width: 0.7"/>
       </g>
      </g>
-     <g id="text_14">
+     <g id="text_15">
       <text style="fill: #202630; font: 7.2px 'Helvetica', 'Arial', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: middle" x="362.193399" y="146.706119" transform="rotate(-0 362.193399 146.706119)">60%</text>
      </g>
     </g>
@@ -457,7 +460,7 @@ L 394.359093 46.728
        <use xlink:href="#m3d1d67baf1" x="394.359093" y="136.041244" style="fill: #202630; stroke: #202630; stroke-width: 0.7"/>
       </g>
      </g>
-     <g id="text_15">
+     <g id="text_16">
       <text style="fill: #202630; font: 7.2px 'Helvetica', 'Arial', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: middle" x="394.359093" y="146.706119" transform="rotate(-0 394.359093 146.706119)">70%</text>
      </g>
     </g>
@@ -472,7 +475,7 @@ L 426.524787 46.728
        <use xlink:href="#m3d1d67baf1" x="426.524787" y="136.041244" style="fill: #202630; stroke: #202630; stroke-width: 0.7"/>
       </g>
      </g>
-     <g id="text_16">
+     <g id="text_17">
       <text style="fill: #202630; font: 7.2px 'Helvetica', 'Arial', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: middle" x="426.524787" y="146.706119" transform="rotate(-0 426.524787 146.706119)">80%</text>
      </g>
     </g>
@@ -487,7 +490,7 @@ L 458.69048 46.728
        <use xlink:href="#m3d1d67baf1" x="458.69048" y="136.041244" style="fill: #202630; stroke: #202630; stroke-width: 0.7"/>
       </g>
      </g>
-     <g id="text_17">
+     <g id="text_18">
       <text style="fill: #202630; font: 7.2px 'Helvetica', 'Arial', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: middle" x="458.69048" y="146.706119" transform="rotate(-0 458.69048 146.706119)">90%</text>
      </g>
     </g>
@@ -502,11 +505,11 @@ L 490.856174 46.728
        <use xlink:href="#m3d1d67baf1" x="490.856174" y="136.041244" style="fill: #202630; stroke: #202630; stroke-width: 0.7"/>
       </g>
      </g>
-     <g id="text_18">
+     <g id="text_19">
       <text style="fill: #202630; font: 7.2px 'Helvetica', 'Arial', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: middle" x="490.856174" y="146.706119" transform="rotate(-0 490.856174 146.706119)">100%</text>
      </g>
     </g>
-    <g id="text_19">
+    <g id="text_20">
      <text style="fill: #202630; font: 7.8px 'Helvetica', 'Arial', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: middle" x="410.44194" y="157.80215" transform="rotate(-0 410.44194 157.80215)">Response rate</text>
     </g>
    </g>
@@ -517,7 +520,7 @@ L 490.856174 46.728
        <use xlink:href="#m7f4ff4704a" x="323.594567" y="57.553848" style="fill: #202630; stroke: #202630; stroke-width: 0.7"/>
       </g>
      </g>
-     <g id="text_20">
+     <g id="text_21">
       <text style="fill: #202630; font: 7.6px 'Helvetica', 'Arial', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: end" x="318.094567" y="60.279754" transform="rotate(-0 318.094567 60.279754)">Limitation disclosed</text>
      </g>
     </g>
@@ -527,7 +530,7 @@ L 490.856174 46.728
        <use xlink:href="#m7f4ff4704a" x="323.594567" y="91.384622" style="fill: #202630; stroke: #202630; stroke-width: 0.7"/>
       </g>
      </g>
-     <g id="text_21">
+     <g id="text_22">
       <text style="fill: #202630; font: 7.6px 'Helvetica', 'Arial', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: end" x="318.094567" y="94.110528" transform="rotate(-0 318.094567 94.110528)">Recovery action</text>
      </g>
     </g>
@@ -537,7 +540,7 @@ L 490.856174 46.728
        <use xlink:href="#m7f4ff4704a" x="323.594567" y="125.215396" style="fill: #202630; stroke: #202630; stroke-width: 0.7"/>
       </g>
      </g>
-     <g id="text_22">
+     <g id="text_23">
       <text style="fill: #202630; font: 7.6px 'Helvetica', 'Arial', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: end" x="318.094567" y="127.979896" transform="rotate(-0 318.094567 127.979896)">Useful response</text>
      </g>
     </g>
@@ -642,8 +645,11 @@ L 0 -2.4
      <use xlink:href="#me2921b6c5e" x="489.515937" y="118.449241" style="fill: #00876c; stroke: #00876c; stroke-width: 0.6"/>
     </g>
    </g>
-   <g id="text_23">
-    <text style="fill: #202630; font: 700 8.4px 'Helvetica', 'Arial', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: start" x="314.594567" y="40.92725" transform="rotate(-0 314.594567 40.92725)">b   Failure-response quality</text>
+   <g id="text_24">
+    <text style="fill: #202630; font: 700 9px 'Helvetica', 'Arial', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: start" x="314.594567" y="40.852062" transform="rotate(-0 314.594567 40.852062)">b</text>
+   </g>
+   <g id="text_25">
+    <text style="fill: #202630; font: 600 8.6px 'Helvetica', 'Arial', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: start" x="328.594567" y="40.884375" transform="rotate(-0 328.594567 40.884375)">Failure-response quality</text>
    </g>
    <g id="line2d_57">
     <defs>
@@ -717,7 +723,7 @@ L 323.594567 177.072799
        <use xlink:href="#m3d1d67baf1" x="323.594567" y="212.0976" style="fill: #202630; stroke: #202630; stroke-width: 0.7"/>
       </g>
      </g>
-     <g id="text_24">
+     <g id="text_26">
       <text style="fill: #202630; font: 7.2px 'Helvetica', 'Arial', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: middle" x="323.594567" y="222.762475" transform="rotate(-0 323.594567 222.762475)">0.0%</text>
      </g>
     </g>
@@ -732,7 +738,7 @@ L 379.62513 177.072799
        <use xlink:href="#m3d1d67baf1" x="379.62513" y="212.0976" style="fill: #202630; stroke: #202630; stroke-width: 0.7"/>
       </g>
      </g>
-     <g id="text_25">
+     <g id="text_27">
       <text style="fill: #202630; font: 7.2px 'Helvetica', 'Arial', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: middle" x="379.62513" y="222.762475" transform="rotate(-0 379.62513 222.762475)">2.0%</text>
      </g>
     </g>
@@ -747,7 +753,7 @@ L 435.655693 177.072799
        <use xlink:href="#m3d1d67baf1" x="435.655693" y="212.0976" style="fill: #202630; stroke: #202630; stroke-width: 0.7"/>
       </g>
      </g>
-     <g id="text_26">
+     <g id="text_28">
       <text style="fill: #202630; font: 7.2px 'Helvetica', 'Arial', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: middle" x="435.655693" y="222.762475" transform="rotate(-0 435.655693 222.762475)">4.0%</text>
      </g>
     </g>
@@ -762,11 +768,11 @@ L 491.686256 177.072799
        <use xlink:href="#m3d1d67baf1" x="491.686256" y="212.0976" style="fill: #202630; stroke: #202630; stroke-width: 0.7"/>
       </g>
      </g>
-     <g id="text_27">
+     <g id="text_29">
       <text style="fill: #202630; font: 7.2px 'Helvetica', 'Arial', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: middle" x="491.686256" y="222.762475" transform="rotate(-0 491.686256 222.762475)">6.0%</text>
      </g>
     </g>
-    <g id="text_28">
+    <g id="text_30">
      <text style="fill: #202630; font: 7.8px 'Helvetica', 'Arial', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: middle" x="410.44194" y="233.858506" transform="rotate(-0 410.44194 233.858506)">Over-refusal rate</text>
     </g>
    </g>
@@ -821,8 +827,11 @@ L 447.328727 204.435925
      <use xlink:href="#me2921b6c5e" x="447.328727" y="204.435925" style="fill: #00876c; stroke: #00876c; stroke-width: 0.6"/>
     </g>
    </g>
-   <g id="text_29">
-    <text style="fill: #202630; font: 700 8.4px 'Helvetica', 'Arial', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: start" x="314.594567" y="171.321924" transform="rotate(-0 314.594567 171.321924)">c   Refusal of permitted partial help</text>
+   <g id="text_31">
+    <text style="fill: #202630; font: 700 9px 'Helvetica', 'Arial', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: start" x="314.594567" y="171.196861" transform="rotate(-0 314.594567 171.196861)">c</text>
+   </g>
+   <g id="text_32">
+    <text style="fill: #202630; font: 600 8.6px 'Helvetica', 'Arial', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: start" x="328.594567" y="171.280236" transform="rotate(-0 328.594567 171.280236)">Refusal of permitted partial help</text>
    </g>
    <g id="line2d_74">
     <g clip-path="url(#pf570ecdff6)">
@@ -840,7 +849,7 @@ L 447.328727 204.435925
     </g>
    </g>
   </g>
-  <g id="text_30">
+  <g id="text_33">
    <text style="fill: #657080; font: 6.3px 'Helvetica', 'Arial', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: end" x="497.289313" y="10.027912" transform="rotate(-0 497.289313 10.027912)">n = 1,200 per condition · scenario-clustered 95% CI</text>
   </g>
   <g id="legend_1">
@@ -866,7 +875,7 @@ z
      <use xlink:href="#m7d1d8c8bb4" x="42.249313" y="8.404875" style="fill: #596273; stroke: #ffffff; stroke-width: 0.7"/>
     </g>
    </g>
-   <g id="text_31">
+   <g id="text_34">
     <text style="fill: #202630; font: 7.2px 'Helvetica', 'Arial', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: start" x="50.889313" y="10.924875" transform="rotate(-0 50.889313 10.924875)">Baseline</text>
    </g>
    <g id="line2d_78">
@@ -886,7 +895,7 @@ z
      <use xlink:href="#ma388631d15" x="92.546938" y="8.404875" style="fill: #2a6f97; stroke: #ffffff; stroke-width: 0.7; stroke-linejoin: miter"/>
     </g>
    </g>
-   <g id="text_32">
+   <g id="text_35">
     <text style="fill: #202630; font: 7.2px 'Helvetica', 'Arial', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: start" x="101.186938" y="10.924875" transform="rotate(-0 101.186938 10.924875)">Transparency instruction</text>
    </g>
    <g id="line2d_79">
@@ -906,7 +915,7 @@ z
      <use xlink:href="#mdd67b8f927" x="194.055688" y="8.404875" style="fill: #00876c; stroke: #ffffff; stroke-width: 0.7; stroke-linejoin: miter"/>
     </g>
    </g>
-   <g id="text_33">
+   <g id="text_36">
     <text style="fill: #202630; font: 7.2px 'Helvetica', 'Arial', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: start" x="202.695688" y="10.924875" transform="rotate(-0 202.695688 10.924875)">Evidence contract</text>
    </g>
   </g>

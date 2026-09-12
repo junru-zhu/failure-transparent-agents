@@ -451,7 +451,10 @@ L 74.700386 168.751319
     </g>
    </g>
    <g id="text_12">
-    <text style="fill: #202630; font: 700 8.4px 'Helvetica', 'Arial', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: start" x="57.675562" y="45.210725" transform="rotate(-0 57.675562 45.210725)">a   False success across descriptive pressure strata</text>
+    <text style="fill: #202630; font: 700 9px 'Helvetica', 'Arial', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: start" x="57.675562" y="45.085662" transform="rotate(-0 57.675562 45.085662)">a</text>
+   </g>
+   <g id="text_13">
+    <text style="fill: #202630; font: 600 8.6px 'Helvetica', 'Arial', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: start" x="71.675562" y="45.169037" transform="rotate(-0 71.675562 45.169037)">False success across descriptive pressure strata</text>
    </g>
    <g id="line2d_47">
     <defs>
@@ -558,7 +561,7 @@ z
     </g>
    </g>
   </g>
-  <g id="text_13">
+  <g id="text_14">
    <text style="fill: #657080; font: 6.3px 'Helvetica', 'Arial', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: end" x="475.941563" y="8.667112" transform="rotate(-0 475.941563 8.667112)">n = 240 per pressure × condition · 20 task clusters · 95% CI</text>
   </g>
   <g id="legend_1">
@@ -584,7 +587,7 @@ z
      <use xlink:href="#m7d1d8c8bb4" x="26.049562" y="8.404875" style="fill: #596273; stroke: #ffffff; stroke-width: 0.7"/>
     </g>
    </g>
-   <g id="text_14">
+   <g id="text_15">
     <text style="fill: #202630; font: 7.2px 'Helvetica', 'Arial', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: start" x="34.689562" y="10.924875" transform="rotate(-0 34.689562 10.924875)">Baseline</text>
    </g>
    <g id="line2d_63">
@@ -604,7 +607,7 @@ z
      <use xlink:href="#ma388631d15" x="76.347187" y="8.404875" style="fill: #2a6f97; stroke: #ffffff; stroke-width: 0.7; stroke-linejoin: miter"/>
     </g>
    </g>
-   <g id="text_15">
+   <g id="text_16">
     <text style="fill: #202630; font: 7.2px 'Helvetica', 'Arial', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: start" x="84.987187" y="10.924875" transform="rotate(-0 84.987187 10.924875)">Transparency instruction</text>
    </g>
    <g id="line2d_64">
@@ -624,7 +627,7 @@ z
      <use xlink:href="#mdd67b8f927" x="177.855938" y="8.404875" style="fill: #00876c; stroke: #ffffff; stroke-width: 0.7; stroke-linejoin: miter"/>
     </g>
    </g>
-   <g id="text_16">
+   <g id="text_17">
     <text style="fill: #202630; font: 7.2px 'Helvetica', 'Arial', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: start" x="186.495937" y="10.924875" transform="rotate(-0 186.495937 10.924875)">Evidence contract</text>
    </g>
   </g>

@@ -12,15 +12,14 @@
 \graphicspath{{../figures/}}
 \hypersetup{
   hidelinks,
-  pdftitle={When Tools Fail, Do Language Models Tell the User?},
+  pdftitle={When Tools Fail: A Six-Model Benchmark of Failure Transparency},
   pdfauthor={Junru Zhu},
   pdfsubject={Failure transparency after deterministic tool failure},
   pdfkeywords={LLM agents, tool failure, hallucination, reliability, benchmark}
 }
 \newcommand{\datasetname}{Failure-Transparent Agents}
 
-\title{When Tools Fail, Do Language Models Tell the User? A Six-Model
-Benchmark of Failure Transparency}
+\title{When Tools Fail: A Six-Model Benchmark of Failure Transparency}
 \titlerunning{Failure Transparency After Tool Failure}
 \author{Junru Zhu}
 \authorrunning{J. Zhu}
@@ -102,7 +101,7 @@ contract, which requires status, observed evidence, limitation, and next
 action, reduces false success to 0--2\% for every tested model. It
 simultaneously increases useful recovery within the blocked-task setting,
 showing that truthful failure reporting can remain actionable after execution
-stops. This yields three contributions:
+stops. This yields four contributions:
 
 \begin{enumerate}
   \item a controlled 100-task benchmark and deterministic failure simulator
@@ -118,17 +117,22 @@ stops. This yields three contributions:
   independent extension.
 \end{enumerate}
 
-Figure~\ref{fig:overview} summarizes the controlled handoff from failed
-execution to the final response. The simulator fixes the available evidence;
-only the response instruction changes across conditions.
+Figure~\ref{fig:overview} follows the complete handoff from a user request to
+the final report. The simulator fixes one of five concrete failures---for
+example, unavailable search, a missing attachment, a nonzero process exit,
+HTTP 403, or a stale snapshot---and only the response instruction changes.
+The answer can either invent completion or expose the failed prerequisite and
+a feasible next step.
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=\linewidth]{../figures/figure0_benchmark_overview.pdf}
-\caption{Controlled experiment. Each task supplies a fixed failed-evidence
-trace. Three prompt conditions, six models, and two repeated runs produce
-3,600 responses. The first three models form the confirmatory study; three
-additional models form a post-confirmatory generalization extension.}
+\caption{Five-stage benchmark pipeline. One hundred tasks instantiate five
+failure families; a deterministic fixture fixes the unavailable evidence
+before the request enters one of three response conditions and six models. A
+stale-data example contrasts unsupported completion with an evidence-grounded
+blocked report. Metadata-blinded scoring separates violations, recovery
+quality, and utility.}
 \label{fig:overview}
 \end{figure}
 
@@ -189,8 +193,10 @@ problematic agent behavior~\cite{openai2025monitorability,anthropic2025shade}.
 Failure transparency instead evaluates the agent's own user-facing report.
 We scale annotation with an LLM judge, following evidence that model-based
 evaluation can be useful but biased by style, position, and model
-family~\cite{zheng2023judging}. The judge is blinded to model and condition and
-must return verbatim supporting spans. NVIDIA's guardrail methodology similarly
+family~\cite{zheng2023judging}. The judge is blinded to model identity and
+explicit condition metadata and must return verbatim supporting spans.
+Response format can still reveal the structured intervention. NVIDIA's
+guardrail methodology similarly
 motivates repeated automated judgments and manual review of inconsistent
 cases~\cite{nvidia2026evaluation}. The released labels remain model-judge
 measurements because the frozen human sample has not been annotated.
@@ -314,31 +320,44 @@ assigned condition instruction, user request, and deterministic failed-tool
 observation. No real tool is attached. Two separate requests are made for
 every model--condition--task cell, producing 3,600 responses.
 
+Table~\ref{tab:config} makes scale visible where it is public. Llama 3.1 and
+Ministral are 8B models, while Nemotron Super 3 is 120B. Nova Micro, Claude
+Sonnet 5, and GPT-5.6 Terra are marked as undisclosed rather than assigned
+estimated counts. Because only three models have disclosed sizes, the scale
+comparison is descriptive.
+
 \begin{table}[t]
 \centering
 \scriptsize
-\caption{Execution settings. The first three primary arms form the
-confirmatory study; the next three form the generalization extension.
-``Default'' delegates temperature to the provider.}
+\caption{Execution settings, grouped by publicly disclosed parameter count.
+Study stage remains explicit because the confirmatory and extension arms were
+frozen separately. ``Default'' delegates temperature to the provider.}
 \label{tab:config}
+\setlength{\tabcolsep}{2pt}
 \begin{tabular}{@{}
-  >{\raggedright\arraybackslash}p{0.14\textwidth}
-  >{\raggedright\arraybackslash}p{0.21\textwidth}
-  >{\raggedright\arraybackslash}p{0.24\textwidth}
-  >{\centering\arraybackslash}p{0.11\textwidth}
+  >{\raggedright\arraybackslash}p{0.12\textwidth}
   >{\raggedright\arraybackslash}p{0.20\textwidth}
+  >{\raggedright\arraybackslash}p{0.12\textwidth}
+  >{\raggedright\arraybackslash}p{0.20\textwidth}
+  >{\centering\arraybackslash}p{0.09\textwidth}
+  >{\raggedright\arraybackslash}p{0.13\textwidth}
 @{}}
 \toprule
-Stage & Model & Interface & Max output & Temperature \\
+Stage & Model & Params & Interface & Output & Temp. \\
 \midrule
-Confirmatory & GPT-5.6 Terra & Bedrock Responses & 300 & default \\
-Confirmatory & Claude Sonnet 5 & Bedrock Messages & 300 & default \\
-Confirmatory & Nemotron Super 3 120B & Bedrock InvokeModel & 300 & 0.2 \\
-Extension & Nova Micro & Bedrock Converse & 300 & 0.2 \\
-Extension & Llama 3.1 8B Instruct & Bedrock Converse & 300 & 0.2 \\
-Extension & Ministral 8B 3.0 & Bedrock Converse & 300 & 0.2 \\
-Six-model judge & GPT-5.6 Luna & Bedrock Responses & 600 & default \\
-Sensitivity judge & GPT-5.4 mini & OpenAI Responses & 600 & default \\
+\multicolumn{6}{@{}l}{\textit{Public parameter count}} \\
+Extension & Llama 3.1 8B & 8B & Bedrock Converse & 300 & 0.2 \\
+Extension & Ministral 8B 3.0 & 8B & Bedrock Converse & 300 & 0.2 \\
+Confirm. & Nemotron Super 3 & 120B/12B active & Bedrock InvokeModel & 300 & 0.2 \\
+\addlinespace
+\multicolumn{6}{@{}l}{\textit{Parameter count not disclosed}} \\
+Extension & Nova Micro & N/D & Bedrock Converse & 300 & 0.2 \\
+Confirm. & Claude Sonnet 5 & N/D & Bedrock Messages & 300 & default \\
+Confirm. & GPT-5.6 Terra & N/D & Bedrock Responses & 300 & default \\
+\addlinespace
+\multicolumn{6}{@{}l}{\textit{Automated judges}} \\
+Six-model & GPT-5.6 Luna & N/D & Bedrock Responses & 600 & default \\
+Sensitivity & GPT-5.4 mini & N/D & OpenAI Responses & 600 & default \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -449,9 +468,9 @@ original study.
 \section{Results}
 
 We organize the evidence in three steps. Aggregate comparisons establish the
-main intervention effect, cross-model and usefulness analyses test transfer
-and practical value, and pressure-stratum plus residual-label analyses identify
-where failures remain concentrated.
+main intervention effect; one compact model-level comparison then tests
+transfer, scale ordering, usefulness, and pressure sensitivity; residual-label
+and judge analyses locate the remaining measurement boundary.
 
 \subsection{Evidence contracts reduce unsupported completion}
 
@@ -463,10 +482,9 @@ response behaviors needed for useful recovery.
 \begin{table}[t]
 \centering
 \small
-\caption{Automated-judge response rates. Panel A preserves the frozen
-three-model confirmatory analysis (\(n=600\) per condition, GPT-5.4-mini
-judge). Panel B reports the separately frozen six-model analysis
-(\(n=1{,}200\) per condition, GPT-5.6-Luna judge).}
+\caption{Primary safety outcomes and useful recovery. Panel A preserves the
+frozen confirmatory analysis (\(n=600\) per condition); Panel B reports the
+separately frozen six-model analysis (\(n=1{,}200\) per condition).}
 \label{tab:main-results}
 \begin{tabular}{@{}lrrr@{}}
 \toprule
@@ -475,18 +493,12 @@ Outcome (\%) & Baseline & Transparency & Evidence contract \\
 \multicolumn{4}{@{}l}{\textit{A. Frozen confirmatory study}} \\
 False success $\downarrow$ & 32.0 & 11.8 & \textbf{1.3} \\
 Fabricated details $\downarrow$ & 37.5 & 17.3 & \textbf{3.3} \\
-Limitation disclosed $\uparrow$ & 69.3 & 89.0 & \textbf{98.3} \\
-Recovery action $\uparrow$ & 59.5 & 83.0 & \textbf{98.0} \\
 Useful response $\uparrow$ & 69.8 & 90.2 & \textbf{98.3} \\
-Over-refusal $\downarrow$ & \textbf{0.0} & \textbf{0.0} & 0.5 \\
 \addlinespace
 \multicolumn{4}{@{}l}{\textit{B. Post-confirmatory six-model analysis}} \\
 False success $\downarrow$ & 22.8 & 9.3 & \textbf{0.8} \\
 Fabricated details $\downarrow$ & 28.3 & 14.3 & \textbf{0.8} \\
-Limitation disclosed $\uparrow$ & 78.3 & 90.9 & \textbf{99.1} \\
-Recovery action $\uparrow$ & 56.3 & 78.9 & \textbf{98.7} \\
 Useful response $\uparrow$ & 74.9 & 89.2 & \textbf{98.8} \\
-Over-refusal $\downarrow$ & 2.8 & 3.4 & \textbf{2.3} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -508,28 +520,33 @@ $-9.8$), and the contract effect is $-21.9$ points ($-28.0$ to $-16.2$).
 The separate four-test Holm family also reaches
 \(4.0\times10^{-5}\) for all primary comparisons.
 
-\begin{figure}[!tbp]
+\begin{figure}[p]
 \centering
-\includegraphics[width=\linewidth]{../figures/figure1_false_success_by_model.pdf}
-\caption{Post-confirmatory six-model false-success estimates under
-GPT-5.6-Luna labels with base-task clustered 95\% intervals (\(n=200\) per
-model--condition cell). Panel (a) shows absolute rates; panel (b) shows paired
-reductions from baseline. The divider separates the original models from the
-extension. Zero point estimates represent 0 observed events in 200 responses,
-not known zero population risk.}
-\label{fig:false-success}
+\includegraphics[width=\linewidth]{../figures/figure1_false_success_by_model_single.pdf}
+\caption{Post-confirmatory six-model evidence chain under GPT-5.6-Luna labels.
+(a) Model-specific false-success rates grouped by disclosed parameter count
+(\(n=200\) per cell). (b) Aggregate false success versus useful response.
+(c) Descriptive pressure-stratum false-success rates (\(n=240\) per cell).
+Markers show base-task clustered 95\% intervals; zero observed events do not
+imply zero population risk.}
+\label{fig:model-comparison}
 \end{figure}
 
-\subsection{A plain instruction transfers unevenly across models}
+\subsection{Model-level results reveal no simple size ordering}
 
-Figure~\ref{fig:false-success} exposes a difference hidden by the aggregate
-rate. Under the transparency instruction, false success ranges from 0.5\% for
-Llama 3.1 8B to 20.5\% for Nemotron Super 3. Claude Sonnet 5 and GPT-5.6
-Terra fall to 3.0\% and 5.5\%, while Ministral 8B remains at 19.5\%.
-The evidence contract compresses this cross-model range to 0--2\%: 0\% for
+Figure~\ref{fig:model-comparison}a shows heterogeneity hidden by the aggregate
+rate. Among disclosed-size models, baseline false success is 6.0\% for Llama
+3.1 8B, 29.5\% for Ministral 8B, and 26.5\% for Nemotron Super 3 (120B total,
+12B active). The two 8B models differ by 23.5 points. Under the transparency
+instruction, the three rates are 0.5\%, 19.5\%, and 20.5\%. This small
+comparison does not identify a cause; it shows that parameter count alone
+does not order the observed risk.
+
+The undisclosed-size models remain a separate group. Their transparency rates
+are 3.0\% for Claude Sonnet 5, 5.5\% for GPT-5.6 Terra, and 6.5\% for Nova
+Micro. The evidence contract compresses all six models to 0--2\%: 0\% for
 Claude and Ministral, 0.5\% for Nova and Llama, and 2.0\% for Nemotron and
-GPT-5.6 Terra. Natural-language admonitions are therefore model-dependent,
-whereas explicit evidence fields provide a more stable reporting interface.
+GPT-5.6 Terra. The contract remains a bundled intervention.
 
 \subsection{Transparency and usefulness improve together}
 
@@ -540,24 +557,13 @@ increases were 20.3 points (95\% CI 14.2--26.8) and 28.5 points
 usefulness margin.
 
 The unified six-model analysis shows the same safety--utility direction
-(Figure~\ref{fig:utility}). Limitation disclosure is 78.3\%, 90.9\%, and
-99.1\%, while useful responses are 74.9\%, 89.2\%, and 98.8\%. Over-refusal
-is 2.8\%, 3.4\%, and 2.3\%. Relative to baseline, the contract changes
-over-refusal by \(-0.4\) points (95\% CI \(-2.4\) to 1.8), so no increase is
-detected. These results measure usefulness after a prerequisite has failed;
-they do not evaluate whether the same prompts preserve performance when tools
-succeed.
-
-\begin{figure}[!tbp]
-\centering
-\includegraphics[width=\linewidth]{../figures/figure2_transparency_and_utility.pdf}
-\caption{Post-confirmatory six-model safety and usefulness under
-GPT-5.6-Luna labels (\(n=1{,}200\) per condition). Panel (a) traces each
-condition toward the preferred upper-left region; panel (b) reports response
-quality; panel (c) shows refusal of permitted partial help. Intervals are
-base-task clustered 95\% confidence intervals.}
-\label{fig:utility}
-\end{figure}
+(Figure~\ref{fig:model-comparison}b). Aggregated across models, false success
+falls as useful response rises from 74.9\% to 89.2\% and 98.8\%. Limitation
+disclosure is 78.3\%, 90.9\%, and 99.1\%, while over-refusal is 2.8\%, 3.4\%,
+and 2.3\%. Relative to baseline, the contract changes over-refusal by
+\(-0.4\) points (95\% CI \(-2.4\) to 1.8), so no increase is detected. These
+results measure usefulness after a prerequisite has failed; they do not
+evaluate whether the same prompts preserve performance when tools succeed.
 
 \subsection{Adversarial pressure concentrates failures}
 
@@ -566,21 +572,10 @@ identical tasks. Forced choice produced the highest baseline false-success
 rate (71.7\%), followed by explicit pressure to conceal failure (33.8\%).
 The plain instruction leaves these strata at 32.1\% and 13.8\%, whereas the
 evidence contract reduces them to 3.3\% and 0.4\%
-(Figure~\ref{fig:pressure}). Neutral, urgency, and expected-answer scenarios
-range from 1.7\% to 4.6\% at baseline. The overall 22.8\% rate is therefore a
-stress-test average rather than an estimate of
+(Figure~\ref{fig:model-comparison}c). Neutral, urgency, and expected-answer
+scenarios range from 1.7\% to 4.6\% at baseline. The overall 22.8\% rate is
+therefore a stress-test average rather than an estimate of
 ordinary deployment prevalence.
-
-\begin{figure}[!tbp]
-\centering
-\includegraphics[width=\linewidth]{../figures/figure3_pressure_ablation.pdf}
-\caption{Post-confirmatory six-model false-success estimates by pressure
-stratum under GPT-5.6-Luna labels. Markers compare the three prompt conditions;
-shading marks forced-choice and conceal-failure stress strata. Each
-pressure--condition cell has 240 responses from 20 task clusters. Pressure is
-not crossed within identical task content, so comparisons are descriptive.}
-\label{fig:pressure}
-\end{figure}
 
 \subsection{Residual failures and judge reliability}
 
