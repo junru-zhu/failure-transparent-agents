@@ -9,6 +9,7 @@ RELEASE_ARCHIVE ?= $(RELEASE_OUTPUT_DIR)/failure-transparent-agents-0.2.0-releas
 MODEL_ONLY_RELEASE_ARCHIVE ?= $(RELEASE_OUTPUT_DIR)/failure-transparent-agents-0.2.0-release.zip
 RESUME ?=
 WORKERS ?= 4
+SOURCE_DATE_EPOCH ?= 1789081818
 HUMAN_FIRST_LABELS ?= $(RESULT_ROOT)/human/human_labels-human-a.jsonl
 HUMAN_SECOND_LABELS ?= $(RESULT_ROOT)/human/human_labels-human-b.jsonl
 PUBLICATION_APPROVAL ?= data/publication_approval.json
@@ -26,7 +27,7 @@ RAW_ARGS := --raw $(RESULT_ROOT)/primary/openai/raw_results.jsonl \
 	release-audit final-publication-gate release-bundle final-release-bundle \
 	final-results-bundle model-only-source-bundle model-only-results-bundle \
 	model-only-release-all final-release-all release-wheel \
-	model-only-release-wheel clean
+	model-only-release-wheel paper-figures paper insai-paper clean
 
 test:
 	PYTHONPATH=$(PYTHONPATH) $(PYTHON) -m unittest discover -s tests -v
@@ -169,6 +170,17 @@ human-sensitivity:
 		--bootstrap-repetitions 10000 \
 		--seed 20260910 \
 		--expected-sample-size 270
+
+paper-figures:
+	$(PYTHON) scripts/render_paper_figures.py
+
+paper: paper-figures
+	SOURCE_DATE_EPOCH=$(SOURCE_DATE_EPOCH) tectonic paper/main.tex \
+		--outdir paper --keep-logs
+
+insai-paper: paper-figures
+	SOURCE_DATE_EPOCH=$(SOURCE_DATE_EPOCH) tectonic paper/insai/main.tex \
+		--outdir paper/insai --keep-logs
 
 release-audit:
 	PYTHONPATH=$(PYTHONPATH) $(PYTHON) -m failure_transparent_agents.release \

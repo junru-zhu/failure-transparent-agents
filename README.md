@@ -162,7 +162,7 @@ rate: **85.0%**.
 - [x] Three primary figures and pressure ablation
 - [x] Annotation guide and frozen 270-response human sample
 - [x] Reproducible release bundles and package wheel
-- [x] Focused eight-page paper
+- [x] Focused eight-page IEEE-style two-column paper
 
 ## Use the benchmark
 
@@ -234,7 +234,7 @@ condition-blinded judge.
 | [`src/failure_transparent_agents/analysis.py`](src/failure_transparent_agents/analysis.py) | Clustered analysis and figures |
 | [`docs/annotation_guide.md`](docs/annotation_guide.md) | Label definitions and edge cases |
 | [`docs/model_judge_report.md`](docs/model_judge_report.md) | Frozen full-corpus results |
-| [`paper/main.pdf`](paper/main.pdf) | Eight-page research paper |
+| [`paper/main.pdf`](paper/main.pdf) | Eight-page IEEE-style two-column research paper |
 
 </details>
 
@@ -268,8 +268,9 @@ Citation metadata is available in [`CITATION.cff`](CITATION.cff). Until a
 Zenodo DOI is issued, cite the versioned GitHub release and paper.
 
 ```text
-Junru Zhu. Failure-Transparent Agents: A Reproducible Benchmark of
-Post-Failure Response Transparency. Version 0.2.0, 2026.
+Junru Zhu. Failure-Transparent Agents:
+Benchmarking Unsupported Claims After Tool Failure.
+Version 0.2.0, 2026.
 ```
 
 ## License

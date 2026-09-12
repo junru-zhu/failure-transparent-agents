@@ -18,7 +18,7 @@ tool or evidence source fails.
 - optional disagreement-only third-review adjudication and consensus tooling;
 - clustered bootstrap and paired randomization analysis;
 - three publication figures and one ablation table generator;
-- an eight-page LaTeX paper with model-judge-only results;
+- an eight-page IEEE-style two-column paper with model-judge-only results;
 - deterministic source archive, checksum, and embedded file manifest; and
 - a fail-closed final scientific publication gate with separate clean-source
   and sanitized scientific-results archive builders.

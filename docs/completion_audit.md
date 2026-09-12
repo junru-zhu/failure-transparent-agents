@@ -1,6 +1,6 @@
 # Completion Audit
 
-**Audit date:** 2026-09-11
+**Audit date:** 2026-09-12
 **Overall status:** confirmatory collection, frozen model judging, and
 full-corpus analysis complete; v0.2.0 authorized for model-judge-only
 publication and not human-validated
@@ -24,7 +24,7 @@ confirmatory model results.
 | Human validation and agreement | Not conducted for v0.2.0 | Junru Zhu authorized omission on 2026-09-11; dual annotation, adjudication, consensus, and agreement tooling remains available | Optional future validation only |
 | Bootstrap intervals and primary tests | Frozen full-corpus model-judge analysis complete | `docs/model_judge_report.md`; 10,000-draw bootstrap and 100,000-draw paired tests over 100 task clusters | Optional human-label sensitivity analysis is outside v0.2.0 |
 | Three figures and ablation table | Frozen model-judge artifacts complete | `results/confirmatory-20260910-v1/analysis-model-judge/` | Package for release |
-| Six-to-eight-page paper | Model-judge-only result-bearing draft complete | `paper/main.tex` and eight-page `paper/main.pdf`; SHA-256 `5253e8364e7d96dd8c8defabc5390c1274252746340aa263ecddd132217bc9ed`; no human results are claimed | Keep the not-human-validated limitation explicit |
+| Focused research paper | Model-judge-only result-bearing draft complete | `paper/main.tex` and eight-page IEEE-style two-column `paper/main.pdf`; SHA-256 `a958007b943178244f45160f8d3ab01726c462e0d0a997736082c72c1ca08860`; no human results are claimed | Keep the not-human-validated limitation explicit |
 | GitHub-ready software/data artifact | Publication authorized | Deterministic source ZIP and sanitized model-judge-only results ZIP; all model-output dispositions approved; raw request IDs removed; checksums, release notes, CI, MIT license, and citation metadata prepared | Build artifacts and publish the approved GitHub release |
 | Zenodo-ready metadata | Complete locally | `.zenodo.json`, `CITATION.cff`, release audit | Publish exact GitHub release, create DOI, then insert DOI into README, citation metadata, and paper |
 | arXiv/workshop submission | Not achieved | Submission checklist only | Venue review, optional DOI, and explicit submission authorization |

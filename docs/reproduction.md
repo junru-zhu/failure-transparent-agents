@@ -233,12 +233,23 @@ third-party dependencies.
 
 ## 10. Compile the paper
 
-With Tectonic installed:
+Install the optional plotting dependency in an isolated environment:
 
 ```bash
-tectonic paper/main.tex --outdir paper --keep-logs
+python3.12 -m venv .venv
+uv pip install --python .venv/bin/python -e '.[paper]'
+```
+
+With Tectonic, Ghostscript, and qpdf installed:
+
+```bash
+make paper PYTHON=.venv/bin/python
 qpdf --check paper/main.pdf
 ```
 
-The v0.2.0 source compiles to eight pages. Before submission, inspect every
-rendered page after any paper change.
+`make paper` regenerates the four PDF and SVG figures directly from the
+frozen `results/confirmatory-20260910-v1/analysis-model-judge/rates.csv` table
+before compiling the manuscript. The current source compiles to an eight-page
+IEEE-style two-column paper.
+Before submission, inspect every rendered page after any paper or plotting
+change and verify that the figures contain no Type 3 fonts.

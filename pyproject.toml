@@ -18,6 +18,9 @@ classifiers = [
 ]
 dependencies = []
 
+[project.optional-dependencies]
+paper = ["matplotlib==3.9.4"]
+
 [project.urls]
 Homepage = "https://github.com/junru-zhu/failure-transparent-agents"
 Repository = "https://github.com/junru-zhu/failure-transparent-agents"

@@ -5,6 +5,7 @@ __pycache__/
 results/
 dist/
 build/
+tmp/
 *.egg-info/
 paper/*.aux
 paper/*.log
@@ -13,6 +14,11 @@ paper/*.pdf
 !paper/main.pdf
 paper/*.bbl
 paper/*.blg
+paper/**/*.aux
+paper/**/*.log
+paper/**/*.out
+paper/**/*.bbl
+paper/**/*.blg
 .env
 *.pem
 .kiro/
